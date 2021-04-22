@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">GraphicEditor</string>
+    <string name="button_gallery">Gallery</string>
+    <string name="button_camera">Camera</string>
+    <string name="image_content_description">Just Image</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="save_image">Save image</string>
+    <string-array name="item_list">
+        <item>-Не выбрано-</item>
+        <item>Синий фильтр</item>
+        <item>Красный фильтр</item>
+        <item>KK</item>
+        <item>Повернуть картинку на 90 град.</item>
+    </string-array>
+
 </resources>
