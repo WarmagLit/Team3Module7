@@ -42,6 +42,8 @@ import kotlin.math.log
 import android.graphics.Matrix as Matrix
 
 private const val REQUEST_CODE = 42
+private const val CAMERA_PERMISSION_CODE = 1
+private const val CAMERA_REQUEST_CODE = 1
 class MainActivity : AppCompatActivity() {
 
 
@@ -72,16 +74,17 @@ class MainActivity : AppCompatActivity() {
 
         buttonCamera.setOnClickListener {
             Log.d("TAG", "Camera button click")
-            Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
-            /*
-            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            //Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
 
-            if (takePictureIntent.resolveActivity(this.packageManager) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_CODE)
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(intent, CAMERA_REQUEST_CODE)
             } else {
-                Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA),
+                    CAMERA_REQUEST_CODE)
+
             }
-            */
         }
 
         buttonSave.setOnClickListener {
@@ -99,7 +102,7 @@ class MainActivity : AppCompatActivity() {
 
 
         // Initializing a String Array
-        val colors = arrayOf("-Не выбрано-","Синий фильтр","NN","KK","Повернуть картинку на 90 град.")
+        val colors = arrayOf("-Не выбрано-","Синий фильтр","Серый фильтр","Сепия","Повернуть картинку на 90 град.")
 
         // Initializing an ArrayAdapter
         val adapter = ArrayAdapter(
@@ -134,6 +137,14 @@ class MainActivity : AppCompatActivity() {
                     rotateImage()
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
+                if (parent.getItemAtPosition(position).toString() == "Серый фильтр") {
+                    GreyFilter()
+                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
+                }
+                if (parent.getItemAtPosition(position).toString() == "Сепия") {
+                    SepiaFilter()
+                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
+                }
 
             }
 
@@ -160,10 +171,10 @@ class MainActivity : AppCompatActivity() {
 
         for (i in  0..bitmap.width-1) {
             for (j in  0..bitmap.height-1) {
-                if (argbArray[i][j].B < 235 && argbArray[i][j].R > 10 && argbArray[i][j].G > 10) {
-                    argbArray[i][j].R = argbArray[i][j].R - 10
-                    argbArray[i][j].G = argbArray[i][j].G - 10
-                    argbArray[i][j].B = argbArray[i][j].B + 20
+                if (true) {
+                    argbArray[i][j].R = argbArray[i][j].R / 10 * 7
+                    argbArray[i][j].G = argbArray[i][j].G  / 10 * 7
+                    argbArray[i][j].B = argbArray[i][j].B
                 }
             }
         }
@@ -172,6 +183,65 @@ class MainActivity : AppCompatActivity() {
 
         imageView2.setImageBitmap(bitmap2)
     }
+
+    fun GreyFilter() {
+        Log.d("TAG", "Grey Filter")
+        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
+        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+
+        var argbArray = averageARGB(mutableBitmap)
+        var mid = 0
+
+        for (i in  0..bitmap.width-1) {
+            for (j in  0..bitmap.height-1) {
+                if (true) {
+                    mid = (argbArray[i][j].R + argbArray[i][j].G + argbArray[i][j].B)/3
+                    argbArray[i][j].R = mid
+                    argbArray[i][j].G = mid
+                    argbArray[i][j].B = mid
+                }
+            }
+        }
+
+        val bitmap2 = ARGBtoBitmap(argbArray)
+
+        imageView2.setImageBitmap(bitmap2)
+    }
+
+    fun SepiaFilter() {
+        Log.d("TAG", "Sepia Filter")
+        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
+        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+
+        var argbArray = averageARGB(mutableBitmap)
+
+
+        for (i in  0..bitmap.width-1) {
+            for (j in  0..bitmap.height-1) {
+                    val oldR = argbArray[i][j].R
+                    val oldG = argbArray[i][j].G
+                    val oldB = argbArray[i][j].B
+                    argbArray[i][j].R = (oldR * 0.393 + oldG * 0.769 + oldB * 0.189).toInt()
+                    argbArray[i][j].G = (oldR * 0.349 + oldG * 0.686 + oldB * 0.168).toInt()
+                    argbArray[i][j].B = (oldR * 0.272 + oldG * 0.534 + oldB * 0.131).toInt()
+
+                    if (argbArray[i][j].R > 255) argbArray[i][j].R = 255
+                    if (argbArray[i][j].G > 255) argbArray[i][j].G = 255
+                    if (argbArray[i][j].B > 255) argbArray[i][j].B = 255
+
+                Log.d("tg", (oldR * 0.393 + oldG * 0.769 + oldB * 0.189).toInt().toString() + " " +
+                        (oldR * 0.349 + oldG * 0.686 + oldB * 0.168).toInt().toString() + " " +
+                        (oldR * 0.272 + oldG * 0.534 + oldB * 0.131).toInt().toString())
+
+            }
+        }
+
+        val bitmap2 = ARGBtoBitmap(argbArray)
+
+        imageView2.setImageBitmap(bitmap2)
+    }
+
+
     
     fun rotateImage() {
         val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
@@ -246,10 +316,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == 100) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == CAMERA_PERMISSION_CODE) {
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //permission from popup granted
-                saveImageToStorage()
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
             else {
                 //permission from popup denied
@@ -272,6 +344,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
+            super.onActivityResult(requestCode, resultCode, data)
+            val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
+            imageView2.setImageBitmap(thumbNail)
+        }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
         } else {
@@ -282,7 +359,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveImageToStorage() {
         val externalStorageState = Environment.getExternalStorageState()
         if (externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
-            val storageDirectory = File(getExternalFilesDir(null), "Text.txt") //not working
+            val storageDirectory = Environment.getExternalStorageDirectory().toString();//not working
             val file = File(storageDirectory, "test_image.png")
             try {
                 val stream:OutputStream = FileOutputStream(file)
