@@ -163,24 +163,20 @@ class MainActivity : AppCompatActivity() {
 
     fun BlueFilter() {
         Log.d("TAG", "Blue Filter")
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
 
-        var argbArray = averageARGB(mutableBitmap)
-
-        for (i in 0..bitmap.width - 1) {
-            for (j in 0..bitmap.height - 1) {
-                if (argbArray[i][j].B < 235 && argbArray[i][j].R > 10 && argbArray[i][j].G > 10) {
-                    argbArray[i][j].R = argbArray[i][j].R - 10
-                    argbArray[i][j].G = argbArray[i][j].G - 10
-                    argbArray[i][j].B = argbArray[i][j].B + 20
-                }
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                image.pixelsArray[i][j].r /= 10
+                image.pixelsArray[i][j].r *= 7
+                image.pixelsArray[i][j].g /= 10
+                image.pixelsArray[i][j].g *= 7
             }
         }
 
-        val bitmap2 = ARGBtoBitmap(argbArray)
+        image.updateBitmap()
 
-        imageView2.setImageBitmap(bitmap2)
+        imageView2.setImageBitmap(image.bitmap)
     }
 
     fun rotateImage() {
