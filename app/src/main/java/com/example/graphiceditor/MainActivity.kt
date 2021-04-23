@@ -51,22 +51,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        buttonGallery.setOnClickListener{
+        buttonGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_DENIED) {
+                    PackageManager.PERMISSION_DENIED
+                ) {
                     //permission denied
                     val permissions = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
                     requestPermissions(permissions, PERMISSION_CODE);
 
-                }
-                else {
+                } else {
                     //permission already granted
                     pickImageFromGallery();
                 }
-            }
-            else {
+            } else {
                 //system OS is < Marshmallow
                 pickImageFromGallery();
             }
@@ -89,9 +88,17 @@ class MainActivity : AppCompatActivity() {
 
         buttonSave.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        100
+                    )
                 } else {
                     saveImageToStorage()
                 }
@@ -103,6 +110,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initializing a String Array
         val colors = arrayOf("-Не выбрано-","Синий фильтр","Серый фильтр","Сепия","Повернуть картинку на 90 град.")
+
 
         // Initializing an ArrayAdapter
         val adapter = ArrayAdapter(
@@ -118,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         spinner.adapter = adapter;
 
         // Set an on item selected listener for spinner object
-        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,
                 view: View,
@@ -133,7 +141,9 @@ class MainActivity : AppCompatActivity() {
                     BlueFilter()
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
-                if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
+                if (parent.getItemAtPosition(position)
+                        .toString() == "Повернуть картинку на 90 град."
+                ) {
                     rotateImage()
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
@@ -164,49 +174,41 @@ class MainActivity : AppCompatActivity() {
 
     fun BlueFilter() {
         Log.d("TAG", "Blue Filter")
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
 
-        var argbArray = averageARGB(mutableBitmap)
-
-        for (i in  0..bitmap.width-1) {
-            for (j in  0..bitmap.height-1) {
-                if (true) {
-                    argbArray[i][j].R = argbArray[i][j].R / 10 * 7
-                    argbArray[i][j].G = argbArray[i][j].G  / 10 * 7
-                    argbArray[i][j].B = argbArray[i][j].B
-                }
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                image.pixelsArray[i][j].r /= 10
+                image.pixelsArray[i][j].r *= 7
+                image.pixelsArray[i][j].g /= 10
+                image.pixelsArray[i][j].g *= 7
             }
         }
 
-        val bitmap2 = ARGBtoBitmap(argbArray)
+        image.updateBitmap()
 
-        imageView2.setImageBitmap(bitmap2)
+        imageView2.setImageBitmap(image.bitmap)
     }
 
     fun GreyFilter() {
         Log.d("TAG", "Grey Filter")
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-        var argbArray = averageARGB(mutableBitmap)
+        val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
         var mid = 0
 
-        for (i in  0..bitmap.width-1) {
-            for (j in  0..bitmap.height-1) {
-                if (true) {
-                    mid = (argbArray[i][j].R + argbArray[i][j].G + argbArray[i][j].B)/3
-                    argbArray[i][j].R = mid
-                    argbArray[i][j].G = mid
-                    argbArray[i][j].B = mid
-                }
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                mid = (image.pixelsArray[i][j].r + image.pixelsArray[i][j].g + image.pixelsArray[i][j].b) / 3
+                image.pixelsArray[i][j].r = mid
+                image.pixelsArray[i][j].g = mid
+                image.pixelsArray[i][j].b = mid
             }
         }
 
-        val bitmap2 = ARGBtoBitmap(argbArray)
+        image.updateBitmap()
 
-        imageView2.setImageBitmap(bitmap2)
+        imageView2.setImageBitmap(image.bitmap)
     }
+
 
     fun SepiaFilter() {
         Log.d("TAG", "Sepia Filter")
@@ -238,7 +240,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    
     fun rotateImage() {
         val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
 
@@ -257,23 +258,23 @@ class MainActivity : AppCompatActivity() {
         var height = bitmap.height
         var size = width * height
 
-        var A: Array<IntArray> = Array(width) {IntArray(height) {0} }
-        var R: Array<IntArray> = Array(width) {IntArray(height) {0} }
-        var G: Array<IntArray> = Array(width) {IntArray(height) {0} }
-        var B: Array<IntArray> = Array(width) {IntArray(height) {0} }
+        var A: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
+        var R: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
+        var G: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
+        var B: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
 
 
-        var argb: Array<Array<ARGB>> = Array(width) {Array(height) { ARGB() } }
+        var argb: Array<Array<ARGB>> = Array(width) { Array(height) { ARGB() } }
 
-        for (x in 0..width-1) {
-            for (y in 0..height-1) {
+        for (x in 0..width - 1) {
+            for (y in 0..height - 1) {
                 pixelColor = bitmap.getPixel(x, y)
                 A[x][y] = Color.alpha(pixelColor)
                 R[x][y] = Color.red(pixelColor)
                 G[x][y] = Color.green(pixelColor)
                 B[x][y] = Color.blue(pixelColor)
                 argb[x][y].A = A[x][y]
-                argb[x][y].R =R[x][y]
+                argb[x][y].R = R[x][y]
                 argb[x][y].G = G[x][y]
                 argb[x][y].B = B[x][y]
             }
@@ -281,21 +282,23 @@ class MainActivity : AppCompatActivity() {
         return argb
     }
 
-    fun ARGBtoBitmap(argb:Array<Array<ARGB>>):Bitmap {
+    fun ARGBtoBitmap(argb: Array<Array<ARGB>>): Bitmap {
         val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         var width = bitmap.width
         var height = bitmap.height
 
-        for (x in 0..width-1) {
-            for (y in 0..height-1) {
-                mutableBitmap.setPixel(x, y, Color.argb(argb[x][y].A, argb[x][y].R, argb[x][y].G, argb[x][y].B))
+        for (x in 0..width - 1) {
+            for (y in 0..height - 1) {
+                mutableBitmap.setPixel(
+                    x,
+                    y,
+                    Color.argb(argb[x][y].A, argb[x][y].R, argb[x][y].G, argb[x][y].B)
+                )
             }
         }
 
-
-
-        return  mutableBitmap
+        return mutableBitmap
     }
 
 
@@ -306,10 +309,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val IMAGE_PICK_CODE = 1000;
-
-        private val PERMISSION_CODE = 1001;
+        private val IMAGE_PICK_CODE = 1000
+        private val PERMISSION_CODE = 1001
     }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -324,7 +327,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
             }
         } else {
-
             when (requestCode) {
                 PERMISSION_CODE -> {
                     if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -358,13 +360,18 @@ class MainActivity : AppCompatActivity() {
             val storageDirectory = Environment.getExternalStorageDirectory().toString();//not working
             val file = File(storageDirectory, "test_image.png")
             try {
-                val stream:OutputStream = FileOutputStream(file)
-                val drawable = ContextCompat.getDrawable(applicationContext, R.drawable.ic_launcher_background)
+                val stream: OutputStream = FileOutputStream(file)
+                val drawable =
+                    ContextCompat.getDrawable(applicationContext, R.drawable.ic_launcher_background)
                 val bitmap = (drawable as BitmapDrawable).bitmap
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 stream.flush()
                 stream.close()
-                Toast.makeText(this, "Image saved to ${Uri.parse(file.absolutePath)}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Image saved to ${Uri.parse(file.absolutePath)}",
+                    Toast.LENGTH_SHORT
+                ).show()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -372,6 +379,4 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Unable to access the storage", Toast.LENGTH_SHORT).show()
         }
     }
-
-
 }
