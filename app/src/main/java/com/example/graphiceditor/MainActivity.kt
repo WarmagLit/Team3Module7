@@ -229,10 +229,6 @@ class MainActivity : AppCompatActivity() {
                     if (argbArray[i][j].G > 255) argbArray[i][j].G = 255
                     if (argbArray[i][j].B > 255) argbArray[i][j].B = 255
 
-                Log.d("tg", (oldR * 0.393 + oldG * 0.769 + oldB * 0.189).toInt().toString() + " " +
-                        (oldR * 0.349 + oldG * 0.686 + oldB * 0.168).toInt().toString() + " " +
-                        (oldR * 0.272 + oldG * 0.534 + oldB * 0.131).toInt().toString())
-
             }
         }
 
