@@ -3,17 +3,19 @@ package com.example.graphiceditor
 class Filters() {
     fun Check(told: ProcessedPicture, As: String)
     {
-        if (As == "DiagonalSepia")
-            first(told)
-        else if (As == "Grey") {
-            second(told)
-        }
-        else if (As == "Sepia") {
-            third(told)
+        when (As){
+            "DiagonalSepia" -> diagonalSepia(told)
+            "Grey" -> grey(told)
+            "Sepia" -> sepia(told)
+            "Blue" -> blue(told)
+            "Red" -> red(told)
+            "Green" -> green(told)
+            "SwapColors" -> swapColors(told)
+            "Negative" -> negative(told)
         }
     }
 
-    fun first(image: ProcessedPicture) {
+    fun diagonalSepia(image: ProcessedPicture) {
         for (i in 0..image.bitmap.width - 1) {
             for (j in 0..image.bitmap.height - 1) {
                 var newRed =
@@ -57,11 +59,11 @@ class Filters() {
     }
 
 
-    fun second(image: ProcessedPicture)
+    fun grey(image: ProcessedPicture)
     {
         for (i in 0..image.bitmap.width - 1) {
             for (j in 0..image.bitmap.height - 1) {
-                var intensity = (image.pixelsArray[i][j].r + image.pixelsArray[i][j].g + image.pixelsArray[i][j].b / 3)
+                var intensity = ((image.pixelsArray[i][j].r + image.pixelsArray[i][j].g + image.pixelsArray[i][j].b) / 3)
                 if (intensity > 255)
                     intensity = 255
                 image.pixelsArray[i][j].r = intensity
@@ -71,7 +73,7 @@ class Filters() {
         }
     }
 
-    fun third(image: ProcessedPicture) {
+    fun sepia(image: ProcessedPicture) {
         for (i in 0..image.bitmap.width - 1) {
             for (j in 0..image.bitmap.height - 1) {
                 var newRed =
@@ -94,6 +96,66 @@ class Filters() {
                 image.pixelsArray[i][j].g = newGreen
                 image.pixelsArray[i][j].b = newBlue
 
+            }
+        }
+    }
+
+    fun blue(image: ProcessedPicture) {
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                if (image.pixelsArray[i][j].b < 200) {
+                    image.pixelsArray[i][j].r *= 7
+                    image.pixelsArray[i][j].g *= 7
+                    image.pixelsArray[i][j].r /= 10
+                    image.pixelsArray[i][j].g /= 10
+                }
+            }
+        }
+    }
+
+    fun red(image: ProcessedPicture) {
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                if (image.pixelsArray[i][j].r < 200) {
+                    image.pixelsArray[i][j].b *= 7
+                    image.pixelsArray[i][j].g *= 7
+                    image.pixelsArray[i][j].b /= 10
+                    image.pixelsArray[i][j].g /= 10
+                }
+            }
+        }
+    }
+
+    fun green(image: ProcessedPicture) {
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                if (image.pixelsArray[i][j].g < 200) {
+                    image.pixelsArray[i][j].b *= 7
+                    image.pixelsArray[i][j].r *= 7
+                    image.pixelsArray[i][j].b /= 10
+                    image.pixelsArray[i][j].r /= 10
+                }
+            }
+        }
+    }
+
+    fun swapColors(image: ProcessedPicture) {
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                val oldBlue = image.pixelsArray[i][j].b
+                image.pixelsArray[i][j].b = image.pixelsArray[i][j].r
+                image.pixelsArray[i][j].r = image.pixelsArray[i][j].g
+                image.pixelsArray[i][j].g = oldBlue
+            }
+        }
+    }
+
+    fun negative(image: ProcessedPicture) {
+        for (i in 0..image.bitmap.width - 1) {
+            for (j in 0..image.bitmap.height - 1) {
+                image.pixelsArray[i][j].b = 255 - image.pixelsArray[i][j].b
+                image.pixelsArray[i][j].r = 255 - image.pixelsArray[i][j].r
+                image.pixelsArray[i][j].g = 255 - image.pixelsArray[i][j].g
             }
         }
     }

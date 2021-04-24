@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                 text_view.text = "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
 
                 if (parent.getItemAtPosition(position).toString() == "Синий фильтр") {
-                    BlueFilter("first")
+                    filter("first")
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
                 if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
@@ -137,7 +137,9 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Another interface callback
             }
+
         }
+
         var spinnerfilters: Spinner = findViewById(R.id.filterssss)
         spinnerfilters.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -151,9 +153,8 @@ class MainActivity : AppCompatActivity() {
 
                 var selected: String = spinnerfilters.getSelectedItem().toString();
                 textView2.text = "Spinner selected : ${selected}"
-                if (selected == "DiagonalSepia" || selected == "Grey" || selected == "Sepia")
-                {
-                    BlueFilter(selected)
+                if (selected != "-Не выбрано-") {
+                    filter(selected)
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
             }
@@ -161,22 +162,26 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
+        imageView2.setImageResource(R.drawable.hippo)
+
     }
 
-    fun BlueFilter(told: String) {
-        val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
+    fun filter(told: String) {
+        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
 
-        Filters().Check(image,told)
-        image.updateBitmap()
+        Filters().Check(currentPicture,told)
+        currentPicture.updateBitmap()
 
-        imageView2.setImageBitmap(image.bitmap)
+        imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
     fun rotateImage() {
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
+        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
 
-        val rotatedBitmap = bitmap.rotate(45f)
-        imageView2.setImageBitmap(rotatedBitmap)
+        val rotatedBitmap = currentPicture.bitmap.rotate(45f)
+        currentPicture = ProcessedPicture(rotatedBitmap)
+
+        imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
     fun Bitmap.rotate(degrees: Float): Bitmap {
