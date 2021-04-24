@@ -1,44 +1,32 @@
 package com.example.graphiceditor
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
+import android.content.ActivityNotFoundException
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.jar.Manifest
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
-import androidx.core.app.ComponentActivity.ExtraData
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.net.Uri
+import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.graphics.get
-import androidx.core.graphics.toColor
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.lang.Exception
-import kotlin.math.log
 import android.graphics.Matrix as Matrix
 
 private const val REQUEST_CODE = 42
@@ -48,46 +36,61 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        buttonGallery.setOnClickListener{
+
+
+
+
+        buttonGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_DENIED) {
+                    PackageManager.PERMISSION_DENIED
+                ) {
                     //permission denied
                     val permissions = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
                     requestPermissions(permissions, PERMISSION_CODE);
 
-                }
-                else {
+                } else {
                     //permission already granted
                     pickImageFromGallery();
                 }
-            }
-            else {
+            } else {
                 //system OS is < Marshmallow
                 pickImageFromGallery();
             }
         }
 
+        var CAMERA_REQUEST_CODE = 42
         buttonCamera.setOnClickListener {
-            Log.d("TAG", "Camera button click")
-            Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
-            /*
-            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            buttonCamera.setOnClickListener {
+                Log.d("TAG", "Camera button click")
+                //Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
 
-            if (takePictureIntent.resolveActivity(this.packageManager) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_CODE)
-            } else {
-                Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    startActivityForResult(intent, CAMERA_REQUEST_CODE)
+                } else {
+                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA),
+                        CAMERA_REQUEST_CODE)
+
+                }
             }
-            */
         }
 
         buttonSave.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        100
+                    )
                 } else {
                     saveImageToStorage()
                 }
@@ -98,7 +101,8 @@ class MainActivity : AppCompatActivity() {
 
 
         // Initializing a String Array
-        val colors = arrayOf("-Не выбрано-","Синий фильтр","NN","KK","Повернуть картинку на 90 град.")
+        val colors =
+            arrayOf("-Не выбрано-", "KK", "Повернуть картинку на 90 град.")
 
         // Initializing an ArrayAdapter
         val adapter = ArrayAdapter(
@@ -114,7 +118,8 @@ class MainActivity : AppCompatActivity() {
         spinner.adapter = adapter;
 
         // Set an on item selected listener for spinner object
-        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            @SuppressLint("SetTextI18n")
             override fun onItemSelected(
                 parent: AdapterView<*>,
                 view: View,
@@ -122,11 +127,10 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 // Display the selected item text on text view
-                text_view.text =
-                    "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
+                text_view.text = "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
 
                 if (parent.getItemAtPosition(position).toString() == "Синий фильтр") {
-                    BlueFilter()
+                    BlueFilter("first")
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
                 if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
@@ -140,42 +144,49 @@ class MainActivity : AppCompatActivity() {
                 // Another interface callback
             }
         }
+        var spinnerfilters: Spinner = findViewById(R.id.filterssss)
+        spinnerfilters.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            @SuppressLint("SetTextI18n")
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
 
-    }
-
-    class ARGB {
-        var A = 0
-        var R = 0
-        var G = 0
-        var B = 0
-    }
-
-    fun BlueFilter() {
-        Log.d("TAG", "Blue Filter")
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-        var argbArray = averageARGB(mutableBitmap)
-
-        for (i in  0..bitmap.width-1) {
-            for (j in  0..bitmap.height-1) {
-                if (argbArray[i][j].B < 235 && argbArray[i][j].R > 10 && argbArray[i][j].G > 10) {
-                    argbArray[i][j].R = argbArray[i][j].R - 10
-                    argbArray[i][j].G = argbArray[i][j].G - 10
-                    argbArray[i][j].B = argbArray[i][j].B + 90
+                var selected: String = spinnerfilters.getSelectedItem().toString();
+                textView2.text = "Spinner selected : ${selected}"
+                if (selected == "DiagonalSepia" || selected == "Grey" || selected == "Sepia")
+                {
+                    BlueFilter(selected)
+                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
             }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        val bitmap2 = ARGBtoBitmap(argbArray)
-
-        imageView2.setImageBitmap(bitmap2)
     }
-    
+
+
+
+
+
+
+    fun BlueFilter(told: String) {
+        val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
+
+        Filters().Check(image,told)
+        image.updateBitmap()
+
+        imageView2.setImageBitmap(image.bitmap)
+    }
+
     fun rotateImage() {
         val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
 
-        val rotatedBitmap = bitmap.rotate(90f)
+        val rotatedBitmap = bitmap.rotate(45f)
         imageView2.setImageBitmap(rotatedBitmap)
     }
 
@@ -184,52 +195,36 @@ class MainActivity : AppCompatActivity() {
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
     }
 
-    fun averageARGB(bitmap: Bitmap): Array<Array<ARGB>> {
+    fun averageARGB(bitmap: Bitmap): Array<Array<PixelARGB>> {
         var pixelColor = 0
         var width = bitmap.width
         var height = bitmap.height
         var size = width * height
 
-        var A: Array<IntArray> = Array(width) {IntArray(height) {0} }
-        var R: Array<IntArray> = Array(width) {IntArray(height) {0} }
-        var G: Array<IntArray> = Array(width) {IntArray(height) {0} }
-        var B: Array<IntArray> = Array(width) {IntArray(height) {0} }
+        var A: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
+        var R: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
+        var G: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
+        var B: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
 
 
-        var argb: Array<Array<ARGB>> = Array(width) {Array(height) { ARGB() } }
+        var argb: Array<Array<PixelARGB>> = Array(width) { Array(height) { PixelARGB() } }
 
-        for (x in 0..width-1) {
-            for (y in 0..height-1) {
+        for (x in 0..width - 1) {
+            for (y in 0..height - 1) {
                 pixelColor = bitmap.getPixel(x, y)
                 A[x][y] = Color.alpha(pixelColor)
                 R[x][y] = Color.red(pixelColor)
                 G[x][y] = Color.green(pixelColor)
                 B[x][y] = Color.blue(pixelColor)
-                argb[x][y].A = A[x][y]
-                argb[x][y].R = R[x][y]
-                argb[x][y].G = G[x][y]
-                argb[x][y].B = B[x][y]
+                argb[x][y].a = A[x][y]
+                argb[x][y].r = R[x][y]
+                argb[x][y].g = G[x][y]
+                argb[x][y].b = B[x][y]
             }
         }
         return argb
     }
 
-    fun ARGBtoBitmap(argb:Array<Array<ARGB>>):Bitmap {
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-        var width = bitmap.width
-        var height = bitmap.height
-
-        for (x in 0..width-1) {
-            for (y in 0..height-1) {
-                mutableBitmap.setPixel(x, y, Color.argb(argb[x][y].A, argb[x][y].R, argb[x][y].G, argb[x][y].B))
-            }
-        }
-
-
-
-        return  mutableBitmap
-    }
 
 
     private fun pickImageFromGallery() {
@@ -244,13 +239,16 @@ class MainActivity : AppCompatActivity() {
         private val PERMISSION_CODE = 1001;
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == 100) {
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //permission from popup granted
                 saveImageToStorage()
-            }
-            else {
+            } else {
                 //permission from popup denied
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
             }
@@ -283,13 +281,18 @@ class MainActivity : AppCompatActivity() {
             val storageDirectory = File(getExternalFilesDir(null), "Text.txt") //not working
             val file = File(storageDirectory, "test_image.png")
             try {
-                val stream:OutputStream = FileOutputStream(file)
-                val drawable = ContextCompat.getDrawable(applicationContext, R.drawable.ic_launcher_background)
+                val stream: OutputStream = FileOutputStream(file)
+                val drawable =
+                    ContextCompat.getDrawable(applicationContext, R.drawable.ic_launcher_background)
                 val bitmap = (drawable as BitmapDrawable).bitmap
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 stream.flush()
                 stream.close()
-                Toast.makeText(this, "Image saved to ${Uri.parse(file.absolutePath)}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Image saved to ${Uri.parse(file.absolutePath)}",
+                    Toast.LENGTH_SHORT
+                ).show()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -297,6 +300,4 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Unable to access the storage", Toast.LENGTH_SHORT).show()
         }
     }
-
-
 }

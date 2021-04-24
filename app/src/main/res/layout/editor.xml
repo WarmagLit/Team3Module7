@@ -31,7 +31,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:srcCompat="@drawable/Filter" />
+        app:srcCompat="@drawable/filter" />
 
     <ImageButton
         android:id="@+id/imageButton7"
@@ -57,7 +57,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:srcCompat="@drawable/Resolution" />
+        app:srcCompat="@drawable/resolution" />
 
     <ImageView
         android:id="@+id/imageView"
