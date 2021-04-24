@@ -34,6 +34,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        imageView2.setImageResource(R.drawable.hippo)
+        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
+
         buttonGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
@@ -52,6 +55,7 @@ class MainActivity : AppCompatActivity() {
                 //system OS is < Marshmallow
                 pickImageFromGallery();
             }
+            currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
         }
 
         var CAMERA_REQUEST_CODE = 42
@@ -123,12 +127,9 @@ class MainActivity : AppCompatActivity() {
                 // Display the selected item text on text view
                 text_view.text = "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
 
-                if (parent.getItemAtPosition(position).toString() == "Синий фильтр") {
-                    filter("first")
-                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
-                }
+
                 if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
-                    rotateImage()
+                    currentPicture = rotateImage(currentPicture)
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
 
@@ -154,34 +155,33 @@ class MainActivity : AppCompatActivity() {
                 var selected: String = spinnerfilters.getSelectedItem().toString();
                 textView2.text = "Spinner selected : ${selected}"
                 if (selected != "-Не выбрано-") {
-                    filter(selected)
+                    currentPicture = filter(selected, currentPicture)
                     spinnerfilters.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-
-        imageView2.setImageResource(R.drawable.hippo)
-
     }
 
-    fun filter(told: String) {
-        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
 
-        Filters().Check(currentPicture,told)
+
+
+
+
+    fun filter(told: String, currentPicture: ProcessedPicture): ProcessedPicture {
+        Filters().Check(currentPicture, told)
         currentPicture.updateBitmap()
 
         imageView2.setImageBitmap(currentPicture.bitmap)
+        return currentPicture
     }
 
-    fun rotateImage() {
-        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
-
+    fun rotateImage(currentPicture: ProcessedPicture): ProcessedPicture {
         val rotatedBitmap = currentPicture.bitmap.rotate(45f)
-        currentPicture = ProcessedPicture(rotatedBitmap)
 
-        imageView2.setImageBitmap(currentPicture.bitmap)
+        imageView2.setImageBitmap(rotatedBitmap)
+        return ProcessedPicture(rotatedBitmap)
     }
 
     fun Bitmap.rotate(degrees: Float): Bitmap {
