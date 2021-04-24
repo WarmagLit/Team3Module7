@@ -24,5 +24,6 @@
         <item>Blurring</item>
         <item>EdgeDetection</item>
         <item>Emboss</item>
+        <item>SomeFilter</item>
     </string-array>
 </resources>

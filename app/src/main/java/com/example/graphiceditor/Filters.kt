@@ -15,6 +15,7 @@ class Filters() {
             "Blurring" -> blurring(told)
             "EdgeDetection" -> edgeDetection(told)
             "Emboss" -> emboss(told)
+            "SomeFilter" -> mynkFilter(told)
         }
     }
 
@@ -204,6 +205,22 @@ class Filters() {
                         image.pixelsArray[i][j-1].b + image.pixelsArray[i][j+1].b +
                         image.pixelsArray[i-1][j].b + image.pixelsArray[i+1][j].b - 4*image.pixelsArray[i][j].b
 
+                newRed = when(newRed){
+                    in -3000..0 -> 0
+                    in 0..255 -> newRed
+                    else -> 255
+                }
+                newGreen = when(newGreen){
+                    in -3000..0 -> 0
+                    in 0..255 -> newGreen
+                    else -> 255
+                }
+                newBlue = when(newBlue){
+                    in -3000..0 -> 0
+                    in 0..255 -> newBlue
+                    else -> 255
+                }
+
                 copyArr[i][j].r = newRed
                 copyArr[i][j].g = newGreen
                 copyArr[i][j].b = newBlue
@@ -246,6 +263,52 @@ class Filters() {
             }
         }
 
+        image.pixelsArray = copyArr
+    }
+
+    fun mynkFilter(image: ProcessedPicture) {
+        val copyArr = image.getCopy();
+
+        for (i in 1..image.bitmap.width - 2) {
+            for (j in 1..image.bitmap.height - 2) {
+                val k2 = i
+                val k3 = j
+                val k1 = i+j
+
+                var newRed = k1*image.pixelsArray[i-1][j-1].r - k1*image.pixelsArray[i+1][j-1].r +
+                        k1*image.pixelsArray[i-1][j+1].r - k1*image.pixelsArray[i+1][j+1].r +
+                        k2*image.pixelsArray[i][j-1].r - k2*image.pixelsArray[i][j+1].r +
+                        k3*image.pixelsArray[i-1][j].r - k3*image.pixelsArray[i+1][j].r
+                var newGreen = k1*image.pixelsArray[i-1][j-1].g - k1*image.pixelsArray[i+1][j-1].g +
+                        k1*image.pixelsArray[i-1][j+1].g - k1*image.pixelsArray[i+1][j+1].g +
+                        k2*image.pixelsArray[i][j-1].g - k2*image.pixelsArray[i][j+1].g +
+                        k3*image.pixelsArray[i-1][j].g - k3*image.pixelsArray[i+1][j].g
+                var newBlue = k1*image.pixelsArray[i-1][j-1].b - k1*image.pixelsArray[i+1][j-1].b +
+                        k1*image.pixelsArray[i-1][j+1].b - k1*image.pixelsArray[i+1][j+1].b +
+                        k2*image.pixelsArray[i][j-1].b - k2*image.pixelsArray[i][j+1].b +
+                        k3*image.pixelsArray[i-1][j].b - k3*image.pixelsArray[i+1][j].b
+
+                newRed = when(newRed){
+                    in -100000..0 -> 0
+                    in 0..255 -> newRed
+                    else -> 255
+                }
+                newGreen = when(newGreen){
+                    in -100000..0 -> 0
+                    in 0..255 -> newGreen
+                    else -> 255
+                }
+                newBlue = when(newBlue){
+                    in -100000..0 -> 0
+                    in 0..255 -> newBlue
+                    else -> 255
+                }
+
+                copyArr[i][j].r = newRed
+                copyArr[i][j].g = newGreen
+                copyArr[i][j].b = newBlue
+            }
+        }
         image.pixelsArray = copyArr
     }
 }
