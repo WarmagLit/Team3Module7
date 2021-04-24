@@ -16,6 +16,11 @@
         <item>DiagonalSepia</item>
         <item>Grey</item>
         <item>Sepia</item>
+        <item>Blue</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>SwapColors</item>
+        <item>Negative</item>
         <item>Рыжик</item>
     </string-array>
 </resources>
