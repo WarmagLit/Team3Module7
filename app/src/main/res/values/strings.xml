@@ -21,6 +21,8 @@
         <item>Green</item>
         <item>SwapColors</item>
         <item>Negative</item>
-        <item>Рыжик</item>
+        <item>Blurring</item>
+        <item>EdgeDetection</item>
+        <item>Emboss</item>
     </string-array>
 </resources>
