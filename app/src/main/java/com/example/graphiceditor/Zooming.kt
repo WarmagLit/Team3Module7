@@ -1,10 +1,6 @@
 package com.example.graphiceditor
 
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.widget.ImageView
-import androidx.core.graphics.createBitmap
-
 
 class Zooming() {
 
@@ -15,11 +11,12 @@ class Zooming() {
                 doubleArrayOf(0.0, scale, 0.0),
                 doubleArrayOf(0.0, 0.0, 1.0)
             )
-            val zoomTransformations = AffineTransformations(transMatrix)
 
+            val zoomTransformations = AffineTransformations(transMatrix)
             val newBitmap = Bitmap.createBitmap(currentPicture.bitmap.width, currentPicture.bitmap.height, Bitmap.Config.ARGB_8888)
             val biasX = ((1.0 - scale) * newBitmap.width / 2).toInt()
             val biasY = ((1.0 - scale) * newBitmap.height / 2).toInt()
+
             for (x in 0..newBitmap.width - 1) {
                 for (y in 0..newBitmap.height - 1) {
                     val oldCoordinates = zoomTransformations.inverseTransition(intArrayOf(x, y, 1))

@@ -6,6 +6,7 @@
     android:id="@+id/scroll"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,8 +16,8 @@
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="400dp"
-            android:layout_height="400dp"
+            android:layout_width="400sp"
+            android:layout_height="400sp"
             android:contentDescription="@string/image_content_description"
             android:src="@drawable/ic_launcher_background"
             app:srcCompat="@drawable/hippo" />
@@ -47,6 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="40sp"
             android:entries="@array/item_list" />
+
 
         <TextView
             android:layout_width="300sp"
