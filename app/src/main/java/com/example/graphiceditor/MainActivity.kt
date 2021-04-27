@@ -6,33 +6,24 @@ import android.content.ContentValues
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.jar.Manifest
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
-import androidx.core.app.ComponentActivity.ExtraData
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.net.Uri
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -40,10 +31,10 @@ import androidx.core.graphics.get
 import androidx.core.graphics.toColor
 import kotlinx.android.synthetic.main.editor.*
 import java.io.File.separator
+
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.lang.Exception
-import kotlin.math.log
 import android.graphics.Matrix as Matrix
 
 private const val REQUEST_CODE = 42
@@ -51,12 +42,14 @@ private const val CAMERA_PERMISSION_CODE = 1
 private const val CAMERA_REQUEST_CODE = 1
 class MainActivity : AppCompatActivity() {
 
-    var isImageVertical = true
     val PI = 3.1415926
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        imageView2.setImageResource(R.drawable.hippo)
+        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
 
         buttonGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -77,11 +70,13 @@ class MainActivity : AppCompatActivity() {
                 //system OS is < Marshmallow
                 pickImageFromGallery()
             }
+            currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
         }
+
+        var CAMERA_REQUEST_CODE = 42
 
         buttonCamera.setOnClickListener {
             Log.d("TAG", "Camera button click")
-            //Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
 
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -92,7 +87,9 @@ class MainActivity : AppCompatActivity() {
                     CAMERA_REQUEST_CODE)
 
             }
+
         }
+
 
         buttonSave.setOnClickListener {
             val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
@@ -127,15 +124,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        buttonNewPage.setOnClickListener {
-            setContentView(R.layout.editor)
-            val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
-            imageView.setImageBitmap(image.bitmap)
-        }
-
 
         // Initializing a String Array
         val colors = arrayOf("-Не выбрано-","Синий фильтр","Серый фильтр","Сепия","Маштабирование","Повернуть картинку на 90 град.")
+
 
 
         // Initializing an ArrayAdapter
@@ -153,6 +145,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set an on item selected listener for spinner object
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            @SuppressLint("SetTextI18n")
             override fun onItemSelected(
                 parent: AdapterView<*>,
                 view: View,
@@ -160,30 +153,11 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 // Display the selected item text on text view
-                text_view.text =
-                    "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
+                text_view.text = "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
 
-                if (parent.getItemAtPosition(position).toString() == "Синий фильтр") {
-                    BlueFilter()
-                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
-                }
-                if (parent.getItemAtPosition(position)
-                        .toString() == "Повернуть картинку на 90 град."
-                ) {
-                    rotateImage(90)
-                    isImageVertical = !isImageVertical
-                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
-                }
-                if (parent.getItemAtPosition(position).toString() == "Серый фильтр") {
-                    GreyFilter()
-                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
-                }
-                if (parent.getItemAtPosition(position).toString() == "Сепия") {
-                    SepiaFilter()
-                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
-                }
-                if (parent.getItemAtPosition(position).toString() == "Маштабирование") {
-                    //scaling(15)
+
+                if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
+                    //currentPicture = rotateImage(currentPicture)
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
 
@@ -192,99 +166,50 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Another interface callback
             }
+
         }
 
-    }
+        var spinnerfilters: Spinner = findViewById(R.id.filterssss)
+        spinnerfilters.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            @SuppressLint("SetTextI18n")
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
 
-    class ARGB {
-        var A = 0
-        var R = 0
-        var G = 0
-        var B = 0
-    }
 
-    fun BlueFilter() {
-        Log.d("TAG", "Blue Filter")
-        val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
-
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                image.pixelsArray[i][j].r /= 10
-                image.pixelsArray[i][j].r *= 7
-                image.pixelsArray[i][j].g /= 10
-                image.pixelsArray[i][j].g *= 7
+                var selected: String = spinnerfilters.getSelectedItem().toString();
+                textView2.text = "Spinner selected : ${selected}"
+                if (selected != "-Не выбрано-") {
+                    currentPicture = filter(selected, currentPicture)
+                    spinnerfilters.setSelection(adapter.getPosition("-Не выбрано-"))
+                }
             }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-
-        image.updateBitmap()
-
-        imageView2.setImageBitmap(image.bitmap)
-    }
-
-    fun GreyFilter() {
-        Log.d("TAG", "Grey Filter")
-        val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
-        var mid = 0
-
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                mid = (image.pixelsArray[i][j].r + image.pixelsArray[i][j].g + image.pixelsArray[i][j].b) / 3
-                image.pixelsArray[i][j].r = mid
-                image.pixelsArray[i][j].g = mid
-                image.pixelsArray[i][j].b = mid
-            }
-        }
-
-        image.updateBitmap()
-
-        imageView2.setImageBitmap(image.bitmap)
     }
 
 
-    fun SepiaFilter() {
-        Log.d("TAG", "Sepia Filter")
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-        var argbArray = averageARGB(mutableBitmap)
 
 
-        for (i in  0..bitmap.width-1) {
-            for (j in  0..bitmap.height-1) {
-                    val oldR = argbArray[i][j].R
-                    val oldG = argbArray[i][j].G
-                    val oldB = argbArray[i][j].B
-                    argbArray[i][j].R = (oldR * 0.393 + oldG * 0.769 + oldB * 0.189).toInt()
-                    argbArray[i][j].G = (oldR * 0.349 + oldG * 0.686 + oldB * 0.168).toInt()
-                    argbArray[i][j].B = (oldR * 0.272 + oldG * 0.534 + oldB * 0.131).toInt()
+    fun filter(told: String, currentPicture: ProcessedPicture): ProcessedPicture {
+        Filters().Check(currentPicture, told)
+        currentPicture.updateBitmap()
 
-                    if (argbArray[i][j].R > 255) argbArray[i][j].R = 255
-                    if (argbArray[i][j].G > 255) argbArray[i][j].G = 255
-                    if (argbArray[i][j].B > 255) argbArray[i][j].B = 255
-            }
-        }
-
-        val bitmap2 = ARGBtoBitmap(argbArray)
-
-        imageView2.setImageBitmap(bitmap2)
+        imageView2.setImageBitmap(currentPicture.bitmap)
+        return currentPicture
     }
+/*
+    fun rotateImage(currentPicture: ProcessedPicture): ProcessedPicture {
+        val rotatedBitmap = currentPicture.bitmap.rotate(45f)
 
-
-    fun rotateImage(degree: Int) {
-        var bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-
-        if (degree % 90 == 0) {
-            if (isImageVertical == false) {
-                bitmap = verticalReflectBitmap(bitmap)
-            }
-            bitmap = transposeBitmap(bitmap)
-        }
-        else {
-            bitmap = degreeRotation(bitmap, degree)
-            bitmap = imageRepair(bitmap)
-        }
-        imageView2.setImageBitmap(bitmap)
-    }
+        imageView2.setImageBitmap(rotatedBitmap)
+        return ProcessedPicture(rotatedBitmap)
+    }*/
 
     fun transposeBitmap(image: Bitmap):Bitmap {
         val transposedImage = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
@@ -380,56 +305,6 @@ class MainActivity : AppCompatActivity() {
 
         imageView2.setImageBitmap(scaledImage)
     }
-
-    fun averageARGB(bitmap: Bitmap): Array<Array<ARGB>> {
-        var pixelColor = 0
-        var width = bitmap.width
-        var height = bitmap.height
-        var size = width * height
-
-        var A: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
-        var R: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
-        var G: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
-        var B: Array<IntArray> = Array(width) { IntArray(height) { 0 } }
-
-
-        var argb: Array<Array<ARGB>> = Array(width) { Array(height) { ARGB() } }
-
-        for (x in 0..width - 1) {
-            for (y in 0..height - 1) {
-                pixelColor = bitmap.getPixel(x, y)
-                A[x][y] = Color.alpha(pixelColor)
-                R[x][y] = Color.red(pixelColor)
-                G[x][y] = Color.green(pixelColor)
-                B[x][y] = Color.blue(pixelColor)
-                argb[x][y].A = A[x][y]
-                argb[x][y].R = R[x][y]
-                argb[x][y].G = G[x][y]
-                argb[x][y].B = B[x][y]
-            }
-        }
-        return argb
-    }
-
-    fun ARGBtoBitmap(argb: Array<Array<ARGB>>): Bitmap {
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-        var width = bitmap.width
-        var height = bitmap.height
-
-        for (x in 0..width - 1) {
-            for (y in 0..height - 1) {
-                mutableBitmap.setPixel(
-                    x,
-                    y,
-                    Color.argb(argb[x][y].A, argb[x][y].R, argb[x][y].G, argb[x][y].B)
-                )
-            }
-        }
-
-        return mutableBitmap
-    }
-
 
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)

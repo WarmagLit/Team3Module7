@@ -12,7 +12,8 @@ class Zooming(imageView: ImageView) {
         val bitmap = (image.getDrawable() as BitmapDrawable).bitmap
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
 
-        var argbArray = averageARGB(mutableBitmap)
+
+        //var argbArray = averageARGB(mutableBitmap)
     }
 }
 */

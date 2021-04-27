@@ -35,4 +35,16 @@ class ProcessedPicture(currentBitmap: Bitmap) {
         }
         bitmap = bitmap2;
     }
+
+    fun getCopy(): Array<Array<PixelARGB>>{
+        var copyArr = arrayOf<Array<PixelARGB>>()
+        for (x in 0..bitmap.width-1){
+            var arr = arrayOf<PixelARGB>()
+            for (y in 0..bitmap.height-1){
+                arr += pixelsArray[x][y].getCopy()
+            }
+            copyArr += arr
+        }
+        return copyArr
+    }
 }
