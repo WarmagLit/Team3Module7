@@ -66,6 +66,22 @@
             android:layout_height="wrap_content"
             android:entries="@array/DifFilters" />
 
+        <EditText
+            android:id="@+id/zoomingInput"
+            android:layout_width="match_parent"
+            android:layout_height="71dp"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:text="1" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name" />
+
         <TextView
             android:id="@+id/textView2"
             android:layout_width="150sp"

@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.util.Log
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import android.graphics.drawable.BitmapDrawable
@@ -17,14 +16,13 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.lang.Exception
+import kotlin.math.abs
 import android.graphics.Matrix as Matrix
 
 private const val REQUEST_CODE = 42
@@ -66,12 +64,15 @@ class MainActivity : AppCompatActivity() {
                 //Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
 
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED) {
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
                     val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                     startActivityForResult(intent, CAMERA_REQUEST_CODE)
                 } else {
-                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA),
-                        CAMERA_REQUEST_CODE)
+                    ActivityCompat.requestPermissions(
+                        this, arrayOf(android.Manifest.permission.CAMERA),
+                        CAMERA_REQUEST_CODE
+                    )
 
                 }
             }
@@ -126,10 +127,13 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 // Display the selected item text on text view
-                text_view.text = "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
+                text_view.text =
+                    "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
 
 
-                if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
+                if (parent.getItemAtPosition(position)
+                        .toString() == "Повернуть картинку на 90 град."
+                ) {
                     rotateImage()
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
@@ -163,6 +167,20 @@ class MainActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+
+        var zoomingInput: EditText = findViewById(R.id.zoomingInput)
+        zoomingInput.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus){
+                val zoomFactor = zoomingInput.text.toString().toDouble()
+                if (abs(zoomFactor - 1.0) < 0.01){
+                    return@setOnFocusChangeListener
+                }
+                currentPicture = ProcessedPicture(Zooming.zoom(currentPicture, zoomFactor))
+                zoomingInput.setText("1")
+                imageView2.setImageBitmap(currentPicture.bitmap)
+            }
+        }
+
     }
 
 
