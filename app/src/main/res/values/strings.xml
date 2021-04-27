@@ -21,5 +21,13 @@
         <item>Green</item>
         <item>SwapColors</item>
         <item>Negative</item>
+<<<<<<< HEAD
+=======
+        <item>Blurring</item>
+        <item>EdgeDetection</item>
+        <item>Emboss</item>
+        <item>SomeFilter</item>
+        <item>UnsharpFilter</item>
+>>>>>>> 62f4261b62c75892e5fd576fb0a34978a7856901
     </string-array>
 </resources>

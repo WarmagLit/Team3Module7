@@ -12,6 +12,11 @@ class Filters() {
             "Green" -> green(told)
             "SwapColors" -> swapColors(told)
             "Negative" -> negative(told)
+            "Blurring" -> blurring(told)
+            "EdgeDetection" -> edgeDetection(told)
+            "Emboss" -> emboss(told)
+            "SomeFilter" -> mynkFilter(told)
+            "UnsharpFilter" -> unsharpFilter(told)
         }
     }
 
@@ -103,7 +108,7 @@ class Filters() {
     fun blue(image: ProcessedPicture) {
         for (i in 0..image.bitmap.width - 1) {
             for (j in 0..image.bitmap.height - 1) {
-                if (image.pixelsArray[i][j].b < 200) {
+                if (image.pixelsArray[i][j].b < 240) {
                     image.pixelsArray[i][j].r *= 7
                     image.pixelsArray[i][j].g *= 7
                     image.pixelsArray[i][j].r /= 10
@@ -116,7 +121,7 @@ class Filters() {
     fun red(image: ProcessedPicture) {
         for (i in 0..image.bitmap.width - 1) {
             for (j in 0..image.bitmap.height - 1) {
-                if (image.pixelsArray[i][j].r < 200) {
+                if (image.pixelsArray[i][j].r < 240) {
                     image.pixelsArray[i][j].b *= 7
                     image.pixelsArray[i][j].g *= 7
                     image.pixelsArray[i][j].b /= 10
@@ -129,7 +134,7 @@ class Filters() {
     fun green(image: ProcessedPicture) {
         for (i in 0..image.bitmap.width - 1) {
             for (j in 0..image.bitmap.height - 1) {
-                if (image.pixelsArray[i][j].g < 200) {
+                if (image.pixelsArray[i][j].g < 240) {
                     image.pixelsArray[i][j].b *= 7
                     image.pixelsArray[i][j].r *= 7
                     image.pixelsArray[i][j].b /= 10
@@ -159,5 +164,204 @@ class Filters() {
             }
         }
     }
-}
 
+    fun blurring(image: ProcessedPicture) {
+        val copyArr = image.getCopy();
+
+        for (i in 1..image.bitmap.width - 2) {
+            for (j in 1..image.bitmap.height - 2) {
+                val newRed = image.pixelsArray[i-1][j-1].r + image.pixelsArray[i+1][j-1].r +
+                        image.pixelsArray[i-1][j+1].r + image.pixelsArray[i+1][j+1].r +
+                        image.pixelsArray[i][j-1].r + image.pixelsArray[i][j+1].r +
+                        image.pixelsArray[i-1][j].r + image.pixelsArray[i+1][j].r + image.pixelsArray[i][j].r
+                val newGreen = image.pixelsArray[i-1][j-1].g + image.pixelsArray[i+1][j-1].g +
+                        image.pixelsArray[i-1][j+1].g + image.pixelsArray[i+1][j+1].g +
+                        image.pixelsArray[i][j-1].g + image.pixelsArray[i][j+1].g +
+                        image.pixelsArray[i-1][j].g + image.pixelsArray[i+1][j].g + image.pixelsArray[i][j].g
+                val newBlue = image.pixelsArray[i-1][j-1].b + image.pixelsArray[i+1][j-1].b +
+                        image.pixelsArray[i-1][j+1].b + image.pixelsArray[i+1][j+1].b +
+                        image.pixelsArray[i][j-1].b + image.pixelsArray[i][j+1].b +
+                        image.pixelsArray[i-1][j].b + image.pixelsArray[i+1][j].b + image.pixelsArray[i][j].b
+
+                copyArr[i][j].r = newRed/9
+                copyArr[i][j].g = newGreen/9
+                copyArr[i][j].b = newBlue/9
+            }
+        }
+        image.pixelsArray = copyArr
+    }
+
+    fun edgeDetection(image: ProcessedPicture) {
+        val copyArr = image.getCopy();
+
+        for (i in 1..image.bitmap.width - 2) {
+            for (j in 1..image.bitmap.height - 2) {
+                var newRed =
+                        image.pixelsArray[i][j-1].r + image.pixelsArray[i][j+1].r +
+                        image.pixelsArray[i-1][j].r + image.pixelsArray[i+1][j].r - 4*image.pixelsArray[i][j].r
+                var newGreen =
+                        image.pixelsArray[i][j-1].g + image.pixelsArray[i][j+1].g +
+                        image.pixelsArray[i-1][j].g + image.pixelsArray[i+1][j].g - 4*image.pixelsArray[i][j].g
+                var newBlue =
+                        image.pixelsArray[i][j-1].b + image.pixelsArray[i][j+1].b +
+                        image.pixelsArray[i-1][j].b + image.pixelsArray[i+1][j].b - 4*image.pixelsArray[i][j].b
+
+                newRed = when(newRed){
+                    in -3000..0 -> 0
+                    in 0..255 -> newRed
+                    else -> 255
+                }
+                newGreen = when(newGreen){
+                    in -3000..0 -> 0
+                    in 0..255 -> newGreen
+                    else -> 255
+                }
+                newBlue = when(newBlue){
+                    in -3000..0 -> 0
+                    in 0..255 -> newBlue
+                    else -> 255
+                }
+
+                copyArr[i][j].r = newRed
+                copyArr[i][j].g = newGreen
+                copyArr[i][j].b = newBlue
+            }
+        }
+
+        image.pixelsArray = copyArr
+    }
+
+    fun emboss(image: ProcessedPicture) {
+        val copyArr = image.getCopy();
+        for (i in 1..image.bitmap.width - 2) {
+            for (j in 1..image.bitmap.height - 2) {
+                var newRed = image.pixelsArray[i][j-1].r - image.pixelsArray[i][j+1].r +
+                        image.pixelsArray[i-1][j].r - image.pixelsArray[i+1][j].r + 128
+                var newGreen = image.pixelsArray[i][j-1].g - image.pixelsArray[i][j+1].g +
+                        image.pixelsArray[i-1][j].g - image.pixelsArray[i+1][j].g + 128
+                var newBlue = image.pixelsArray[i][j-1].b - image.pixelsArray[i][j+1].b +
+                        image.pixelsArray[i-1][j].b - image.pixelsArray[i+1][j].b + 128
+
+                newRed = when(newRed){
+                    in -3000..0 -> 0
+                    in 0..255 -> newRed
+                    else -> 255
+                }
+                newGreen = when(newGreen){
+                    in -3000..0 -> 0
+                    in 0..255 -> newGreen
+                    else -> 255
+                }
+                newBlue = when(newBlue){
+                    in -3000..0 -> 0
+                    in 0..255 -> newBlue
+                    else -> 255
+                }
+
+                copyArr[i][j].r = newRed
+                copyArr[i][j].g = newGreen
+                copyArr[i][j].b = newBlue
+            }
+        }
+
+        image.pixelsArray = copyArr
+    }
+
+    fun mynkFilter(image: ProcessedPicture) {
+        val copyArr = image.getCopy();
+
+        for (i in 1..image.bitmap.width - 2) {
+            for (j in 1..image.bitmap.height - 2) {
+                val k1 = i+j
+                val k2 = j
+                val k3 = i
+                val k4 = 0
+
+                var newRed = k1*image.pixelsArray[i-1][j-1].r - k1*image.pixelsArray[i+1][j-1].r +
+                        k1*image.pixelsArray[i-1][j+1].r - k1*image.pixelsArray[i+1][j+1].r +
+                        k2*image.pixelsArray[i][j-1].r - k2*image.pixelsArray[i][j+1].r +
+                        k3*image.pixelsArray[i-1][j].r - k3*image.pixelsArray[i+1][j].r + k4*image.pixelsArray[i+1][j].r
+                var newGreen = k1*image.pixelsArray[i-1][j-1].g - k1*image.pixelsArray[i+1][j-1].g +
+                        k1*image.pixelsArray[i-1][j+1].g - k1*image.pixelsArray[i+1][j+1].g +
+                        k2*image.pixelsArray[i][j-1].g - k2*image.pixelsArray[i][j+1].g +
+                        k3*image.pixelsArray[i-1][j].g - k3*image.pixelsArray[i+1][j].g + k4*image.pixelsArray[i+1][j].g
+                var newBlue = k1*image.pixelsArray[i-1][j-1].b - k1*image.pixelsArray[i+1][j-1].b +
+                        k1*image.pixelsArray[i-1][j+1].b - k1*image.pixelsArray[i+1][j+1].b +
+                        k2*image.pixelsArray[i][j-1].b - k2*image.pixelsArray[i][j+1].b +
+                        k3*image.pixelsArray[i-1][j].b - k3*image.pixelsArray[i+1][j].b + k4*image.pixelsArray[i+1][j].b
+
+                newRed = when(newRed){
+                    in -100000..0 -> 0
+                    in 0..255 -> newRed
+                    else -> 255
+                }
+                newGreen = when(newGreen){
+                    in -100000..0 -> 0
+                    in 0..255 -> newGreen
+                    else -> 255
+                }
+                newBlue = when(newBlue){
+                    in -100000..0 -> 0
+                    in 0..255 -> newBlue
+                    else -> 255
+                }
+
+                copyArr[i][j].r = newRed
+                copyArr[i][j].g = newGreen
+                copyArr[i][j].b = newBlue
+            }
+        }
+        image.pixelsArray = copyArr
+    }
+
+    fun unsharpFilter(image: ProcessedPicture) {
+        val copyArr = image.getCopy();
+
+        for (i in 1..image.bitmap.width - 2) {
+            for (j in 1..image.bitmap.height - 2) {
+                val k1 = -1
+                val k2 = -2
+                val k3 = -2
+                val k4 = 12
+
+                var newRed = k1*image.pixelsArray[i-1][j-1].r - k1*image.pixelsArray[i+1][j-1].r +
+                        k1*image.pixelsArray[i-1][j+1].r - k1*image.pixelsArray[i+1][j+1].r +
+                        k2*image.pixelsArray[i][j-1].r - k2*image.pixelsArray[i][j+1].r +
+                        k3*image.pixelsArray[i-1][j].r - k3*image.pixelsArray[i+1][j].r + k4*image.pixelsArray[i+1][j].r
+                var newGreen = k1*image.pixelsArray[i-1][j-1].g - k1*image.pixelsArray[i+1][j-1].g +
+                        k1*image.pixelsArray[i-1][j+1].g - k1*image.pixelsArray[i+1][j+1].g +
+                        k2*image.pixelsArray[i][j-1].g - k2*image.pixelsArray[i][j+1].g +
+                        k3*image.pixelsArray[i-1][j].g - k3*image.pixelsArray[i+1][j].g + k4*image.pixelsArray[i+1][j].g
+                var newBlue = k1*image.pixelsArray[i-1][j-1].b - k1*image.pixelsArray[i+1][j-1].b +
+                        k1*image.pixelsArray[i-1][j+1].b - k1*image.pixelsArray[i+1][j+1].b +
+                        k2*image.pixelsArray[i][j-1].b - k2*image.pixelsArray[i][j+1].b +
+                        k3*image.pixelsArray[i-1][j].b - k3*image.pixelsArray[i+1][j].b + k4*image.pixelsArray[i+1][j].b
+
+                newRed /= 16
+                newGreen /= 16
+                newBlue /= 16
+
+                newRed = when(newRed){
+                    in -100000..0 -> 0
+                    in 0..255 -> newRed
+                    else -> 255
+                }
+                newGreen = when(newGreen){
+                    in -100000..0 -> 0
+                    in 0..255 -> newGreen
+                    else -> 255
+                }
+                newBlue = when(newBlue){
+                    in -100000..0 -> 0
+                    in 0..255 -> newBlue
+                    else -> 255
+                }
+
+                copyArr[i][j].r = newRed
+                copyArr[i][j].g = newGreen
+                copyArr[i][j].b = newBlue
+            }
+        }
+        image.pixelsArray = copyArr
+    }
+}
