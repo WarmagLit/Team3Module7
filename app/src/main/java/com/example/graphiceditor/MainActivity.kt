@@ -42,14 +42,17 @@ private const val CAMERA_PERMISSION_CODE = 1
 private const val CAMERA_REQUEST_CODE = 1
 class MainActivity : AppCompatActivity() {
 
+
     val PI = 3.1415926
+    var currentPicture = ProcessedPicture(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         imageView2.setImageResource(R.drawable.hippo)
-        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
+        currentPicture = ProcessedPicture((imageView2.drawable as BitmapDrawable).bitmap)
 
         buttonGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -70,7 +73,6 @@ class MainActivity : AppCompatActivity() {
                 //system OS is < Marshmallow
                 pickImageFromGallery()
             }
-            currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
         }
 
         var CAMERA_REQUEST_CODE = 42
@@ -157,7 +159,8 @@ class MainActivity : AppCompatActivity() {
 
 
                 if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
-                    //currentPicture = rotateImage(currentPicture)
+
+                    //rotateImage()
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
 
@@ -184,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                 var selected: String = spinnerfilters.getSelectedItem().toString();
                 textView2.text = "Spinner selected : ${selected}"
                 if (selected != "-Не выбрано-") {
-                    currentPicture = filter(selected, currentPicture)
+                    filter(selected)
                     spinnerfilters.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
             }
@@ -196,71 +199,21 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    fun filter(told: String, currentPicture: ProcessedPicture): ProcessedPicture {
+
+    fun filter(told: String) {
         Filters().Check(currentPicture, told)
         currentPicture.updateBitmap()
 
         imageView2.setImageBitmap(currentPicture.bitmap)
-        return currentPicture
     }
+
 /*
-    fun rotateImage(currentPicture: ProcessedPicture): ProcessedPicture {
+    fun rotateImage() {
         val rotatedBitmap = currentPicture.bitmap.rotate(45f)
 
         imageView2.setImageBitmap(rotatedBitmap)
-        return ProcessedPicture(rotatedBitmap)
+        currentPicture = ProcessedPicture(rotatedBitmap)
     }*/
-
-    fun transposeBitmap(image: Bitmap):Bitmap {
-        val transposedImage = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
-
-        for (i in  0..transposedImage.width-1) {
-            for (j in  0..transposedImage.height-1) {
-                transposedImage.setPixel(i, j, image.getPixel(j, i))
-            }
-        }
-
-        return transposedImage
-    }
-
-    fun verticalReflectBitmap(image: Bitmap ):Bitmap {
-        val reflectedImage = image.copy(Bitmap.Config.ARGB_8888, true)
-
-        for (i in  0..reflectedImage.width-1) {
-            for (j in  0..reflectedImage.height-1) {
-                reflectedImage.setPixel(i, j, image.getPixel(reflectedImage.width - i - 1, reflectedImage.height - j - 1))
-            }
-        }
-
-        return reflectedImage
-    }
-
-    fun degreeRotation(image: Bitmap, degree: Int):Bitmap {
-        val rotatedImage = image.copy(Bitmap.Config.ARGB_8888, true)
-        val centerX = Math.round(image.width / 2.0)
-        val centerY = Math.round(image.height / 2.0)
-
-        var x = 0
-        var y = 0
-
-        for (i in  0..rotatedImage.width-1) {
-            for (j in  0..rotatedImage.height-1) {
-                rotatedImage.setPixel(i, j, Color.BLACK)
-            }
-        }
-
-        for (i in  0..rotatedImage.width-1) {
-            for (j in  0..rotatedImage.height-1) {
-                x = (Math.cos(degree*PI / 180)*(i - centerX) - Math.sin(degree*PI / 180)*(j - centerY.toDouble()) + centerX).toInt()
-                y = (Math.sin(degree*PI / 180)*(i - centerX) + Math.cos(degree*PI / 180)*(j - centerY.toDouble()) + centerY).toInt()
-                if (x >= 0 && x <= rotatedImage.width-1 && y >= 0 && y <= rotatedImage.height-1) {
-                    rotatedImage.setPixel(x, y, image.getPixel(i, j))
-                }
-            }
-        }
-
-        return rotatedImage
-    }
 
     fun imageRepair(image: Bitmap):Bitmap {
         val repairImage = image.copy(Bitmap.Config.ARGB_8888, true)
@@ -352,6 +305,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
+            currentPicture = ProcessedPicture((imageView2.drawable as BitmapDrawable).bitmap)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
