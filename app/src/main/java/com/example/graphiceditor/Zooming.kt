@@ -30,8 +30,8 @@ class Zooming() {
                         newY += biasY
                     }
                     else{
-                        oldX -= biasX
-                        oldY -= biasY
+                        oldX -= (biasX/scale).toInt()
+                        oldY -= (biasY/scale).toInt()
                     }
 
                     if (oldX in 0 .. currentPicture.bitmap.width - 1 && oldY in 0 .. currentPicture.bitmap.height - 1) {

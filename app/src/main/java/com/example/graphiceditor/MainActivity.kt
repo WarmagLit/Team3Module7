@@ -350,7 +350,7 @@ class MainActivity : AppCompatActivity() {
             if (!directory.exists()) {
                 directory.mkdirs()
             }
-            val fileName =  "img_${SystemClock.uptimeMillis()}"+ ".jpeg"
+            val fileName =  "img_${SystemClock.uptimeMillis()}"+ ".png"
             val file = File(directory, fileName)
             saveImageToStream(this, FileOutputStream(file))
             if (file.absolutePath != null) {
@@ -368,7 +368,7 @@ class MainActivity : AppCompatActivity() {
     fun saveImageToStream(bitmap: Bitmap, outputStream: OutputStream?) {
         if (outputStream != null) {
             try {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 outputStream.close()
             } catch (e: Exception) {
                 e.printStackTrace()
