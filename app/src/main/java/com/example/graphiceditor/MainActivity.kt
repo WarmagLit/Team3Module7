@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
                 textView2.text = "Spinner selected : ${selected}"
                 if (selected != "-Не выбрано-") {
                     filter(selected)
-                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
+                    spinnerfilters.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
             }
 
