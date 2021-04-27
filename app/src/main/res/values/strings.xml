@@ -25,5 +25,6 @@
         <item>EdgeDetection</item>
         <item>Emboss</item>
         <item>SomeFilter</item>
+        <item>UnsharpFilter</item>
     </string-array>
 </resources>
