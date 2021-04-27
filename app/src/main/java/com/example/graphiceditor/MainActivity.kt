@@ -1,6 +1,8 @@
 package com.example.graphiceditor
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -27,6 +29,7 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.net.Uri
+import android.os.SystemClock
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -35,6 +38,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.get
 import androidx.core.graphics.toColor
+import kotlinx.android.synthetic.main.editor.*
+import java.io.File.separator
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.lang.Exception
@@ -46,6 +51,8 @@ private const val CAMERA_PERMISSION_CODE = 1
 private const val CAMERA_REQUEST_CODE = 1
 class MainActivity : AppCompatActivity() {
 
+    var isImageVertical = true
+    val PI = 3.1415926
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,11 +70,12 @@ class MainActivity : AppCompatActivity() {
 
                 } else {
                     //permission already granted
-                    pickImageFromGallery();
+                    pickImageFromGallery()
+
                 }
             } else {
                 //system OS is < Marshmallow
-                pickImageFromGallery();
+                pickImageFromGallery()
             }
         }
 
@@ -87,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonSave.setOnClickListener {
+            val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ContextCompat.checkSelfPermission(
                         this,
@@ -100,16 +109,33 @@ class MainActivity : AppCompatActivity() {
                         100
                     )
                 } else {
-                    saveImageToStorage()
+                    //saveImageToStorage()
+                    val imageUri = bitmap.saveImage(applicationContext)
+                    Toast.makeText(
+                        this,
+                        "Image saved to ${imageUri}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
-                saveImageToStorage()
+                val imageUri = bitmap.saveImage(applicationContext)
+                Toast.makeText(
+                    this,
+                    "Image saved to ${imageUri}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+        }
+
+        buttonNewPage.setOnClickListener {
+            setContentView(R.layout.editor)
+            val image = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
+            imageView.setImageBitmap(image.bitmap)
         }
 
 
         // Initializing a String Array
-        val colors = arrayOf("-Не выбрано-","Синий фильтр","Серый фильтр","Сепия","Повернуть картинку на 90 град.")
+        val colors = arrayOf("-Не выбрано-","Синий фильтр","Серый фильтр","Сепия","Маштабирование","Повернуть картинку на 90 град.")
 
 
         // Initializing an ArrayAdapter
@@ -144,7 +170,8 @@ class MainActivity : AppCompatActivity() {
                 if (parent.getItemAtPosition(position)
                         .toString() == "Повернуть картинку на 90 град."
                 ) {
-                    rotateImage()
+                    rotateImage(90)
+                    isImageVertical = !isImageVertical
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
                 if (parent.getItemAtPosition(position).toString() == "Серый фильтр") {
@@ -153,6 +180,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (parent.getItemAtPosition(position).toString() == "Сепия") {
                     SepiaFilter()
+                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
+                }
+                if (parent.getItemAtPosition(position).toString() == "Маштабирование") {
+                    //scaling(15)
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
 
@@ -230,7 +261,6 @@ class MainActivity : AppCompatActivity() {
                     if (argbArray[i][j].R > 255) argbArray[i][j].R = 255
                     if (argbArray[i][j].G > 255) argbArray[i][j].G = 255
                     if (argbArray[i][j].B > 255) argbArray[i][j].B = 255
-
             }
         }
 
@@ -240,16 +270,115 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun rotateImage() {
-        val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
+    fun rotateImage(degree: Int) {
+        var bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
 
-        val rotatedBitmap = bitmap.rotate(90f)
-        imageView2.setImageBitmap(rotatedBitmap)
+        if (degree % 90 == 0) {
+            if (isImageVertical == false) {
+                bitmap = verticalReflectBitmap(bitmap)
+            }
+            bitmap = transposeBitmap(bitmap)
+        }
+        else {
+            bitmap = degreeRotation(bitmap, degree)
+            bitmap = imageRepair(bitmap)
+        }
+        imageView2.setImageBitmap(bitmap)
     }
 
-    fun Bitmap.rotate(degrees: Float): Bitmap {
-        val matrix = Matrix().apply { postRotate(degrees) }
-        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    fun transposeBitmap(image: Bitmap):Bitmap {
+        val transposedImage = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
+
+        for (i in  0..transposedImage.width-1) {
+            for (j in  0..transposedImage.height-1) {
+                transposedImage.setPixel(i, j, image.getPixel(j, i))
+            }
+        }
+
+        return transposedImage
+    }
+
+    fun verticalReflectBitmap(image: Bitmap ):Bitmap {
+        val reflectedImage = image.copy(Bitmap.Config.ARGB_8888, true)
+
+        for (i in  0..reflectedImage.width-1) {
+            for (j in  0..reflectedImage.height-1) {
+                reflectedImage.setPixel(i, j, image.getPixel(reflectedImage.width - i - 1, reflectedImage.height - j - 1))
+            }
+        }
+
+        return reflectedImage
+    }
+
+    fun degreeRotation(image: Bitmap, degree: Int):Bitmap {
+        val rotatedImage = image.copy(Bitmap.Config.ARGB_8888, true)
+        val centerX = Math.round(image.width / 2.0)
+        val centerY = Math.round(image.height / 2.0)
+
+        var x = 0
+        var y = 0
+
+        for (i in  0..rotatedImage.width-1) {
+            for (j in  0..rotatedImage.height-1) {
+                rotatedImage.setPixel(i, j, Color.BLACK)
+            }
+        }
+
+        for (i in  0..rotatedImage.width-1) {
+            for (j in  0..rotatedImage.height-1) {
+                x = (Math.cos(degree*PI / 180)*(i - centerX) - Math.sin(degree*PI / 180)*(j - centerY.toDouble()) + centerX).toInt()
+                y = (Math.sin(degree*PI / 180)*(i - centerX) + Math.cos(degree*PI / 180)*(j - centerY.toDouble()) + centerY).toInt()
+                if (x >= 0 && x <= rotatedImage.width-1 && y >= 0 && y <= rotatedImage.height-1) {
+                    rotatedImage.setPixel(x, y, image.getPixel(i, j))
+                }
+            }
+        }
+
+        return rotatedImage
+    }
+
+    fun imageRepair(image: Bitmap):Bitmap {
+        val repairImage = image.copy(Bitmap.Config.ARGB_8888, true)
+        for (i in  0..repairImage.width-2) {
+            for (j in  0..repairImage.height-1) {
+                if (image.getPixel(i, j) == Color.BLACK) {
+                    repairImage.setPixel(i, j, image.getPixel(i + 1, j))
+                }
+            }
+        }
+        return repairImage
+    }
+
+    fun scaling(degree: Int) {
+        val image = (imageView2.getDrawable() as BitmapDrawable).bitmap
+        val scaledImage = image.copy(Bitmap.Config.ARGB_8888, true)
+
+        val centerX = Math.round(image.width / 2.0)
+        val centerY = Math.round(image.height / 2.0)
+
+        var a = (Math.cos(degree*PI / 180)*(- centerX) - Math.sin(degree*PI / 180)*(- centerY.toDouble()) + centerX).toInt()
+        var b = (Math.sin(degree*PI / 180)*(- centerX) + Math.cos(degree*PI / 180)*(image.height - 1 - centerY.toDouble()) + centerY).toInt()
+        var c = image.width - a
+        var d = image.height - b
+        var ratio = Math.sqrt(a*a*1.0+b*b*1.0) / image.height
+        val centeringPixels = ((scaledImage.width - scaledImage.width * ratio)/2)
+
+        Log.d("d", a.toString() + " " + b.toString() + " " + c.toString() + " "+ d.toString() + " "+ ((a*b + c*d)/1.0).toString()+ " " + ratio.toString())
+        //ratio = 0.8
+        for (i in  0..scaledImage.width-1) {
+            for (j in  0..scaledImage.height-1) {
+                if ((i * ratio + centeringPixels).toInt() >= 0 && (j * ratio + centeringPixels).toInt() >= 0 &&
+                    (i * ratio + centeringPixels).toInt() < image.width && (j * ratio + centeringPixels).toInt() < image.height) {
+                    scaledImage.setPixel(
+                        (i * ratio + centeringPixels).toInt(),
+                        (j * ratio + centeringPixels).toInt(),
+                        image.getPixel(i, j)
+                    )
+                }
+            }
+        }
+
+        imageView2.setImageBitmap(scaledImage)
     }
 
     fun averageARGB(bitmap: Bitmap): Array<Array<ARGB>> {
@@ -337,10 +466,9 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
         }
     }
-
+}
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
             super.onActivityResult(requestCode, resultCode, data)
@@ -354,29 +482,54 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImageToStorage() {
-        val externalStorageState = Environment.getExternalStorageState()
-        if (externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
-            val storageDirectory = Environment.getExternalStorageDirectory().toString();//not working
-            val file = File(storageDirectory, "test_image.png")
+
+    fun Bitmap.saveImage(context: Context): Uri? {
+        if (android.os.Build.VERSION.SDK_INT >= 29) {
+            val values = ContentValues()
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
+            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/test_pictures")
+            values.put(MediaStore.Images.Media.IS_PENDING, true)
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, "img_${SystemClock.uptimeMillis()}")
+
+            val uri: Uri? =
+                context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            if (uri != null) {
+                saveImageToStream(this, context.contentResolver.openOutputStream(uri))
+                values.put(MediaStore.Images.Media.IS_PENDING, false)
+                context.contentResolver.update(uri, values, null, null)
+                return uri
+            }
+        } else {
+            val directory =
+                File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + separator + "test_pictures")
+            if (!directory.exists()) {
+                directory.mkdirs()
+            }
+            val fileName =  "img_${SystemClock.uptimeMillis()}"+ ".jpeg"
+            val file = File(directory, fileName)
+            saveImageToStream(this, FileOutputStream(file))
+            if (file.absolutePath != null) {
+                val values = ContentValues()
+                values.put(MediaStore.Images.Media.DATA, file.absolutePath)
+                // .DATA is deprecated in API 29
+                context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                return Uri.fromFile(file)
+            }
+        }
+        return null
+    }
+
+
+    fun saveImageToStream(bitmap: Bitmap, outputStream: OutputStream?) {
+        if (outputStream != null) {
             try {
-                val stream: OutputStream = FileOutputStream(file)
-                val drawable =
-                    ContextCompat.getDrawable(applicationContext, R.drawable.ic_launcher_background)
-                val bitmap = (drawable as BitmapDrawable).bitmap
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                stream.flush()
-                stream.close()
-                Toast.makeText(
-                    this,
-                    "Image saved to ${Uri.parse(file.absolutePath)}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                outputStream.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        } else {
-            Toast.makeText(this, "Unable to access the storage", Toast.LENGTH_SHORT).show()
         }
     }
 }
