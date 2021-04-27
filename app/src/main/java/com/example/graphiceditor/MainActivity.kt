@@ -30,12 +30,14 @@ import android.graphics.Matrix as Matrix
 private const val REQUEST_CODE = 42
 class MainActivity : AppCompatActivity() {
 
+    var currentPicture = ProcessedPicture(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         imageView2.setImageResource(R.drawable.hippo)
-        var currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
+        currentPicture = ProcessedPicture((imageView2.drawable as BitmapDrawable).bitmap)
 
         buttonGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -55,7 +57,6 @@ class MainActivity : AppCompatActivity() {
                 //system OS is < Marshmallow
                 pickImageFromGallery();
             }
-            currentPicture = ProcessedPicture((imageView2.getDrawable() as BitmapDrawable).bitmap)
         }
 
         var CAMERA_REQUEST_CODE = 42
@@ -129,7 +130,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
-                    currentPicture = rotateImage(currentPicture)
+                    rotateImage()
                     spinner.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
 
@@ -155,7 +156,7 @@ class MainActivity : AppCompatActivity() {
                 var selected: String = spinnerfilters.getSelectedItem().toString();
                 textView2.text = "Spinner selected : ${selected}"
                 if (selected != "-Не выбрано-") {
-                    currentPicture = filter(selected, currentPicture)
+                    filter(selected)
                     spinnerfilters.setSelection(adapter.getPosition("-Не выбрано-"))
                 }
             }
@@ -169,19 +170,18 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    fun filter(told: String, currentPicture: ProcessedPicture): ProcessedPicture {
+    fun filter(told: String) {
         Filters().Check(currentPicture, told)
         currentPicture.updateBitmap()
 
         imageView2.setImageBitmap(currentPicture.bitmap)
-        return currentPicture
     }
 
-    fun rotateImage(currentPicture: ProcessedPicture): ProcessedPicture {
+    fun rotateImage() {
         val rotatedBitmap = currentPicture.bitmap.rotate(45f)
 
         imageView2.setImageBitmap(rotatedBitmap)
-        return ProcessedPicture(rotatedBitmap)
+        currentPicture = ProcessedPicture(rotatedBitmap)
     }
 
     fun Bitmap.rotate(degrees: Float): Bitmap {
@@ -232,6 +232,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
+            currentPicture = ProcessedPicture((imageView2.drawable as BitmapDrawable).bitmap)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
