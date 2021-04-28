@@ -36,7 +36,7 @@ class ProcessedPicture(currentBitmap: Bitmap) {
         bitmap = bitmap2;
     }
 
-    fun getCopy(): Array<Array<PixelARGB>>{
+    fun getCopyOfArray(): Array<Array<PixelARGB>>{
         var copyArr = arrayOf<Array<PixelARGB>>()
         for (x in 0..bitmap.width-1){
             var arr = arrayOf<PixelARGB>()
@@ -46,5 +46,10 @@ class ProcessedPicture(currentBitmap: Bitmap) {
             copyArr += arr
         }
         return copyArr
+    }
+
+    fun getCopy(): ProcessedPicture{
+        val copyBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        return ProcessedPicture(copyBitmap)
     }
 }

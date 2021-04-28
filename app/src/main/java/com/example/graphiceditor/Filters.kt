@@ -166,7 +166,7 @@ class Filters() {
     }
 
     fun blurring(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
+        val copyArr = image.getCopyOfArray();
 
         for (i in 1..image.bitmap.width - 2) {
             for (j in 1..image.bitmap.height - 2) {
@@ -192,7 +192,7 @@ class Filters() {
     }
 
     fun edgeDetection(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
+        val copyArr = image.getCopyOfArray();
 
         for (i in 1..image.bitmap.width - 2) {
             for (j in 1..image.bitmap.height - 2) {
@@ -232,7 +232,7 @@ class Filters() {
     }
 
     fun emboss(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
+        val copyArr = image.getCopyOfArray();
         for (i in 1..image.bitmap.width - 2) {
             for (j in 1..image.bitmap.height - 2) {
                 var newRed = image.pixelsArray[i][j-1].r - image.pixelsArray[i][j+1].r +
@@ -268,7 +268,7 @@ class Filters() {
     }
 
     fun mynkFilter(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
+        val copyArr = image.getCopyOfArray();
 
         for (i in 1..image.bitmap.width - 2) {
             for (j in 1..image.bitmap.height - 2) {
@@ -315,7 +315,7 @@ class Filters() {
     }
 
     fun unsharpFilter(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
+        val copyArr = image.getCopyOfArray();
 
         for (i in 1..image.bitmap.width - 2) {
             for (j in 1..image.bitmap.height - 2) {
