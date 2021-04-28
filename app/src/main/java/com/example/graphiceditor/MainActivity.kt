@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         var CAMERA_REQUEST_CODE = 42
 
         buttonCamera.setOnClickListener {
+            /*
             Log.d("TAG", "Camera button click")
             //Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
 
@@ -89,7 +90,9 @@ class MainActivity : AppCompatActivity() {
                     this, arrayOf(android.Manifest.permission.CAMERA),
                     CAMERA_REQUEST_CODE
                 )
-            }
+            }*/
+            setContentView(R.layout.editor_v2)
+
         }
 
 
