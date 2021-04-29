@@ -27,7 +27,6 @@ import java.io.OutputStream
 import java.lang.Exception
 import android.graphics.Matrix as Matrix
 
-private const val REQUEST_CODE = 42
 class MainActivity : AppCompatActivity() {
 
     var currentPicture = ProcessedPicture(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
