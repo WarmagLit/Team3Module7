@@ -5,29 +5,30 @@
     <string name="image_content_description">Just Image</string>
     <string name="permission_denied">Permission denied</string>
     <string name="save_image">Save image</string>
-    <string name="button">Button</string>
-    <string name="about">About</string>
+    <string name="button" translatable="false">Button</string>
+    <string name="about" translatable="false">About</string>
+
     <string-array name="item_list">
-        <item>-Не выбрано-</item>
+        <item>-Not chosen-</item>
         <item>KK</item>
-        <item>Повернуть картинку на 90 град.</item>
+        <item>Rotate picture for 90 degrees</item>
     </string-array>
 
     <string-array name="DifFilters">
-        <item>-Не выбрано-</item>
-        <item>DiagonalSepia</item>
-        <item>Grey</item>
-        <item>Sepia</item>
-        <item>Blue</item>
-        <item>Red</item>
-        <item>Green</item>
-        <item>SwapColors</item>
-        <item>Negative</item>
-        <item>Blurring</item>
-        <item>EdgeDetection</item>
-        <item>Emboss</item>
-        <item>SomeFilter</item>
-        <item>UnsharpFilter</item>
+        <item>@string/none</item>
+        <item>@string/sepia</item>
+        <item>@string/gray_filter</item>
+        <item>@string/diagonal_sepia</item>
+        <item>@string/blue_filter</item>
+        <item>@string/red_filter</item>
+        <item>@string/green_filter</item>
+        <item>@string/swap_colors</item>
+        <item>@string/negative</item>
+        <item>@string/blur</item>
+        <item>@string/edge_detection</item>
+        <item>@string/emboss</item>
+        <item>@string/mynka</item>
+        <item>@string/unsharp</item>
     </string-array>
     <string name="blue_filter">Blue filter</string>
     <string name="gray_filter">Gray filter</string>

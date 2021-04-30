@@ -28,8 +28,10 @@ import java.lang.Exception
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
+import android.view.ViewOutlineProvider
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
+import kotlinx.coroutines.*
+import kotlin.coroutines.*
 import kotlin.math.*
 
 private const val REQUEST_CODE = 42
@@ -89,13 +91,6 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
-            else {
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(android.Manifest.permission.CAMERA),
-                    CAMERA_REQUEST_CODE
-                )
-            }
-            setContentView(R.layout.editor_v2)
         }
     }
 
@@ -253,10 +248,13 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 val selected: String = spinnerFilters.selectedItem.toString();
+
                 textView2.text = getString(R.string.spinner, selected)
+                Log.d("TAG", selected)
                 val filter = of(selected)
+                Log.d("TAG", filter.toString())
                 if (filter != Filter.NONE) {
-                    apply(filter)
+                    CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
                     spinnerFilters.setSelection(adapter.getPosition(getString(Filter.NONE)))
                 }
             }
@@ -264,6 +262,12 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
     }
+
+    private suspend fun apply(filter: Filter) {
+        currentPicture = filter.process(currentPicture)
+        imageView2.setImageBitmap(currentPicture.bitmap)
+    }
+
     private fun of(string: String): Filter{
         Filter.values().forEach {
             if(getString(it) == string)
@@ -275,10 +279,9 @@ class MainActivity : AppCompatActivity() {
     private fun getStrings(): List<String> = Filter.values().map { getString(it) }
     private fun getString(filter: Filter) = getString(filter.code)
 
-    fun apply(told: Filter) {
-        told.process(currentPicture)
-        imageView2.setImageBitmap(currentPicture.bitmap)
-    }
+//    suspend fun apply(told: Filter) {
+//        currentPicture = told.process(currentPicture)
+//    }
 
 //    fun imageRepair(image: Bitmap): Bitmap {
 //        val repairImage = image.copy(Bitmap.Config.ARGB_8888, true)
@@ -334,7 +337,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
             super.onActivityResult(requestCode, resultCode, data)
-            val thumbNail: Bitmap = data?.extras?.get("data") as Bitmap
+            val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
             imageView2.setImageBitmap(thumbNail)
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {

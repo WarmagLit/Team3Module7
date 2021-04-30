@@ -1,9 +1,10 @@
 package com.example.graphiceditor
 
+import android.util.Log
 import kotlin.reflect.KFunction1
 
-enum class Filter(val code: Int, val process: KFunction1<PixelArray, PixelArray>) {
-    NONE(R.string.none, TODO()),
+enum class Filter(val code: Int, val process: suspend (PixelArray) -> PixelArray) {
+    NONE(R.string.none, { TODO() }),
     BLUE(R.string.blue_filter, ::blue),
     GRAY(R.string.gray_filter, ::grey),
     RED(R.string.red_filter, ::red),
@@ -17,11 +18,11 @@ enum class Filter(val code: Int, val process: KFunction1<PixelArray, PixelArray>
     SEPIA(R.string.sepia, ::sepia),
     DIAGONAL_SEPIA(R.string.diagonal_sepia, ::diagonalSepia),
 
-    ZOOMING(R.string.zooming, TODO()),
-    ROTATE_90(R.string.rotate_90, TODO());
+    ZOOMING(R.string.zooming, { TODO() }),
+    ROTATE_90(R.string.rotate_90, { TODO() });
 }
 
-private fun diagonalSepia(image: PixelArray): PixelArray {
+private suspend fun diagonalSepia(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             var newRed =
@@ -54,7 +55,7 @@ private fun diagonalSepia(image: PixelArray): PixelArray {
     return image
 }
 
-private fun grey(image: PixelArray): PixelArray {
+private suspend fun grey(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             val intensity = ((image[i, j].component(red) + image[i, j].component(green) + image[i, j].component(blue)) / 3)
@@ -65,7 +66,7 @@ private fun grey(image: PixelArray): PixelArray {
     return image
 }
 
-private fun sepia(image: PixelArray): PixelArray {
+private suspend fun sepia(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             var newRed =
@@ -92,7 +93,7 @@ private fun sepia(image: PixelArray): PixelArray {
     return image
 }
 
-private fun blue(image: PixelArray): PixelArray {
+private suspend fun blue(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             if (image[i, j].component(blue) < 240) {
@@ -108,7 +109,7 @@ private fun blue(image: PixelArray): PixelArray {
     return image
 }
 
-private fun red(image: PixelArray): PixelArray {
+private suspend fun red(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             if (image[i, j].component(red) < 240) {
@@ -124,7 +125,7 @@ private fun red(image: PixelArray): PixelArray {
     return image
 }
 
-private fun green(image: PixelArray): PixelArray {
+private suspend fun green(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             if (image[i, j].component(green) < 240) {
@@ -140,7 +141,7 @@ private fun green(image: PixelArray): PixelArray {
     return image
 }
 
-private fun swapColors(image: PixelArray): PixelArray {
+private suspend fun swapColors(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             image[i, j] = colorOf(
@@ -154,7 +155,7 @@ private fun swapColors(image: PixelArray): PixelArray {
     return image
 }
 
-private fun negative(image: PixelArray): PixelArray {
+private suspend fun negative(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             image[i, j] = colorOf(
@@ -168,8 +169,9 @@ private fun negative(image: PixelArray): PixelArray {
     return image
 }
 
-private fun blurring(image: PixelArray): PixelArray {
-    val arrCopy = image.clone();
+private suspend fun blurring(image: PixelArray): PixelArray {
+    val arrCopy = image.clone()
+    Log.d("TAG", "Entered blur")
 
     for (x in 1..image.width - 2) {
         for (y in 1..image.height - 2) {
@@ -191,7 +193,7 @@ private fun blurring(image: PixelArray): PixelArray {
     return arrCopy
 }
 
-private fun edgeDetection(image: PixelArray): PixelArray {
+private suspend fun edgeDetection(image: PixelArray): PixelArray {
     val arrCopy = image.clone();
 
     for (x in 1..image.width - 2) {
@@ -203,9 +205,11 @@ private fun edgeDetection(image: PixelArray): PixelArray {
                         image[x - 1, y].component(component) +
                         image[x + 1, y].component(component) -
                         4 * image[x, y].component(component)
-                return if (result < 0) 0
-                else if (result > 255) 255
-                else result
+                return when {
+                    result < 0 -> 0
+                    result > 255 -> 255
+                    else -> result
+                }
             }
 
             arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
@@ -215,7 +219,7 @@ private fun edgeDetection(image: PixelArray): PixelArray {
     return arrCopy
 }
 
-private fun emboss(image: PixelArray): PixelArray {
+private suspend fun emboss(image: PixelArray): PixelArray {
     val arrCopy = image.clone();
     for (x in 1..image.width - 2) {
         for (y in 1..image.height - 2) {
@@ -225,9 +229,11 @@ private fun emboss(image: PixelArray): PixelArray {
                         image[x, y + 1].component(component) +
                         image[x - 1, y].component(component) -
                         image[x + 1, y].component(component) + 128
-                return if (result < 0) 0
-                else if (result > 255) 255
-                else result
+                return when {
+                    result < 0 -> 0
+                    result > 255 -> 255
+                    else -> result
+                }
             }
 
             arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
@@ -237,7 +243,7 @@ private fun emboss(image: PixelArray): PixelArray {
     return arrCopy
 }
 
-private fun someFilter(image: PixelArray): PixelArray {
+private suspend fun someFilter(image: PixelArray): PixelArray {
     val arrCopy = image.clone();
 
     for (x in 1..image.width - 2) {
@@ -269,7 +275,7 @@ private fun someFilter(image: PixelArray): PixelArray {
     return arrCopy
 }
 
-private fun unsharpFilter(image: PixelArray): PixelArray {
+private suspend fun unsharpFilter(image: PixelArray): PixelArray {
     val arrCopy = image.clone();
 
     for (x in 1..image.width - 2) {
