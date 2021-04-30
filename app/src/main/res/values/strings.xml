@@ -5,6 +5,8 @@
     <string name="image_content_description">Just Image</string>
     <string name="permission_denied">Permission denied</string>
     <string name="save_image">Save image</string>
+    <string name="button">Button</string>
+    <string name="about">About</string>
     <string-array name="item_list">
         <item>-Не выбрано-</item>
         <item>KK</item>

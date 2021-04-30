@@ -29,6 +29,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import kotlin.math.*
 
 private const val REQUEST_CODE = 42
@@ -88,7 +89,14 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
-        }
+            else {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(android.Manifest.permission.CAMERA),
+                    CAMERA_REQUEST_CODE
+                )
+            }
+            setContentView(R.layout.editor_v2)
+     }
     }
 
     private fun initSaveButton() {
