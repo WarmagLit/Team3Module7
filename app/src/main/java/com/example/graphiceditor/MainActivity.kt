@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             setContentView(R.layout.editor_v2)
-     }
+        }
     }
 
     private fun initSaveButton() {
