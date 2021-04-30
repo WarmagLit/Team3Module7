@@ -1,17 +1,24 @@
 package com.example.graphiceditor
 
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.widget.ImageView
+class Zooming() {
 
+    companion object {
+        fun zoom(currentPicture: PixelArray, scale: Double): PixelArray {
+            val transMatrix = arrayOf(
+                doubleArrayOf(scale, 0.0, 0.0),
+                doubleArrayOf(0.0, scale, 0.0),
+                doubleArrayOf(0.0, 0.0, 1.0)
+            )
 
-class Zooming(imageView: ImageView) {
-    val image = imageView;
+            val zoomTransformations = AffineTransformations(transMatrix)
+            val newPicture: PixelArray
 
-    fun zooming(zoomFactor: Int){
-        val bitmap = (image.getDrawable() as BitmapDrawable).bitmap;
-        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+            newPicture = if (scale > 1)
+                zoomTransformations.transformWithBilinearFiltering(currentPicture)
+            else
+                zoomTransformations.transformWithTrilinearFiltering(currentPicture)
 
-        //var argbArray = averageARGB(mutableBitmap)
+            return newPicture
+        }
     }
 }
