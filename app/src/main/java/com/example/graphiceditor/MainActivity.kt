@@ -1,277 +1,320 @@
 package com.example.graphiceditor
 
-import android.annotation.SuppressLint
+import android.Manifest.permission.*
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Environment
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.view.View
 import android.widget.*
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.graphics.get
-import androidx.core.graphics.toColor
 import kotlinx.android.synthetic.main.editor.*
 import java.io.File.separator
 
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.lang.Exception
-import kotlin.math.abs
-import android.graphics.Matrix as Matrix
+
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Environment.DIRECTORY_PICTURES
+import android.provider.MediaStore.Images.Media.*
+import androidx.annotation.RequiresApi
+import kotlin.math.*
 
 private const val REQUEST_CODE = 42
-private const val CAMERA_PERMISSION_CODE = 1
-private const val CAMERA_REQUEST_CODE = 1
+private const val CAMERA_REQUEST_CODE = 42
+private const val IMAGE_PICK_CODE = 1000
+private const val READ_STORAGE_CODE = 1001
+private const val WRITE_STORAGE_CODE = 100
+private const val PERMISSION_CAMERA_CODE = 1002
+
 class MainActivity : AppCompatActivity() {
-
-
-    val PI = 3.1415926
-    var currentPicture = ProcessedPicture(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
-
+    var currentPicture = PixelArray(1, 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         imageView2.setImageResource(R.drawable.hippo)
-        currentPicture = ProcessedPicture((imageView2.drawable as BitmapDrawable).bitmap)
+        currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
 
+        initButtons()
+
+        initOptionList()
+        initZoomer()
+    }
+
+    private fun initButtons() {
+        initGalleryPicker()
+        initCameraButton()
+        initSaveButton()
+    }
+
+    private fun initGalleryPicker() {
         buttonGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED
-                ) {
-                    //permission denied
-                    val permissions = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-
-                    requestPermissions(permissions, PERMISSION_CODE);
-
-                } else {
-                    //permission already granted
+                if(checkPermission(READ_EXTERNAL_STORAGE, READ_STORAGE_CODE))
                     pickImageFromGallery()
-
-                }
             } else {
                 //system OS is < Marshmallow
                 pickImageFromGallery()
             }
         }
+    }
 
-        var CAMERA_REQUEST_CODE = 42
+    private fun checkPermission(permission: String, requestCode: Int): Boolean{
+        if (checkSelfPermission(permission) == PERMISSION_GRANTED)
+            return true
 
+        val permissions = arrayOf(permission)
+        requestPermissions(permissions, requestCode)
+        return false
+    }
+
+    private fun initCameraButton() {
         buttonCamera.setOnClickListener {
             Log.d("TAG", "Camera button click")
-            //Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
-
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
+            if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            } else {
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(android.Manifest.permission.CAMERA),
-                    CAMERA_REQUEST_CODE
-                )
             }
         }
+    }
 
-
+    private fun initSaveButton() {
         buttonSave.setOnClickListener {
-            val bitmap = (imageView2.getDrawable() as BitmapDrawable).bitmap
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        100
-                    )
-                } else {
-                    //saveImageToStorage()
-                    val imageUri = bitmap.saveImage(applicationContext)
-                    Toast.makeText(
-                        this,
-                        "Image saved to ${imageUri}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if(checkPermission(WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_CODE)) {
+                    saveImage()
                 }
             } else {
-                val imageUri = bitmap.saveImage(applicationContext)
+                saveImage()
+            }
+        }
+    }
+    // is called after checkPermission gets the result of asking the permission.
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == PERMISSION_CAMERA_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
+                pickImageFromGallery()
+            } else {
                 Toast.makeText(
                     this,
-                    "Image saved to ${imageUri}",
+                    getString(R.string.permission_denied),
                     Toast.LENGTH_SHORT
                 ).show()
             }
         }
+    }
+
+    private fun saveImage() {
+        val bitmap = (imageView2.drawable as BitmapDrawable).bitmap
+        val imageUri:Uri? = bitmap.saveImage(this)
+        Toast.makeText(
+            this,
+            getString(R.string.saved_image, imageUri),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+    private fun Bitmap.saveImage(context: Context): Uri? {
+        if (Build.VERSION.SDK_INT >= 29) {
+            return saveFileNewSDK(context)
+        } else {
+            return saveFileOldSDK(context)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun Bitmap.saveFileNewSDK(context: Context): Uri? {
+        val values = fileInfo()
+
+        val uri: Uri =
+            context.contentResolver.insert(EXTERNAL_CONTENT_URI, values)
+                ?: return null
+        saveImageToStream(context.contentResolver.openOutputStream(uri))
+        values.put(IS_PENDING, false)
+        context.contentResolver.update(uri, values, null, null)
+        return uri
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun fileInfo(): ContentValues {
+        val values = ContentValues()
+        values.put(MIME_TYPE, "image/jpeg")
+        values.put(DATE_ADDED, System.currentTimeMillis() / 1000)
+        values.put(DATE_TAKEN, System.currentTimeMillis())
+        values.put(RELATIVE_PATH, "Pictures/test_pictures")
+        values.put(IS_PENDING, true)
+        values.put(DISPLAY_NAME, "img_${SystemClock.uptimeMillis()}")
+        return values
+    }
+
+    private fun Bitmap.saveImageToStream(outputStream: OutputStream?) {
+        if (outputStream != null) {
+            try {
+                compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                outputStream.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    private fun Bitmap.saveFileOldSDK(context: Context): Uri? {
+        val directory =
+            File(context.getExternalFilesDir(DIRECTORY_PICTURES).toString() +
+                    separator + "test_pictures"
+            )
+        if (!directory.exists())
+            directory.mkdirs()
+
+        val fileName = "img_${SystemClock.uptimeMillis()}.png"
+        val file = File(directory, fileName)
+        saveImageToStream(FileOutputStream(file))
+
+        val values = ContentValues()
+        values.put(DATA, file.absolutePath)
+        context.contentResolver.insert(EXTERNAL_CONTENT_URI, values)
+
+        return Uri.fromFile(file)
+    }
 
 
-        // Initializing a String Array
-        val colors = arrayOf("-Не выбрано-","Синий фильтр","Серый фильтр","Сепия","Маштабирование","Повернуть картинку на 90 град.")
 
+    private fun initZoomer() {
+        val zoomingInput: EditText = findViewById(R.id.zoomingInput)
+        zoomingInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val zoomFactor = zoomingInput.text.toDouble()
+                if (abs(zoomFactor - 1.0) < 0.01) {
+                    return@setOnFocusChangeListener
+                }
+                currentPicture = Zooming.zoom(currentPicture, zoomFactor)
+                zoomingInput.setText("1")
+                imageView2.setImageBitmap(currentPicture.bitmap)
+            }
+        }
+    }
 
-
-        // Initializing an ArrayAdapter
+    private fun initOptionList() {
         val adapter = ArrayAdapter(
-            this, // Context
-            android.R.layout.simple_spinner_item, // Layout
-            colors // Array
+            this,
+            android.R.layout.simple_spinner_item,
+            getStrings()
         )
 
-        // Set the drop down view resource
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
 
         // Finally, data bind the spinner object with dapter
-        spinner.adapter = adapter;
+        spinner.adapter = adapter
 
-        // Set an on item selected listener for spinner object
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            @SuppressLint("SetTextI18n")
             override fun onItemSelected(
                 parent: AdapterView<*>,
                 view: View,
                 position: Int,
                 id: Long
             ) {
-                // Display the selected item text on text view
-                text_view.text =
-                    "Spinner selected : ${parent.getItemAtPosition(position).toString()}"
+                text_view.text = getString(R.string.spinner, parent.getItemAtPosition(position))
 
-
-                if (parent.getItemAtPosition(position).toString() == "Повернуть картинку на 90 град.") {
-                    //rotateImage()
-                    spinner.setSelection(adapter.getPosition("-Не выбрано-"))
+                if (parent.getItemAtPosition(position).toString()
+                    == getString(Filter.ROTATE_90)
+                ) {
+                    spinner.setSelection(adapter.getPosition(getString(Filter.NONE)))
                 }
-
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Another interface callback
-            }
-
+            override fun onNothingSelected(parent: AdapterView<*>) = Unit
         }
 
-        var spinnerfilters: Spinner = findViewById(R.id.filterssss)
-        spinnerfilters.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            @SuppressLint("SetTextI18n")
+        val spinnerFilters: Spinner = findViewById(R.id.filters)
+        spinnerFilters.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View,
                 position: Int,
                 id: Long
             ) {
-
-
-                var selected: String = spinnerfilters.getSelectedItem().toString();
-                textView2.text = "Spinner selected : ${selected}"
-                if (selected != "-Не выбрано-") {
-                    filter(selected)
-                    spinnerfilters.setSelection(adapter.getPosition("-Не выбрано-"))
+                val selected: String = spinnerFilters.selectedItem.toString();
+                textView2.text = getString(R.string.spinner, selected)
+                val filter = of(selected)
+                if (filter != Filter.NONE) {
+                    apply(filter)
+                    spinnerFilters.setSelection(adapter.getPosition(getString(Filter.NONE)))
                 }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
-
-        var zoomingInput: EditText = findViewById(R.id.zoomingInput)
-        zoomingInput.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus){
-                val zoomFactor = zoomingInput.text.toString().toDouble()
-                if (abs(zoomFactor - 1.0) < 0.01){
-                    return@setOnFocusChangeListener
-                }
-                currentPicture = ProcessedPicture(Zooming.zoom(currentPicture, zoomFactor))
-                zoomingInput.setText("1")
-                imageView2.setImageBitmap(currentPicture.bitmap)
-            }
+    }
+    private fun of(string: String): Filter{
+        Filter.values().forEach {
+            if(getString(it) == string)
+                return it
         }
-
+        return Filter.NONE
     }
 
+    private fun getStrings(): List<String> = Filter.values().map { getString(it) }
+    private fun getString(filter: Filter) = getString(filter.code)
 
-
-
-
-    fun filter(told: String) {
-        Filters().Check(currentPicture, told)
-        currentPicture.updateBitmap()
-
+    fun apply(told: Filter) {
+        told.process(currentPicture)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-/*
-    fun rotateImage() {
-        val rotatedBitmap = currentPicture.bitmap.rotate(45f)
-
-        imageView2.setImageBitmap(rotatedBitmap)
-        currentPicture = ProcessedPicture(rotatedBitmap)
-    }*/
-
-    fun imageRepair(image: Bitmap):Bitmap {
-        val repairImage = image.copy(Bitmap.Config.ARGB_8888, true)
-        for (i in  0..repairImage.width-2) {
-            for (j in  0..repairImage.height-1) {
-                if (image.getPixel(i, j) == Color.BLACK) {
-                    repairImage.setPixel(i, j, image.getPixel(i + 1, j))
-                }
-            }
-        }
-        return repairImage
-    }
-
-    fun scaling(degree: Int) {
-        val image = (imageView2.getDrawable() as BitmapDrawable).bitmap
-        val scaledImage = image.copy(Bitmap.Config.ARGB_8888, true)
-
-        val centerX = Math.round(image.width / 2.0)
-        val centerY = Math.round(image.height / 2.0)
-
-        var a = (Math.cos(degree*PI / 180)*(- centerX) - Math.sin(degree*PI / 180)*(- centerY.toDouble()) + centerX).toInt()
-        var b = (Math.sin(degree*PI / 180)*(- centerX) + Math.cos(degree*PI / 180)*(image.height - 1 - centerY.toDouble()) + centerY).toInt()
-        var c = image.width - a
-        var d = image.height - b
-        var ratio = Math.sqrt(a*a*1.0+b*b*1.0) / image.height
-        val centeringPixels = ((scaledImage.width - scaledImage.width * ratio)/2)
-
-        Log.d("d", a.toString() + " " + b.toString() + " " + c.toString() + " "+ d.toString() + " "+ ((a*b + c*d)/1.0).toString()+ " " + ratio.toString())
-        //ratio = 0.8
-        for (i in  0..scaledImage.width-1) {
-            for (j in  0..scaledImage.height-1) {
-                if ((i * ratio + centeringPixels).toInt() >= 0 && (j * ratio + centeringPixels).toInt() >= 0 &&
-                    (i * ratio + centeringPixels).toInt() < image.width && (j * ratio + centeringPixels).toInt() < image.height) {
-                    scaledImage.setPixel(
-                        (i * ratio + centeringPixels).toInt(),
-                        (j * ratio + centeringPixels).toInt(),
-                        image.getPixel(i, j)
-                    )
-                }
-            }
-        }
-
-        imageView2.setImageBitmap(scaledImage)
-    }
+//    fun imageRepair(image: Bitmap): Bitmap {
+//        val repairImage = image.copy(Bitmap.Config.ARGB_8888, true)
+//        for (i in  0 until repairImage.width-1) {
+//            for (j in 0 until repairImage.height) {
+//                if (image.getPixel(i, j) == Color.BLACK) {
+//                    repairImage.setPixel(i, j, image.getPixel(i + 1, j))
+//                }
+//            }
+//        }
+//        return repairImage
+//    }
+//
+//    fun scaling(degree: Int) {
+//        val image = (imageView2.drawable as BitmapDrawable).bitmap
+//        val scaledImage = image.copy(Bitmap.Config.ARGB_8888, true)
+//
+//        val centerX = (image.width / 2.0).roundToInt()
+//        val centerY = (image.height / 2.0).roundToInt()
+//
+//        val a = (cos(degree*PI / 180) *(- centerX) - sin(degree*PI / 180)*(- centerY.toDouble()) + centerX).toInt()
+//        val b = (sin(degree*PI / 180) *(- centerX) + cos(degree*PI / 180)*(image.height - 1 - centerY.toDouble()) + centerY).toInt()
+//        val c = image.width - a
+//        val d = image.height - b
+//        val ratio = sqrt(a*a*1.0+b*b*1.0) / image.height
+//        val centeringPixels = ((scaledImage.width - scaledImage.width * ratio)/2)
+//
+//        Log.d("d", a.toString() + " " + b.toString() + " " + c.toString() + " "+ d.toString() + " "+ ((a*b + c*d)/1.0).toString()+ " " + ratio.toString())
+//        //ratio = 0.8
+//        for (i in 0 until scaledImage.width) {
+//            for (j in 0 until scaledImage.height) {
+//                if ((i * ratio + centeringPixels).toInt() >= 0 && (j * ratio + centeringPixels).toInt() >= 0 &&
+//                    (i * ratio + centeringPixels).toInt() < image.width && (j * ratio + centeringPixels).toInt() < image.height) {
+//                    scaledImage.setPixel(
+//                        (i * ratio + centeringPixels).toInt(),
+//                        (j * ratio + centeringPixels).toInt(),
+//                        image.getPixel(i, j)
+//                    )
+//                }
+//            }
+//        }
+//
+//        imageView2.setImageBitmap(scaledImage)
+//    }
 
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
@@ -279,100 +322,18 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 
-    companion object {
-        private val IMAGE_PICK_CODE = 1000
-        private val PERMISSION_CODE = 1001
-    }
 
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == CAMERA_PERMISSION_CODE) {
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //permission from popup granted
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            }
-            else {
-                //permission from popup denied
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            when (requestCode) {
-                PERMISSION_CODE -> {
-                    if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        //permission from popup granted
-                        pickImageFromGallery()
-                    } else {
-                        //permission from popup denied
-                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-                    }
-                }
-        }
-    }
-}
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
             super.onActivityResult(requestCode, resultCode, data)
-            val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
+            val thumbNail: Bitmap = data?.extras?.get("data") as Bitmap
             imageView2.setImageBitmap(thumbNail)
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
-            currentPicture = ProcessedPicture((imageView2.drawable as BitmapDrawable).bitmap)
+            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-
-    fun Bitmap.saveImage(context: Context): Uri? {
-        if (android.os.Build.VERSION.SDK_INT >= 29) {
-            val values = ContentValues()
-            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-            values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
-            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/test_pictures")
-            values.put(MediaStore.Images.Media.IS_PENDING, true)
-            values.put(MediaStore.Images.Media.DISPLAY_NAME, "img_${SystemClock.uptimeMillis()}")
-
-            val uri: Uri? =
-                context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-            if (uri != null) {
-                saveImageToStream(this, context.contentResolver.openOutputStream(uri))
-                values.put(MediaStore.Images.Media.IS_PENDING, false)
-                context.contentResolver.update(uri, values, null, null)
-                return uri
-            }
-        } else {
-            val directory =
-                File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + separator + "test_pictures")
-            if (!directory.exists()) {
-                directory.mkdirs()
-            }
-            val fileName =  "img_${SystemClock.uptimeMillis()}"+ ".png"
-            val file = File(directory, fileName)
-            saveImageToStream(this, FileOutputStream(file))
-            if (file.absolutePath != null) {
-                val values = ContentValues()
-                values.put(MediaStore.Images.Media.DATA, file.absolutePath)
-                // .DATA is deprecated in API 29
-                context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                return Uri.fromFile(file)
-            }
-        }
-        return null
-    }
-
-
-    fun saveImageToStream(bitmap: Bitmap, outputStream: OutputStream?) {
-        if (outputStream != null) {
-            try {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
         }
     }
 }

@@ -27,4 +27,22 @@
         <item>SomeFilter</item>
         <item>UnsharpFilter</item>
     </string-array>
+    <string name="blue_filter">Blue filter</string>
+    <string name="gray_filter">Gray filter</string>
+    <string name="sepia">Sepia</string>
+    <string name="zooming">Zooming</string>
+    <string name="rotate_90">Rotate picture for 90 degrees</string>
+    <string name="none">-Not chosen-</string>
+    <string name="spinner">Spinner selected: %s</string>
+    <string name="saved_image">Image has been saved to %s</string>
+    <string name="red_filter">Red filter</string>
+    <string name="green_filter">Green filter</string>
+    <string name="swap_colors">Swap colors</string>
+    <string name="negative">Negative</string>
+    <string name="blur">Blur</string>
+    <string name="edge_detection">Edge detection</string>
+    <string name="emboss">Emboss</string>
+    <string name="mynka">Mynka filter</string>
+    <string name="unsharp">Unsharp</string>
+    <string name="diagonal_sepia">Diagonal sepia</string>
 </resources>

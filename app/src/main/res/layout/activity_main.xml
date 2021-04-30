@@ -63,7 +63,7 @@
             android:text="@string/save_image" />
 
         <Spinner
-            android:id="@+id/filterssss"
+            android:id="@+id/filters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/DifFilters" />
