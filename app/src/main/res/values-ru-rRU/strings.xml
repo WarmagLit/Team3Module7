@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="item_list">
+    <string-array name="itemList">
         <item>-Не выбрано-</item>
         <item>KK</item>
         <item>Повернуть картинку на 90 град.</item>
     </string-array>
 
-    <string-array name="DifFilters">
+    <string-array name="difFilters">
         <item>@string/none</item>
         <item>@string/sepia</item>
-        <item>@string/gray_filter</item>
-        <item>@string/diagonal_sepia</item>
-        <item>@string/blue_filter</item>
-        <item>@string/red_filter</item>
-        <item>@string/green_filter</item>
-        <item>@string/swap_colors</item>
+        <item>@string/grayFilter</item>
+        <item>@string/diagonalSepia</item>
+        <item>@string/blueFilter</item>
+        <item>@string/redFilter</item>
+        <item>@string/greenFilter</item>
+        <item>@string/swapColors</item>
         <item>@string/negative</item>
         <item>@string/blur</item>
-        <item>@string/edge_detection</item>
+        <item>@string/edgeDetection</item>
         <item>@string/emboss</item>
-        <item>@string/mynka</item>
+        <item>@string/someFilter</item>
         <item>@string/unsharp</item>
     </string-array>
-    <string name="app_name">Графический редактор</string>
-    <string name="button_gallery">Галерея</string>
-    <string name="button_camera">Камера</string>
-    <string name="image_content_description">Изображение</string>
-    <string name="permission_denied">Нет доступа</string>
-    <string name="save_image">Сохранить изображение</string>
-    <string name="blue_filter">Синий фильтр</string>
+    <string name="appName">Графический редактор</string>
+    <string name="buttonGallery">Галерея</string>
+    <string name="buttonCamera">Камера</string>
+    <string name="imageContentDescription">Изображение</string>
+    <string name="permissionDenied">Нет доступа</string>
+    <string name="saveImage">Сохранить изображение</string>
+    <string name="blueFilter">Синий фильтр</string>
     <string name="sepia">Сепия</string>
-    <string name="gray_filter">Серый фильтр</string>
+    <string name="grayFilter">Серый фильтр</string>
     <string name="zooming">Масштабирование</string>
     <string name="none">-Не выбрано-</string>
-    <string name="rotate_90">Повернуть картинку на 90 град.</string>
+    <string name="rotate90">Повернуть картинку на 90 град.</string>
     <string name="spinner">Выбрано в списке: %s</string>
-    <string name="saved_image">Изображение сохранено в %s</string>
-    <string name="red_filter">Красный фильтр</string>
-    <string name="green_filter">Зелёный фильтр</string>
-    <string name="swap_colors">Сменить цвета</string>
+    <string name="savedImage">Изображение сохранено в %s</string>
+    <string name="redFilter">Красный фильтр</string>
+    <string name="greenFilter">Зелёный фильтр</string>
+    <string name="swapColors">Сменить цвета</string>
     <string name="negative">Негатив</string>
     <string name="blur">Размытие</string>
-    <string name="edge_detection">Обнаружение краёв</string>
+    <string name="edgeDetection">Обнаружение краёв</string>
     <string name="emboss">Рельеф</string>
-    <string name="mynka">Фильтр Мынки</string>
+    <string name="someFilter">Какой-то фильтр</string>
     <string name="unsharp">Сглаживание</string>
-    <string name="diagonal_sepia">Сепия по диагонали</string>
+    <string name="diagonalSepia">Сепия по диагонали</string>
 </resources>

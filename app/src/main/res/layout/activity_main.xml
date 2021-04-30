@@ -18,7 +18,7 @@
             android:id="@+id/imageView2"
             android:layout_width="400sp"
             android:layout_height="400sp"
-            android:contentDescription="@string/image_content_description"
+            android:contentDescription="@string/imageContentDescription"
             android:src="@drawable/ic_launcher_background"
             app:srcCompat="@drawable/hippo" />
 
@@ -32,14 +32,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/button_gallery" />
+                android:text="@string/buttonGallery" />
 
             <Button
                 android:id="@+id/buttonCamera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/button_camera" />
+                android:text="@string/buttonCamera" />
 
         </LinearLayout>
 
@@ -47,26 +47,26 @@
             android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="40sp"
-            android:entries="@array/item_list" />
+            android:entries="@array/itemList" />
 
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="300sp"
             android:layout_height="20sp"
-            android:text="what's inside"
-            android:id="@+id/text_view"/>
+            android:text="@string/imageContentDescription" />
 
         <Button
             android:id="@+id/buttonSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/save_image" />
+            android:text="@string/saveImage" />
 
         <Spinner
             android:id="@+id/filters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/DifFilters" />
+            android:entries="@array/difFilters" />
 
         <EditText
             android:id="@+id/zoomingInput"

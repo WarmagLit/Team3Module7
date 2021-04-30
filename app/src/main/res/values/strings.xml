@@ -1,51 +1,51 @@
 <resources>
-    <string name="app_name">GraphicEditor</string>
-    <string name="button_gallery">Gallery</string>
-    <string name="button_camera">Camera</string>
-    <string name="image_content_description">Just Image</string>
-    <string name="permission_denied">Permission denied</string>
-    <string name="save_image">Save image</string>
+    <string name="appName">GraphicEditor</string>
+    <string name="buttonGallery">Gallery</string>
+    <string name="buttonCamera">Camera</string>
+    <string name="imageContentDescription">Just Image</string>
+    <string name="permissionDenied">Permission denied</string>
+    <string name="saveImage">Save image</string>
     <string name="button" translatable="false">Button</string>
     <string name="about" translatable="false">About</string>
 
-    <string-array name="item_list">
+    <string-array name="itemList">
         <item>-Not chosen-</item>
         <item>KK</item>
         <item>Rotate picture for 90 degrees</item>
     </string-array>
 
-    <string-array name="DifFilters">
+    <string-array name="difFilters">
         <item>@string/none</item>
         <item>@string/sepia</item>
-        <item>@string/gray_filter</item>
-        <item>@string/diagonal_sepia</item>
-        <item>@string/blue_filter</item>
-        <item>@string/red_filter</item>
-        <item>@string/green_filter</item>
-        <item>@string/swap_colors</item>
+        <item>@string/grayFilter</item>
+        <item>@string/diagonalSepia</item>
+        <item>@string/blueFilter</item>
+        <item>@string/redFilter</item>
+        <item>@string/greenFilter</item>
+        <item>@string/swapColors</item>
         <item>@string/negative</item>
         <item>@string/blur</item>
-        <item>@string/edge_detection</item>
+        <item>@string/edgeDetection</item>
         <item>@string/emboss</item>
-        <item>@string/mynka</item>
+        <item>@string/someFilter</item>
         <item>@string/unsharp</item>
     </string-array>
-    <string name="blue_filter">Blue filter</string>
-    <string name="gray_filter">Gray filter</string>
+    <string name="blueFilter">Blue filter</string>
+    <string name="grayFilter">Gray filter</string>
     <string name="sepia">Sepia</string>
     <string name="zooming">Zooming</string>
-    <string name="rotate_90">Rotate picture for 90 degrees</string>
+    <string name="rotate90">Rotate picture for 90 degrees</string>
     <string name="none">-Not chosen-</string>
     <string name="spinner">Spinner selected: %s</string>
-    <string name="saved_image">Image has been saved to %s</string>
-    <string name="red_filter">Red filter</string>
-    <string name="green_filter">Green filter</string>
-    <string name="swap_colors">Swap colors</string>
+    <string name="savedImage">Image has been saved to %s</string>
+    <string name="redFilter">Red filter</string>
+    <string name="greenFilter">Green filter</string>
+    <string name="swapColors">Swap colors</string>
     <string name="negative">Negative</string>
     <string name="blur">Blur</string>
-    <string name="edge_detection">Edge detection</string>
+    <string name="edgeDetection">Edge detection</string>
     <string name="emboss">Emboss</string>
-    <string name="mynka">Mynka filter</string>
+    <string name="someFilter">Some filter</string>
     <string name="unsharp">Unsharp</string>
-    <string name="diagonal_sepia">Diagonal sepia</string>
+    <string name="diagonalSepia">Diagonal sepia</string>
 </resources>

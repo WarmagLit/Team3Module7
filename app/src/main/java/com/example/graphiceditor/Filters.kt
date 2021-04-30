@@ -1,25 +1,25 @@
 package com.example.graphiceditor
 
 import android.util.Log
-import kotlin.reflect.KFunction1
 
 enum class Filter(val code: Int, val process: suspend (PixelArray) -> PixelArray) {
     NONE(R.string.none, { TODO() }),
-    BLUE(R.string.blue_filter, ::blue),
-    GRAY(R.string.gray_filter, ::grey),
-    RED(R.string.red_filter, ::red),
-    GREEN(R.string.green_filter, ::green),
-    SWAP_COLORS(R.string.swap_colors, ::swapColors),
+    BLUE(R.string.blueFilter, ::blue),
+    GRAY(R.string.grayFilter, ::grey),
+    RED(R.string.redFilter, ::red),
+    GREEN(R.string.greenFilter, ::green),
+    SWAP_COLORS(R.string.swapColors, ::swapColors),
     NEGATIVE(R.string.negative, ::negative),
-    BLUR(R.string.blur, ::blurring),
-    EDGE_DETECTION(R.string.edge_detection, ::edgeDetection),
+    BLUR(R.string.blur, ::blur),
+    EDGE_DETECTION(R.string.edgeDetection, ::edgeDetection),
     EMBOSS(R.string.emboss, ::emboss),
     UNSHARP(R.string.unsharp, ::unsharpFilter),
     SEPIA(R.string.sepia, ::sepia),
-    DIAGONAL_SEPIA(R.string.diagonal_sepia, ::diagonalSepia),
+    DIAGONAL_SEPIA(R.string.diagonalSepia, ::diagonalSepia),
+    SOME_FILTER(R.string.someFilter, ::someFilter),
 
     ZOOMING(R.string.zooming, { TODO() }),
-    ROTATE_90(R.string.rotate_90, { TODO() });
+    ROTATE_90(R.string.rotate90, { TODO() });
 }
 
 private suspend fun diagonalSepia(image: PixelArray): PixelArray {
@@ -169,7 +169,7 @@ private suspend fun negative(image: PixelArray): PixelArray {
     return image
 }
 
-private suspend fun blurring(image: PixelArray): PixelArray {
+private suspend fun blur(image: PixelArray): PixelArray {
     val arrCopy = image.clone()
     Log.d("TAG", "Entered blur")
 

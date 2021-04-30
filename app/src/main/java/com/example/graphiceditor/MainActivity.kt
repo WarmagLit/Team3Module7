@@ -18,7 +18,6 @@ import android.os.SystemClock
 import android.provider.MediaStore
 import android.view.View
 import android.widget.*
-import kotlinx.android.synthetic.main.editor.*
 import java.io.File.separator
 
 import java.io.FileOutputStream
@@ -28,7 +27,6 @@ import java.lang.Exception
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
-import android.view.ViewOutlineProvider
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
@@ -114,7 +112,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    getString(R.string.permission_denied),
+                    getString(R.string.permissionDenied),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -126,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         val imageUri:Uri? = bitmap.saveImage(this)
         Toast.makeText(
             this,
-            getString(R.string.saved_image, imageUri),
+            getString(R.string.savedImage, imageUri),
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -228,7 +226,7 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                text_view.text = getString(R.string.spinner, parent.getItemAtPosition(position))
+                textView.text = getString(R.string.spinner, parent.getItemAtPosition(position))
 
                 if (parent.getItemAtPosition(position).toString()
                     == getString(Filter.ROTATE_90)
