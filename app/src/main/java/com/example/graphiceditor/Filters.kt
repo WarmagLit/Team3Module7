@@ -1,367 +1,308 @@
 package com.example.graphiceditor
 
-class Filters() {
-    fun Check(told: ProcessedPicture, As: String)
-    {
-        when (As){
-            "DiagonalSepia" -> diagonalSepia(told)
-            "Grey" -> grey(told)
-            "Sepia" -> sepia(told)
-            "Blue" -> blue(told)
-            "Red" -> red(told)
-            "Green" -> green(told)
-            "SwapColors" -> swapColors(told)
-            "Negative" -> negative(told)
-            "Blurring" -> blurring(told)
-            "EdgeDetection" -> edgeDetection(told)
-            "Emboss" -> emboss(told)
-            "SomeFilter" -> mynkFilter(told)
-            "UnsharpFilter" -> unsharpFilter(told)
-        }
-    }
+import android.util.Log
 
-    fun diagonalSepia(image: ProcessedPicture) {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                var newRed =
-                    (0.393 * image.pixelsArray[i][j].r + 0.769 * image.pixelsArray[i][j].g + 0.189 * image.pixelsArray[i][j].b).toInt()
-                var newGreen =
-                    (0.349 * image.pixelsArray[i][j].r + 0.686 * image.pixelsArray[i][j].g + 0.168 * image.pixelsArray[i][j].b).toInt()
-                var newBlue =
-                    (0.272 * image.pixelsArray[i][j].r + 0.534 * image.pixelsArray[i][j].g + 0.131 * image.pixelsArray[i][j].b).toInt()
+enum class Filter(val code: Int, val process: suspend (PixelArray) -> PixelArray) {
+    NONE(R.string.none, { TODO() }),
+    BLUE(R.string.blueFilter, ::blue),
+    GRAY(R.string.grayFilter, ::grey),
+    RED(R.string.redFilter, ::red),
+    GREEN(R.string.greenFilter, ::green),
+    SWAP_COLORS(R.string.swapColors, ::swapColors),
+    NEGATIVE(R.string.negative, ::negative),
+    BLUR(R.string.blur, ::blur),
+    EDGE_DETECTION(R.string.edgeDetection, ::edgeDetection),
+    EMBOSS(R.string.emboss, ::emboss),
+    UNSHARP(R.string.unsharp, ::unsharpFilter),
+    SEPIA(R.string.sepia, ::sepia),
+    DIAGONAL_SEPIA(R.string.diagonalSepia, ::diagonalSepia),
+    SOME_FILTER(R.string.someFilter, ::someFilter),
 
-                if (newRed > 255) {
-                    newRed = 255
-                }
-                if (newGreen > 255) {
-                    newGreen = 255
-                }
-                if (newBlue > 255) {
-                    newBlue = 255
-                }
+    ZOOMING(R.string.zooming, { TODO() }),
+    ROTATE_90(R.string.rotate90, { TODO() });
+}
 
-                if (i < j - image.bitmap.height / 2) {
-                    // apply sepia at lower
-                    image.pixelsArray[i][j].a = image.pixelsArray[i][j].a
-                    image.pixelsArray[i][j].r = newRed
-                    image.pixelsArray[i][j].g = newGreen
-                    image.pixelsArray[i][j].b = newBlue
+private suspend fun diagonalSepia(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            var newRed =
+                (0.393 * image[i, j].component(red) + 0.769 * image[i, j].component(green) + 0.189 * image[i, j].component(blue)).toInt()
+            var newGreen =
+                (0.349 * image[i, j].component(red) + 0.686 * image[i, j].component(green) + 0.168 * image[i, j].component(blue)).toInt()
+            var newBlue =
+                (0.272 * image[i, j].component(red) + 0.534 * image[i, j].component(green) + 0.131 * image[i, j].component(blue)).toInt()
+
+            if (newRed > 255) newRed = 255
+            if (newGreen > 255) newGreen = 255
+            if (newBlue > 255) newBlue = 255
+
+            if (i < j - image.height / 2) {
+                // apply sepia at lower
+                image[i, j] = colorOf(newRed, newGreen, newBlue)
 
 
-                } else if ((i - (image.bitmap.height / 2)) > j) {
-                    // apply sepia upper
-                    image.pixelsArray[i][j].a = image.pixelsArray[i][j].a
-                    image.pixelsArray[i][j].r = newRed
-                    image.pixelsArray[i][j].g = newGreen
-                    image.pixelsArray[i][j].b = newBlue
+            } else if ((i - (image.height / 2)) > j) {
+                // apply sepia upper
+                image[i, j] = colorOf(newRed, newGreen, newBlue)
 
-                } else {
-                    //  don't apply sepia
-                    image.pixelsArray[i][j] = image.pixelsArray[i][j]
-                }
+            } else {
+                //  don't apply sepia
+                image[i, j] = image[i, j]
             }
         }
     }
 
+    return image
+}
 
-    fun grey(image: ProcessedPicture)
-    {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                var intensity = ((image.pixelsArray[i][j].r + image.pixelsArray[i][j].g + image.pixelsArray[i][j].b) / 3)
-                if (intensity > 255)
-                    intensity = 255
-                image.pixelsArray[i][j].r = intensity
-                image.pixelsArray[i][j].g = intensity
-                image.pixelsArray[i][j].b = intensity
+private suspend fun grey(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            val intensity = ((image[i, j].component(red) + image[i, j].component(green) + image[i, j].component(blue)) / 3)
+            image[i, j] = colorOf(intensity, intensity, intensity)
+        }
+    }
+
+    return image
+}
+
+private suspend fun sepia(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            var newRed =
+                (0.393 * image[i, j].component(red) + 0.769 * image[i, j].component(green) + 0.189 * image[i, j].component(blue)).toInt()
+            var newGreen =
+                (0.349 * image[i, j].component(red) + 0.686 * image[i, j].component(green) + 0.168 * image[i, j].component(blue)).toInt()
+            var newBlue =
+                (0.272 * image[i, j].component(red) + 0.534 * image[i, j].component(green) + 0.131 * image[i, j].component(blue)).toInt()
+
+            if (newRed > 255) {
+                newRed = 255
+            }
+            if (newGreen > 255) {
+                newGreen = 255
+            }
+            if (newBlue > 255) {
+                newBlue = 255
+            }
+            image[i, j] = colorOf(newRed, newGreen, newBlue)
+
+        }
+    }
+
+    return image
+}
+
+private suspend fun blue(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            if (image[i, j].component(blue) < 240) {
+                image[i, j] = colorOf(
+                    image[i, j].component(red) * 7 / 10,
+                    image[i, j].component(green) * 7 / 10,
+                    image[i, j].component(blue)
+                )
             }
         }
     }
 
-    fun sepia(image: ProcessedPicture) {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                var newRed =
-                    (0.393 * image.pixelsArray[i][j].r + 0.769 * image.pixelsArray[i][j].g + 0.189 * image.pixelsArray[i][j].b).toInt()
-                var newGreen =
-                    (0.349 * image.pixelsArray[i][j].r + 0.686 * image.pixelsArray[i][j].g + 0.168 * image.pixelsArray[i][j].b).toInt()
-                var newBlue =
-                    (0.272 * image.pixelsArray[i][j].r + 0.534 * image.pixelsArray[i][j].g + 0.131 * image.pixelsArray[i][j].b).toInt()
+    return image
+}
 
-                if (newRed > 255) {
-                    newRed = 255
-                }
-                if (newGreen > 255) {
-                    newGreen = 255
-                }
-                if (newBlue > 255) {
-                    newBlue = 255
-                }
-                image.pixelsArray[i][j].r = newRed
-                image.pixelsArray[i][j].g = newGreen
-                image.pixelsArray[i][j].b = newBlue
-
+private suspend fun red(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            if (image[i, j].component(red) < 240) {
+                image[i, j] = colorOf(
+                    image[i, j].component(red),
+                    image[i, j].component(green) * 7 / 10,
+                    image[i, j].component(blue) * 7 / 10
+                )
             }
         }
     }
 
-    fun blue(image: ProcessedPicture) {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                if (image.pixelsArray[i][j].b < 240) {
-                    image.pixelsArray[i][j].r *= 7
-                    image.pixelsArray[i][j].g *= 7
-                    image.pixelsArray[i][j].r /= 10
-                    image.pixelsArray[i][j].g /= 10
-                }
+    return image
+}
+
+private suspend fun green(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            if (image[i, j].component(green) < 240) {
+                image[i, j] = colorOf(
+                    image[i, j].component(red) * 7 / 10,
+                    image[i, j].component(green),
+                    image[i, j].component(blue) * 7 / 10
+                )
             }
         }
     }
 
-    fun red(image: ProcessedPicture) {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                if (image.pixelsArray[i][j].r < 240) {
-                    image.pixelsArray[i][j].b *= 7
-                    image.pixelsArray[i][j].g *= 7
-                    image.pixelsArray[i][j].b /= 10
-                    image.pixelsArray[i][j].g /= 10
-                }
-            }
+    return image
+}
+
+private suspend fun swapColors(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            image[i, j] = colorOf(
+                image[i, j].component(blue),
+                image[i, j].component(red),
+                image[i, j].component(green)
+            )
         }
     }
 
-    fun green(image: ProcessedPicture) {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                if (image.pixelsArray[i][j].g < 240) {
-                    image.pixelsArray[i][j].b *= 7
-                    image.pixelsArray[i][j].r *= 7
-                    image.pixelsArray[i][j].b /= 10
-                    image.pixelsArray[i][j].r /= 10
-                }
-            }
+    return image
+}
+
+private suspend fun negative(image: PixelArray): PixelArray {
+    for (i in 0 until image.width) {
+        for (j in 0 until image.height) {
+            image[i, j] = colorOf(
+                255 - image[i, j].component(red),
+                255 - image[i, j].component(green),
+                255 - image[i, j].component(blue)
+            )
         }
     }
 
-    fun swapColors(image: ProcessedPicture) {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                val oldBlue = image.pixelsArray[i][j].b
-                image.pixelsArray[i][j].b = image.pixelsArray[i][j].r
-                image.pixelsArray[i][j].r = image.pixelsArray[i][j].g
-                image.pixelsArray[i][j].g = oldBlue
+    return image
+}
+
+private suspend fun blur(image: PixelArray): PixelArray {
+    val arrCopy = image.clone()
+    Log.d("TAG", "Entered blur")
+
+    for (x in 1..image.width - 2) {
+        for (y in 1..image.height - 2) {
+
+            fun average(component: Int): Int{
+                var result = 0
+                for (i in -1..1){
+                    for (j in -1..1){
+                        result += image[x + i, y + j].component(component)
+                    }
+                }
+                return result / 9
             }
+
+            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
         }
     }
 
-    fun negative(image: ProcessedPicture) {
-        for (i in 0..image.bitmap.width - 1) {
-            for (j in 0..image.bitmap.height - 1) {
-                image.pixelsArray[i][j].b = 255 - image.pixelsArray[i][j].b
-                image.pixelsArray[i][j].r = 255 - image.pixelsArray[i][j].r
-                image.pixelsArray[i][j].g = 255 - image.pixelsArray[i][j].g
+    return arrCopy
+}
+
+private suspend fun edgeDetection(image: PixelArray): PixelArray {
+    val arrCopy = image.clone();
+
+    for (x in 1..image.width - 2) {
+        for (y in 1..image.height - 2) {
+
+            fun average(component: Int): Int{
+                val result = image[x, y - 1].component(component) +
+                        image[x, y + 1].component(component) +
+                        image[x - 1, y].component(component) +
+                        image[x + 1, y].component(component) -
+                        4 * image[x, y].component(component)
+                return when {
+                    result < 0 -> 0
+                    result > 255 -> 255
+                    else -> result
+                }
             }
+
+            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
         }
     }
 
-    fun blurring(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
+    return arrCopy
+}
 
-        for (i in 1..image.bitmap.width - 2) {
-            for (j in 1..image.bitmap.height - 2) {
-                val newRed = image.pixelsArray[i-1][j-1].r + image.pixelsArray[i+1][j-1].r +
-                        image.pixelsArray[i-1][j+1].r + image.pixelsArray[i+1][j+1].r +
-                        image.pixelsArray[i][j-1].r + image.pixelsArray[i][j+1].r +
-                        image.pixelsArray[i-1][j].r + image.pixelsArray[i+1][j].r + image.pixelsArray[i][j].r
-                val newGreen = image.pixelsArray[i-1][j-1].g + image.pixelsArray[i+1][j-1].g +
-                        image.pixelsArray[i-1][j+1].g + image.pixelsArray[i+1][j+1].g +
-                        image.pixelsArray[i][j-1].g + image.pixelsArray[i][j+1].g +
-                        image.pixelsArray[i-1][j].g + image.pixelsArray[i+1][j].g + image.pixelsArray[i][j].g
-                val newBlue = image.pixelsArray[i-1][j-1].b + image.pixelsArray[i+1][j-1].b +
-                        image.pixelsArray[i-1][j+1].b + image.pixelsArray[i+1][j+1].b +
-                        image.pixelsArray[i][j-1].b + image.pixelsArray[i][j+1].b +
-                        image.pixelsArray[i-1][j].b + image.pixelsArray[i+1][j].b + image.pixelsArray[i][j].b
+private suspend fun emboss(image: PixelArray): PixelArray {
+    val arrCopy = image.clone();
+    for (x in 1..image.width - 2) {
+        for (y in 1..image.height - 2) {
 
-                copyArr[i][j].r = newRed/9
-                copyArr[i][j].g = newGreen/9
-                copyArr[i][j].b = newBlue/9
+            fun average(component: Int): Int{
+                val result = image[x, y - 1].component(component) -
+                        image[x, y + 1].component(component) +
+                        image[x - 1, y].component(component) -
+                        image[x + 1, y].component(component) + 128
+                return when {
+                    result < 0 -> 0
+                    result > 255 -> 255
+                    else -> result
+                }
             }
+
+            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
         }
-        image.pixelsArray = copyArr
     }
 
-    fun edgeDetection(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
+    return arrCopy
+}
 
-        for (i in 1..image.bitmap.width - 2) {
-            for (j in 1..image.bitmap.height - 2) {
-                var newRed =
-                        image.pixelsArray[i][j-1].r + image.pixelsArray[i][j+1].r +
-                        image.pixelsArray[i-1][j].r + image.pixelsArray[i+1][j].r - 4*image.pixelsArray[i][j].r
-                var newGreen =
-                        image.pixelsArray[i][j-1].g + image.pixelsArray[i][j+1].g +
-                        image.pixelsArray[i-1][j].g + image.pixelsArray[i+1][j].g - 4*image.pixelsArray[i][j].g
-                var newBlue =
-                        image.pixelsArray[i][j-1].b + image.pixelsArray[i][j+1].b +
-                        image.pixelsArray[i-1][j].b + image.pixelsArray[i+1][j].b - 4*image.pixelsArray[i][j].b
+private suspend fun someFilter(image: PixelArray): PixelArray {
+    val arrCopy = image.clone();
 
-                newRed = when(newRed){
-                    in -3000..0 -> 0
-                    in 0..255 -> newRed
-                    else -> 255
-                }
-                newGreen = when(newGreen){
-                    in -3000..0 -> 0
-                    in 0..255 -> newGreen
-                    else -> 255
-                }
-                newBlue = when(newBlue){
-                    in -3000..0 -> 0
-                    in 0..255 -> newBlue
-                    else -> 255
-                }
+    for (x in 1..image.width - 2) {
+        for (y in 1..image.height - 2) {
+            val k1 = x + y
+            val k2 = x
+            val k3 = y
+            val k4 = 0
 
-                copyArr[i][j].r = newRed
-                copyArr[i][j].g = newGreen
-                copyArr[i][j].b = newBlue
+            fun average(component: Int): Int{
+                val result = k1 * image[x - 1, y - 1].component(component) -
+                        k1 * image[x + 1, y - 1].component(component) +
+                        k1 * image[x - 1, y + 1].component(component) -
+                        k1 * image[x + 1, y + 1].component(component) +
+                        k2 * image[x, y - 1].component(component) -
+                        k2 * image[x, y + 1].component(component) +
+                        k3 * image[x - 1, y].component(component) -
+                        k3 * image[x + 1, y].component(component) +
+                        k4 * image[x + 1, y].component(component)
+                return if (result < 0) 0
+                else if (result > 255) 255
+                else result
             }
+
+            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
+
         }
-
-        image.pixelsArray = copyArr
     }
+    return arrCopy
+}
 
-    fun emboss(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
-        for (i in 1..image.bitmap.width - 2) {
-            for (j in 1..image.bitmap.height - 2) {
-                var newRed = image.pixelsArray[i][j-1].r - image.pixelsArray[i][j+1].r +
-                        image.pixelsArray[i-1][j].r - image.pixelsArray[i+1][j].r + 128
-                var newGreen = image.pixelsArray[i][j-1].g - image.pixelsArray[i][j+1].g +
-                        image.pixelsArray[i-1][j].g - image.pixelsArray[i+1][j].g + 128
-                var newBlue = image.pixelsArray[i][j-1].b - image.pixelsArray[i][j+1].b +
-                        image.pixelsArray[i-1][j].b - image.pixelsArray[i+1][j].b + 128
+private suspend fun unsharpFilter(image: PixelArray): PixelArray {
+    val arrCopy = image.clone();
 
-                newRed = when(newRed){
-                    in -3000..0 -> 0
-                    in 0..255 -> newRed
-                    else -> 255
-                }
-                newGreen = when(newGreen){
-                    in -3000..0 -> 0
-                    in 0..255 -> newGreen
-                    else -> 255
-                }
-                newBlue = when(newBlue){
-                    in -3000..0 -> 0
-                    in 0..255 -> newBlue
-                    else -> 255
-                }
+    for (x in 1..image.width - 2) {
+        for (y in 1..image.height - 2) {
+            val k1 = -1
+            val k2 = -2
+            val k3 = -2
+            val k4 = 12
 
-                copyArr[i][j].r = newRed
-                copyArr[i][j].g = newGreen
-                copyArr[i][j].b = newBlue
+            fun average(component: Int): Int{
+                val result = k1 * image[x - 1, y - 1].component(component) -
+                        k1 * image[x + 1, y - 1].component(component) +
+                        k1 * image[x - 1, y + 1].component(component) -
+                        k1 * image[x + 1, y + 1].component(component) +
+                        k2 * image[x, y - 1].component(component) -
+                        k2 * image[x, y + 1].component(component) +
+                        k3 * image[x - 1, y].component(component) -
+                        k3 * image[x + 1, y].component(component) +
+                        k4 * image[x + 1, y].component(component)
+                return if (result < 0) 0
+                else if (result > 255) 255
+                else result / 16
             }
+
+            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
+
         }
-
-        image.pixelsArray = copyArr
     }
-
-    fun mynkFilter(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
-
-        for (i in 1..image.bitmap.width - 2) {
-            for (j in 1..image.bitmap.height - 2) {
-                val k1 = i+j
-                val k2 = j
-                val k3 = i
-                val k4 = 0
-
-                var newRed = k1*image.pixelsArray[i-1][j-1].r - k1*image.pixelsArray[i+1][j-1].r +
-                        k1*image.pixelsArray[i-1][j+1].r - k1*image.pixelsArray[i+1][j+1].r +
-                        k2*image.pixelsArray[i][j-1].r - k2*image.pixelsArray[i][j+1].r +
-                        k3*image.pixelsArray[i-1][j].r - k3*image.pixelsArray[i+1][j].r + k4*image.pixelsArray[i+1][j].r
-                var newGreen = k1*image.pixelsArray[i-1][j-1].g - k1*image.pixelsArray[i+1][j-1].g +
-                        k1*image.pixelsArray[i-1][j+1].g - k1*image.pixelsArray[i+1][j+1].g +
-                        k2*image.pixelsArray[i][j-1].g - k2*image.pixelsArray[i][j+1].g +
-                        k3*image.pixelsArray[i-1][j].g - k3*image.pixelsArray[i+1][j].g + k4*image.pixelsArray[i+1][j].g
-                var newBlue = k1*image.pixelsArray[i-1][j-1].b - k1*image.pixelsArray[i+1][j-1].b +
-                        k1*image.pixelsArray[i-1][j+1].b - k1*image.pixelsArray[i+1][j+1].b +
-                        k2*image.pixelsArray[i][j-1].b - k2*image.pixelsArray[i][j+1].b +
-                        k3*image.pixelsArray[i-1][j].b - k3*image.pixelsArray[i+1][j].b + k4*image.pixelsArray[i+1][j].b
-
-                newRed = when(newRed){
-                    in -100000..0 -> 0
-                    in 0..255 -> newRed
-                    else -> 255
-                }
-                newGreen = when(newGreen){
-                    in -100000..0 -> 0
-                    in 0..255 -> newGreen
-                    else -> 255
-                }
-                newBlue = when(newBlue){
-                    in -100000..0 -> 0
-                    in 0..255 -> newBlue
-                    else -> 255
-                }
-
-                copyArr[i][j].r = newRed
-                copyArr[i][j].g = newGreen
-                copyArr[i][j].b = newBlue
-            }
-        }
-        image.pixelsArray = copyArr
-    }
-
-    fun unsharpFilter(image: ProcessedPicture) {
-        val copyArr = image.getCopy();
-
-        for (i in 1..image.bitmap.width - 2) {
-            for (j in 1..image.bitmap.height - 2) {
-                val k1 = -1
-                val k2 = -2
-                val k3 = -2
-                val k4 = 12
-
-                var newRed = k1*image.pixelsArray[i-1][j-1].r - k1*image.pixelsArray[i+1][j-1].r +
-                        k1*image.pixelsArray[i-1][j+1].r - k1*image.pixelsArray[i+1][j+1].r +
-                        k2*image.pixelsArray[i][j-1].r - k2*image.pixelsArray[i][j+1].r +
-                        k3*image.pixelsArray[i-1][j].r - k3*image.pixelsArray[i+1][j].r + k4*image.pixelsArray[i+1][j].r
-                var newGreen = k1*image.pixelsArray[i-1][j-1].g - k1*image.pixelsArray[i+1][j-1].g +
-                        k1*image.pixelsArray[i-1][j+1].g - k1*image.pixelsArray[i+1][j+1].g +
-                        k2*image.pixelsArray[i][j-1].g - k2*image.pixelsArray[i][j+1].g +
-                        k3*image.pixelsArray[i-1][j].g - k3*image.pixelsArray[i+1][j].g + k4*image.pixelsArray[i+1][j].g
-                var newBlue = k1*image.pixelsArray[i-1][j-1].b - k1*image.pixelsArray[i+1][j-1].b +
-                        k1*image.pixelsArray[i-1][j+1].b - k1*image.pixelsArray[i+1][j+1].b +
-                        k2*image.pixelsArray[i][j-1].b - k2*image.pixelsArray[i][j+1].b +
-                        k3*image.pixelsArray[i-1][j].b - k3*image.pixelsArray[i+1][j].b + k4*image.pixelsArray[i+1][j].b
-
-                newRed /= 16
-                newGreen /= 16
-                newBlue /= 16
-
-                newRed = when(newRed){
-                    in -100000..0 -> 0
-                    in 0..255 -> newRed
-                    else -> 255
-                }
-                newGreen = when(newGreen){
-                    in -100000..0 -> 0
-                    in 0..255 -> newGreen
-                    else -> 255
-                }
-                newBlue = when(newBlue){
-                    in -100000..0 -> 0
-                    in 0..255 -> newBlue
-                    else -> 255
-                }
-
-                copyArr[i][j].r = newRed
-                copyArr[i][j].g = newGreen
-                copyArr[i][j].b = newBlue
-            }
-        }
-        image.pixelsArray = copyArr
-    }
+    return arrCopy
 }

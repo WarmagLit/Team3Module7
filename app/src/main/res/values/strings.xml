@@ -1,35 +1,55 @@
 <resources>
-    <string name="app_name">GraphicEditor</string>
-    <string name="button_gallery">Gallery</string>
-    <string name="button_camera">Camera</string>
-    <string name="image_content_description">Just Image</string>
-    <string name="permission_denied">Permission denied</string>
-    <string name="save_image">Save</string>
-    <string name="button">Button</string>
-    <string name="about">About</string>
-    <string name="menu">Menu</string>
-    <string name="imprt">Import Image</string>
-    <string name="goBack">Go back</string>
-    <string-array name="item_list">
-        <item>-Не выбрано-</item>
+
+    <string name="appName">GraphicEditor</string>
+    <string name="buttonGallery">Gallery</string>
+    <string name="buttonCamera">Camera</string>
+    <string name="imageContentDescription">Just Image</string>
+    <string name="permissionDenied">Permission denied</string>
+    <string name="saveImage">Save image</string>
+    <string name="button" translatable="false">Button</string>
+    <string name="about" translatable="false">About</string>
+
+
+    <string-array name="itemList">
+        <item>-Not chosen-</item>
+
         <item>KK</item>
-        <item>Повернуть картинку на 90 град.</item>
+        <item>Rotate picture for 90 degrees</item>
     </string-array>
 
-    <string-array name="DifFilters">
-        <item>-Не выбрано-</item>
-        <item>DiagonalSepia</item>
-        <item>Grey</item>
-        <item>Sepia</item>
-        <item>Blue</item>
-        <item>Red</item>
-        <item>Green</item>
-        <item>SwapColors</item>
-        <item>Negative</item>
-        <item>Blurring</item>
-        <item>EdgeDetection</item>
-        <item>Emboss</item>
-        <item>SomeFilter</item>
-        <item>UnsharpFilter</item>
+    <string-array name="difFilters">
+        <item>@string/none</item>
+        <item>@string/sepia</item>
+        <item>@string/grayFilter</item>
+        <item>@string/diagonalSepia</item>
+        <item>@string/blueFilter</item>
+        <item>@string/redFilter</item>
+        <item>@string/greenFilter</item>
+        <item>@string/swapColors</item>
+        <item>@string/negative</item>
+        <item>@string/blur</item>
+        <item>@string/edgeDetection</item>
+        <item>@string/emboss</item>
+        <item>@string/someFilter</item>
+        <item>@string/unsharp</item>
     </string-array>
+    <string name="blueFilter">Blue filter</string>
+    <string name="grayFilter">Gray filter</string>
+    <string name="sepia">Sepia</string>
+    <string name="zooming">Zooming</string>
+    <string name="rotate90">Rotate picture for 90 degrees</string>
+    <string name="none">-Not chosen-</string>
+    <string name="spinner">Spinner selected: %s</string>
+    <string name="savedImage">Image has been saved to %s</string>
+    <string name="redFilter">Red filter</string>
+    <string name="greenFilter">Green filter</string>
+    <string name="swapColors">Swap colors</string>
+    <string name="negative">Negative</string>
+    <string name="blur">Blur</string>
+    <string name="edgeDetection">Edge detection</string>
+    <string name="emboss">Emboss</string>
+    <string name="someFilter">Some filter</string>
+    <string name="unsharp">Unsharp</string>
+    <string name="diagonalSepia">Diagonal sepia</string>
+
 </resources>

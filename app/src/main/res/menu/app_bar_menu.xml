@@ -5,19 +5,19 @@
 
     <item android:id="@+id/menuAbout"
         android:icon="@drawable/ic_menu_black_24dp"
-        android:title="@string/menu"
+        android:title="Menu"
         tools:context=".MainActivity"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/addImage"
         android:icon="@drawable/ic_add_black_24dp"
-        android:title="@string/imprt"
+        android:title="Import"
         tools:context=".MainActivity"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/saveImage"
         android:icon="@drawable/ic_save_black_24dp"
-        android:title="@string/save_image"
+        android:title="@string/saveImage"
         tools:context=".MainActivity"
         app:showAsAction="ifRoom"/>
 </menu>
