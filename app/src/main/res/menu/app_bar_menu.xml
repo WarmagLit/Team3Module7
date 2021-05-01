@@ -5,19 +5,27 @@
 
     <item android:id="@+id/menuAbout"
         android:icon="@drawable/ic_menu_black_24dp"
-        android:title="@string/about"
+        android:title="Menu"
         tools:context=".MainActivity"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/addImage"
+    <item android:id="@+id/addGallery"
         android:icon="@drawable/ic_add_black_24dp"
-        android:title="@string/about"
+        android:title="Import"
         tools:context=".MainActivity"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/saveImage"
+    <item
+        android:id="@+id/addCamera"
+        android:icon="@drawable/ic_photo_camera_black_24dp"
+        android:title="Camera"
+        app:showAsAction="ifRoom"
+        tools:context=".MainActivity" />
+
+    <item
+        android:id="@+id/saveImg"
         android:icon="@drawable/ic_save_black_24dp"
         android:title="@string/saveImage"
-        tools:context=".MainActivity"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        tools:context=".MainActivity" />
 </menu>

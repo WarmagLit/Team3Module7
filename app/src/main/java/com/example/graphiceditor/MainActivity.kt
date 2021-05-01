@@ -18,6 +18,14 @@ import android.os.SystemClock
 import android.provider.MediaStore
 import android.view.View
 import android.widget.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.graphics.get
+import androidx.core.graphics.toColor
+import kotlinx.android.synthetic.main.editor.*
+import kotlinx.android.synthetic.main.editor_v2.*
+
 import java.io.File.separator
 
 import java.io.FileOutputStream
@@ -28,6 +36,8 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
 import androidx.annotation.RequiresApi
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 import kotlin.math.*
@@ -50,29 +60,140 @@ class MainActivity : AppCompatActivity() {
         currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
 
         initButtons()
-
-        initOptionList()
+        /*initOptionList()*/
         initZoomer()
         initRotater()
+
+        setupNavigation()
     }
 
-    private fun initButtons() {
-        initGalleryPicker()
-        initCameraButton()
-        initSaveButton()
-    }
 
-    private fun initGalleryPicker() {
-        buttonGallery.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if(checkPermission(READ_EXTERNAL_STORAGE, READ_STORAGE_CODE))
+    private fun setupNavigation() {
+        val navView: BottomNavigationView = findViewById(R.id.bottomNavBar)
+        navView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menuAbout -> {
+                    Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.addGallery -> {
                     pickImageFromGallery()
-            } else {
-                //system OS is < Marshmallow
-                pickImageFromGallery()
+                    true
+                }
+                R.id.addCamera -> {
+                    Log.d("TAG", "Camera button click")
+
+                    if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+                    }
+                    true
+                }
+                R.id.saveImg -> {
+                    saveImage()
+                    true
+                }
+                else -> true
             }
         }
     }
+
+    private fun initButtons() {
+        filtersLayout.btnMain.setOnClickListener {
+            imageView2.setImageResource(R.drawable.hippo)
+            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        }
+
+        filtersLayout.btnBlue.setOnClickListener {
+            val filter = of("Blue filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnRed.setOnClickListener {
+            val filter = of("Red filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnGray.setOnClickListener {
+            val filter = of("Gray filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnGreen.setOnClickListener {
+            val filter = of("Green filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnGreen.setOnClickListener {
+            val filter = of("Green filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnBlur.setOnClickListener {
+            val filter = of("Blur")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnDiagonal.setOnClickListener {
+            val filter = of("Diagonal sepia")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnSwap.setOnClickListener {
+            val filter = of("Swap colors")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnNegative.setOnClickListener {
+            val filter = of("Negative")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnEdge.setOnClickListener {
+            val filter = of("Edge detection")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnEmboss.setOnClickListener {
+            val filter = of("Emboss")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+    }
+
 
     private fun checkPermission(permission: String, requestCode: Int): Boolean{
         if (checkSelfPermission(permission) == PERMISSION_GRANTED)
@@ -83,27 +204,7 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    private fun initCameraButton() {
-        buttonCamera.setOnClickListener {
-            Log.d("TAG", "Camera button click")
-            if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            }
-        }
-    }
 
-    private fun initSaveButton() {
-        buttonSave.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if(checkPermission(WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_CODE)) {
-                    saveImage()
-                }
-            } else {
-                saveImage()
-            }
-        }
-    }
     // is called after checkPermission gets the result of asking the permission.
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -219,7 +320,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initOptionList() {
+    /*private fun initOptionList() {
+
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
@@ -268,7 +370,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
-    }
+
+
+    }*/
 
     private suspend fun apply(filter: Filter) {
         currentPicture = filter.process(currentPicture)

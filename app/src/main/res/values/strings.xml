@@ -1,4 +1,5 @@
 <resources>
+
     <string name="appName">GraphicEditor</string>
     <string name="buttonGallery">Gallery</string>
     <string name="buttonCamera">Camera</string>
@@ -8,8 +9,10 @@
     <string name="button" translatable="false">Button</string>
     <string name="about" translatable="false">About</string>
 
+
     <string-array name="itemList">
         <item>-Not chosen-</item>
+
         <item>KK</item>
         <item>Rotate picture for 90 degrees</item>
     </string-array>
@@ -48,4 +51,5 @@
     <string name="someFilter">Some filter</string>
     <string name="unsharp">Unsharp</string>
     <string name="diagonalSepia">Diagonal sepia</string>
+
 </resources>
