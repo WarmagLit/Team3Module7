@@ -5,34 +5,20 @@ class Zooming() {
     companion object {
         suspend fun zoom(currentPicture: PixelArray, scale: Double): PixelArray {
 
-            val newPicture: PixelArray
-
-            val transMatrix = arrayOf(
-                doubleArrayOf(
-                    scale,
-                    0.0,
-                    0.0
+            val transMatrix = multiplyMatrices(
+                transportMatrix(
+                    (1 - scale) * currentPicture.width.toDouble() / 2,
+                    (1 - scale) * currentPicture.height.toDouble() / 2
                 ),
-                doubleArrayOf(
-                    0.0,
-                    scale,
-                    0.0
-                ),
-                doubleArrayOf(
-                    (1 - scale) * currentPicture.width / 2,
-                    (1 - scale) * currentPicture.height / 2,
-                    1.0
-                )
+                zoomMatrix(scale, scale)
             )
 
             val zoomTransformations = AffineTransformations(transMatrix)
 
-            newPicture = if (scale > 1)
+            return if (scale >= 0.5)
                 zoomTransformations.transformWithBilinearFiltering(currentPicture)
             else
                 zoomTransformations.transformWithTrilinearFiltering(currentPicture)
-
-            return newPicture
         }
     }
 }

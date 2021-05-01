@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         initOptionList()
         initZoomer()
+        initRotater()
     }
 
     private fun initButtons() {
@@ -200,7 +201,20 @@ class MainActivity : AppCompatActivity() {
                     return@setOnFocusChangeListener
                 }
                 CoroutineScope(EmptyCoroutineContext).async { applyZoom(zoomFactor) }
-                zoomingInput.setText("1")
+                zoomingInput.setText("1.0")
+            }
+        }
+    }
+
+    private fun initRotater() {
+        rotationInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val angle = rotationInput.text.toDouble()
+                if (abs(angle - 0.0) < 0.01) {
+                    return@setOnFocusChangeListener
+                }
+                CoroutineScope(EmptyCoroutineContext).async { applyRotate(angle) }
+                rotationInput.setText("0.0")
             }
         }
     }
@@ -263,6 +277,11 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun applyZoom(zoomFactor: Double){
         currentPicture = Zooming.zoom(currentPicture, zoomFactor)
+        imageView2.setImageBitmap(currentPicture.bitmap)
+    }
+
+    private suspend fun applyRotate(angle: Double){
+        currentPicture = Rotation.rotate(currentPicture, angle)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 

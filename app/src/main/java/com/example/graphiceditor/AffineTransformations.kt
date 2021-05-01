@@ -1,11 +1,24 @@
 package com.example.graphiceditor
 
-import android.graphics.Bitmap
 import kotlin.math.*
 
-class AffineTransformations(transMatrix: Array<DoubleArray>) {
-    var matrix = transMatrix
-    var inverseMatrix = calculateInverseMatrix()
+class AffineTransformations {
+    var matrix: Array<DoubleArray>
+    var inverseMatrix: Array<DoubleArray>
+
+    constructor(transMatrix: Array<DoubleArray>){
+        matrix = transMatrix
+        inverseMatrix = calculateInverseMatrix()
+    }
+
+    /*constructor(
+        oldSystemX: IntArray,
+        oldSystemY: IntArray,
+        newSystemX: IntArray,
+        newSystemY: IntArray
+    ){
+
+    }*/
 
     private fun calculateInverseMatrix(): Array<DoubleArray>{
         val inverseMatrix = arrayOf(DoubleArray(3), DoubleArray(3), DoubleArray(3))
@@ -40,6 +53,7 @@ class AffineTransformations(transMatrix: Array<DoubleArray>) {
         return det
     }
 
+
     fun makeTransition(oldSystem: IntArray): DoubleArray{
         val newSystem = DoubleArray(3)
         for (i in 0..2){
@@ -50,14 +64,34 @@ class AffineTransformations(transMatrix: Array<DoubleArray>) {
         return newSystem
     }
 
-    fun inverseTransition(newSystem: IntArray): DoubleArray{
+    private fun inverseTransition(newSystem: IntArray): DoubleArray{
         val oldSystem = DoubleArray(3)
         for (i in 0..2){
             for (j in 0..2){
-                oldSystem[i] += inverseMatrix[i][j] * newSystem[j]
+                oldSystem[j] += inverseMatrix[i][j] * newSystem[i]
             }
         }
         return oldSystem
+    }
+
+    fun transformWithoutFiltering(currentPicture: PixelArray): PixelArray {
+        val newPicture = PixelArray(currentPicture.width, currentPicture.height)
+
+        for (x in 0 until newPicture.width) {
+            for (y in 0 until newPicture.height) {
+                val oldCoordinates = inverseTransition(intArrayOf(x, y, 1))
+                val oldX = oldCoordinates[0].toInt()
+                val oldY = oldCoordinates[1].toInt()
+
+                if (oldX < 0 || oldY < 0 || oldX > currentPicture.width - 1 || oldY > currentPicture.height - 1) {
+                    continue
+                }
+
+                newPicture[x,y] = currentPicture[oldX, oldY]
+            }
+        }
+
+        return newPicture
     }
 
     fun transformWithBilinearFiltering(currentPicture: PixelArray): PixelArray{
@@ -127,7 +161,7 @@ class AffineTransformations(transMatrix: Array<DoubleArray>) {
 
                 val kX = abs(oldCoordinatesNearbyX[0] - oldX)
                 val kY = abs(oldCoordinatesNearbyY[1] - oldY)
-                val k = max(kX, kY)
+                val k = (kX + kY) / 2
 
                 val lod = log2(k)
                 val lowLod = floor(lod).toInt()

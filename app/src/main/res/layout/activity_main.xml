@@ -74,15 +74,15 @@
             android:layout_height="71dp"
             android:ems="10"
             android:inputType="numberDecimal"
-            android:text="1" />
+            android:text="1.0" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName2"
+            android:id="@+id/rotationInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name" />
+            android:inputType="numberDecimal"
+            android:text="0.0" />
 
         <TextView
             android:id="@+id/textView2"
