@@ -150,7 +150,10 @@ class AffineTransformations(transMatrix: Array<DoubleArray>) {
                 val oldX2 = leftDistance2 + oldX / zoomingFactor2
                 val oldY2 = oldY / zoomingFactor2
 
-                if(oldX2 > leftDistance2 + width / 2 || oldY1 > currentPicture.height - 1){
+                if(oldX2 > leftDistance2 + width / 2 ||
+                    oldY1 > currentPicture.height / zoomingFactor1 - 1 ||
+                    oldX1 < leftDistance1 ||
+                    oldY2 < 0){
                     currentPicture[x, y] = 0
                     continue
                 }

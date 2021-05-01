@@ -263,9 +263,11 @@ private suspend fun someFilter(image: PixelArray): PixelArray {
                         k3 * image[x - 1, y].component(component) -
                         k3 * image[x + 1, y].component(component) +
                         k4 * image[x + 1, y].component(component)
-                return if (result < 0) 0
-                else if (result > 255) 255
-                else result
+                return when {
+                    result < 0 -> 0
+                    result > 255 -> 255
+                    else -> result
+                }
             }
 
             arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
@@ -283,21 +285,23 @@ private suspend fun unsharpFilter(image: PixelArray): PixelArray {
             val k1 = -1
             val k2 = -2
             val k3 = -2
-            val k4 = 12
+            val k4 = 13
 
             fun average(component: Int): Int{
-                val result = k1 * image[x - 1, y - 1].component(component) -
+                var result = k1 * image[x - 1, y - 1].component(component) +
                         k1 * image[x + 1, y - 1].component(component) +
-                        k1 * image[x - 1, y + 1].component(component) -
+                        k1 * image[x - 1, y + 1].component(component) +
                         k1 * image[x + 1, y + 1].component(component) +
-                        k2 * image[x, y - 1].component(component) -
+                        k2 * image[x, y - 1].component(component) +
                         k2 * image[x, y + 1].component(component) +
-                        k3 * image[x - 1, y].component(component) -
+                        k3 * image[x - 1, y].component(component) +
                         k3 * image[x + 1, y].component(component) +
-                        k4 * image[x + 1, y].component(component)
-                return if (result < 0) 0
-                else if (result > 255) 255
-                else result / 16
+                        k4 * image[x, y].component(component)
+                return when {
+                    result < 0 -> 0
+                    result > 255 -> 255
+                    else -> result
+                }
             }
 
             arrCopy[x, y] = colorOf(average(red), average(green), average(blue))

@@ -193,16 +193,14 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun initZoomer() {
-        val zoomingInput: EditText = findViewById(R.id.zoomingInput)
         zoomingInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 val zoomFactor = zoomingInput.text.toDouble()
                 if (abs(zoomFactor - 1.0) < 0.01) {
                     return@setOnFocusChangeListener
                 }
-                currentPicture = Zooming.zoom(currentPicture, zoomFactor)
+                CoroutineScope(EmptyCoroutineContext).async { applyZoom(zoomFactor) }
                 zoomingInput.setText("1")
-                imageView2.setImageBitmap(currentPicture.bitmap)
             }
         }
     }
@@ -216,7 +214,6 @@ class MainActivity : AppCompatActivity() {
 
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
 
-        // Finally, data bind the spinner object with dapter
         spinner.adapter = adapter
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -226,7 +223,6 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                textView.text = getString(R.string.spinner, parent.getItemAtPosition(position))
 
                 if (parent.getItemAtPosition(position).toString()
                     == getString(Filter.ROTATE_90)
@@ -247,7 +243,6 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val selected: String = spinnerFilters.selectedItem.toString();
 
-                textView2.text = getString(R.string.spinner, selected)
                 Log.d("TAG", selected)
                 val filter = of(selected)
                 Log.d("TAG", filter.toString())
@@ -263,6 +258,11 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun apply(filter: Filter) {
         currentPicture = filter.process(currentPicture)
+        imageView2.setImageBitmap(currentPicture.bitmap)
+    }
+
+    private suspend fun applyZoom(zoomFactor: Double){
+        currentPicture = Zooming.zoom(currentPicture, zoomFactor)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
