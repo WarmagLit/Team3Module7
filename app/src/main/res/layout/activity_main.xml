@@ -180,9 +180,11 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="numberDecimal"
-                android:text="1.0" />
+                android:text="1.0" /><![CDATA[
             android:layout_height="100dp"
             app:layout_constraintVertical_bias="0.654">
+
+            ]]>
 
             <EditText
                 android:id="@+id/rotationInput"
@@ -190,11 +192,174 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="numberDecimal"
-                android:text="0.0" /><![CDATA[
+                android:text="0.0" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/affineLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:id="@+id/old1"
+                        android:layout_width="155dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/x1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="oldX1"
+                            android:inputType="number" />
+
+                        <EditText
+                            android:id="@+id/y1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="oldY1"
+                            android:inputType="number" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/old2"
+                        android:layout_width="155dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/x2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="oldX2"
+                            android:inputType="number" />
+
+                        <EditText
+                            android:id="@+id/y2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="oldY2"
+                            android:inputType="number" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/old3"
+                        android:layout_width="155dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/x3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="oldX3"
+                            android:inputType="number" />
+
+                        <EditText
+                            android:id="@+id/y3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="oldY3"
+                            android:inputType="number" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/new1"
+                        android:layout_width="155dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/x4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="newX1"
+                            android:inputType="number" />
+
+                        <EditText
+                            android:id="@+id/y4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="newY1"
+                            android:inputType="number" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/new2"
+                        android:layout_width="155dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/x5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="newX2"
+                            android:inputType="number" />
+
+                        <EditText
+                            android:id="@+id/y5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="newY2"
+                            android:inputType="number" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/new3"
+                        android:layout_width="155dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/x6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="newX3"
+                            android:inputType="number" />
+
+                        <EditText
+                            android:id="@+id/y6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="newY3"
+                            android:inputType="number" />
+                    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <Button
+                android:id="@+id/affineButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Применить" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="50dp" /><![CDATA[
+
+
                 android:layout_height="100dp"
                 app:layout_constraintVertical_bias="0.654">
 
-                ]]>
+
+        ]]>
         </LinearLayout>
     </ScrollView>
 

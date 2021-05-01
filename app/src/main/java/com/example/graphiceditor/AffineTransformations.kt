@@ -3,26 +3,40 @@ package com.example.graphiceditor
 import kotlin.math.*
 
 class AffineTransformations {
-    var matrix: Array<DoubleArray>
-    var inverseMatrix: Array<DoubleArray>
+    private var matrix: Array<DoubleArray>
+    private var inverseMatrix: Array<DoubleArray>
 
     constructor(transMatrix: Array<DoubleArray>){
         matrix = transMatrix
-        inverseMatrix = calculateInverseMatrix()
+        inverseMatrix = calculateInverseMatrix(matrix)
     }
 
-    /*constructor(
-        oldSystemX: IntArray,
-        oldSystemY: IntArray,
-        newSystemX: IntArray,
-        newSystemY: IntArray
-    ){
+    constructor(oldSystemX: DoubleArray, oldSystemY: DoubleArray,
+        newSystemX: DoubleArray, newSystemY: DoubleArray){
+        val oldSystemInverseMatrix = calculateInverseMatrix(
+            arrayOf(
+                doubleArrayOf(oldSystemX[0], oldSystemX[1], oldSystemX[2]),
+                doubleArrayOf(oldSystemY[0], oldSystemY[1], oldSystemY[2]),
+                doubleArrayOf(1.0, 1.0, 1.0)
+            )
+        )
 
-    }*/
+        val newSystemMatrix = arrayOf(
+            doubleArrayOf(newSystemX[0], newSystemX[1], newSystemX[2]),
+            doubleArrayOf(newSystemY[0], newSystemY[1], newSystemY[2]),
+            doubleArrayOf(1.0, 1.0, 1.0)
+        )
 
-    private fun calculateInverseMatrix(): Array<DoubleArray>{
+        matrix = multiplyMatrices(
+            oldSystemInverseMatrix,
+            newSystemMatrix
+        )
+        inverseMatrix = calculateInverseMatrix(matrix)
+    }
+
+    private fun calculateInverseMatrix(matrix: Array<DoubleArray>): Array<DoubleArray>{
         val inverseMatrix = arrayOf(DoubleArray(3), DoubleArray(3), DoubleArray(3))
-        val det = calculateDet()
+        val det = calculateDet(matrix)
 
         inverseMatrix[0][0] = (matrix[1][1]*matrix[2][2] - matrix[1][2]*matrix[2][1])/det
         inverseMatrix[0][1] = -(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])/det
@@ -39,7 +53,7 @@ class AffineTransformations {
         return inverseMatrix
     }
 
-    private fun calculateDet(): Double{
+    private fun calculateDet(matrix: Array<DoubleArray>): Double{
         var det = 0.0
         for(i in 0..2){
             for(j in 0..2){
@@ -54,7 +68,7 @@ class AffineTransformations {
     }
 
 
-    fun makeTransition(oldSystem: IntArray): DoubleArray{
+    private fun makeTransition(oldSystem: IntArray): DoubleArray{
         val newSystem = DoubleArray(3)
         for (i in 0..2){
             for (j in 0..2){

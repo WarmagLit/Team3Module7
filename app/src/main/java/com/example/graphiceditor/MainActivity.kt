@@ -16,13 +16,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.SystemClock
 import android.provider.MediaStore
-import android.view.View
 import android.widget.*
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.graphics.get
-import androidx.core.graphics.toColor
 import kotlinx.android.synthetic.main.editor.*
 import kotlinx.android.synthetic.main.editor_v2.*
 
@@ -62,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         initButtons()
         initZoomer()
         initRotater()
+        initTransformator()
 
         setupNavigation()
     }
@@ -252,6 +247,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initTransformator() {
+        affineButton.setOnClickListener {
+            if (x1.text.isEmpty() || x2.text.isEmpty() || x3.text.isEmpty() ||
+                x4.text.isEmpty() || x5.text.isEmpty() || x6.text.isEmpty() ||
+                y1.text.isEmpty() || y2.text.isEmpty() || y3.text.isEmpty() ||
+                y4.text.isEmpty() || y5.text.isEmpty() || y6.text.isEmpty()){
+                return@setOnClickListener
+            }
+
+            CoroutineScope(EmptyCoroutineContext).async { applyTransformation() }
+        }
+    }
+
     private fun of(string: String): Filter{
         Filter.values().forEach {
             if(getString(it) == string)
@@ -272,6 +280,40 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun applyRotate(angle: Double){
         currentPicture = Rotation.rotate(currentPicture, angle)
+        imageView2.setImageBitmap(currentPicture.bitmap)
+    }
+
+    private suspend fun applyTransformation(){
+        val oldSystemX = doubleArrayOf(
+            x1.text.toDouble(),
+            x2.text.toDouble(),
+            x3.text.toDouble()
+        )
+
+        val oldSystemY = doubleArrayOf(
+            y1.text.toDouble(),
+            y2.text.toDouble(),
+            y3.text.toDouble()
+        )
+
+        val newSystemX = doubleArrayOf(
+            x4.text.toDouble(),
+            x5.text.toDouble(),
+            x6.text.toDouble()
+        )
+
+        val newSystemY = doubleArrayOf(
+            y4.text.toDouble(),
+            y5.text.toDouble(),
+            y6.text.toDouble()
+        )
+
+        val transformations = AffineTransformations(
+            oldSystemX, oldSystemY,
+            newSystemX, newSystemY
+        )
+
+        currentPicture = transformations.transformWithBilinearFiltering(currentPicture)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
