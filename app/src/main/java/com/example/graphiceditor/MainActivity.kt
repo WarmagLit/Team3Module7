@@ -49,20 +49,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setContentView(R.layout.editor_v2)
-
-
-
-        //filters preview
-        val images = listOf(
-            R.drawable.hippo,
-            R.drawable.filter,
-            R.drawable.v
-        )
-
-        val adapter2 = ViewPagerAdapter(images)
-        viewPager.adapter = adapter2
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.editor_v2)
 
         imageView2.setImageResource(R.drawable.hippo)
         currentPicture = ProcessedPicture((imageView2.drawable as BitmapDrawable).bitmap)
