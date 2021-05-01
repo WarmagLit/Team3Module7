@@ -38,12 +38,13 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/pic4"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/model" />
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/model" />
+
 
             <ImageView
                 android:id="@+id/pic1"

@@ -36,6 +36,8 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
 import androidx.annotation.RequiresApi
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 import kotlin.math.*
@@ -59,28 +61,68 @@ class MainActivity : AppCompatActivity() {
         currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
 
         initButtons()
-
         initOptionList()
         initZoomer()
+        setupNavigation()
     }
 
-    private fun initButtons() {
-        initGalleryPicker()
-        initCameraButton()
-        initSaveButton()
-    }
 
-    private fun initGalleryPicker() {
-        buttonGallery.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if(checkPermission(READ_EXTERNAL_STORAGE, READ_STORAGE_CODE))
+    private fun setupNavigation() {
+        val navView: BottomNavigationView = findViewById(R.id.bottomNavBar)
+        navView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menuAbout -> {
+                    Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.addGallery -> {
                     pickImageFromGallery()
-            } else {
-                //system OS is < Marshmallow
-                pickImageFromGallery()
+                    true
+                }
+                R.id.addCamera -> {
+                    Log.d("TAG", "Camera button click")
+
+                    if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+                    }
+                    true
+                }
+                R.id.saveImg -> {
+                    saveImage()
+                    true
+                }
+                else -> true
             }
         }
     }
+
+    private fun initButtons() {
+        filtersLayout.btnBlue.setOnClickListener {
+            val filter = of("Blue filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnRed.setOnClickListener {
+            val filter = of("Red filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnGray.setOnClickListener {
+            val filter = of("Gray filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+    }
+
 
     private fun checkPermission(permission: String, requestCode: Int): Boolean{
         if (checkSelfPermission(permission) == PERMISSION_GRANTED)
@@ -91,29 +133,7 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    private fun initCameraButton() {
-        buttonCamera.setOnClickListener {
-            Log.d("TAG", "Camera button click")
-            /*
-            if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            }*/
-            setContentView(R.layout.editor_v2)
-        }
-    }
 
-    private fun initSaveButton() {
-        buttonSave.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if(checkPermission(WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_CODE)) {
-                    saveImage()
-                }
-            } else {
-                saveImage()
-            }
-        }
-    }
     // is called after checkPermission gets the result of asking the permission.
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -204,6 +224,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun initZoomer() {
+    /*
         val zoomingInput: EditText = findViewById(R.id.zoomingInput)
         zoomingInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -216,9 +237,11 @@ class MainActivity : AppCompatActivity() {
                 imageView2.setImageBitmap(currentPicture.bitmap)
             }
         }
+        */
     }
 
     private fun initOptionList() {
+
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
@@ -227,26 +250,6 @@ class MainActivity : AppCompatActivity() {
 
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
 
-        // Finally, data bind the spinner object with dapter
-        spinner.adapter = adapter
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                textView.text = getString(R.string.spinner, parent.getItemAtPosition(position))
-
-                if (parent.getItemAtPosition(position).toString()
-                    == getString(Filter.ROTATE_90)
-                ) {
-                    spinner.setSelection(adapter.getPosition(getString(Filter.NONE)))
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>) = Unit
-        }
 
         val spinnerFilters: Spinner = findViewById(R.id.filters)
         spinnerFilters.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -258,7 +261,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val selected: String = spinnerFilters.selectedItem.toString();
 
-                textView2.text = getString(R.string.spinner, selected)
+                //textView2.text = getString(R.string.spinner, selected)
                 Log.d("TAG", selected)
                 val filter = of(selected)
                 Log.d("TAG", filter.toString())
@@ -270,6 +273,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
+
+
     }
 
     private suspend fun apply(filter: Filter) {
