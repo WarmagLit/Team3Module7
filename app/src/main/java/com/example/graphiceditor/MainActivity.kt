@@ -60,13 +60,11 @@ class MainActivity : AppCompatActivity() {
         currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
 
         initButtons()
-        /*initOptionList()*/
         initZoomer()
         initRotater()
 
         setupNavigation()
     }
-
 
     private fun setupNavigation() {
         val navView: BottomNavigationView = findViewById(R.id.bottomNavBar)
@@ -104,86 +102,30 @@ class MainActivity : AppCompatActivity() {
             currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
         }
 
-        filtersLayout.btnBlue.setOnClickListener {
-            val filter = of("Синий фильтр")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+        val arrayBtn = arrayOf(
+            filtersLayout.btnRed,
+            filtersLayout.btnGreen,
+            filtersLayout.btnBlue,
+            filtersLayout.btnGray,
+            filtersLayout.btnDiagonal,
+            filtersLayout.btnSwap,
+            filtersLayout.btnNegative,
+            filtersLayout.btnBlur,
+            filtersLayout.btnEdge,
+            filtersLayout.btnEmboss
+        )
+
+        val arrayStrings = getStrings()
+
+        for (i in arrayBtn.indices){
+            arrayBtn[i].setOnClickListener {
+                val filter = of(arrayStrings[i])
+                Log.d("TAG", filter.toString())
+                if (filter != Filter.NONE) {
+                    CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+                }
             }
         }
-
-        filtersLayout.btnRed.setOnClickListener {
-            val filter = of("Красный фильтр")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnGray.setOnClickListener {
-            val filter = of("Серый фильтр")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnGreen.setOnClickListener {
-            val filter = of("Зелёный фильтр")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnBlur.setOnClickListener {
-            val filter = of("Размытие")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnDiagonal.setOnClickListener {
-            val filter = of("Сепия по диагонали")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnSwap.setOnClickListener {
-            val filter = of("Сменить цвета")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnNegative.setOnClickListener {
-            val filter = of("Негатив")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnEdge.setOnClickListener {
-            val filter = of("Обнаружение краёв")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnEmboss.setOnClickListener {
-            val filter = of("Рельеф")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
     }
 
 
@@ -284,8 +226,6 @@ class MainActivity : AppCompatActivity() {
         return Uri.fromFile(file)
     }
 
-
-
     private fun initZoomer() {
         zoomingInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -312,59 +252,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*private fun initOptionList() {
-
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            getStrings()
-        )
-
-        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-
-        spinner.adapter = adapter
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-
-                if (parent.getItemAtPosition(position).toString()
-                    == getString(Filter.ROTATE_90)
-                ) {
-                    spinner.setSelection(adapter.getPosition(getString(Filter.NONE)))
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>) = Unit
+    private fun of(string: String): Filter{
+        Filter.values().forEach {
+            if(getString(it) == string)
+                return it
         }
-
-        val spinnerFilters: Spinner = findViewById(R.id.filters)
-        spinnerFilters.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                val selected: String = spinnerFilters.selectedItem.toString();
-
-                Log.d("TAG", selected)
-                val filter = of(selected)
-                Log.d("TAG", filter.toString())
-                if (filter != Filter.NONE) {
-                    CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-                    spinnerFilters.setSelection(adapter.getPosition(getString(Filter.NONE)))
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
-        }
-
-
-    }*/
+        return Filter.NONE
+    }
 
     private suspend fun apply(filter: Filter) {
         currentPicture = filter.process(currentPicture)
@@ -381,71 +275,14 @@ class MainActivity : AppCompatActivity() {
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    private fun of(string: String): Filter{
-        Filter.values().forEach {
-            if(getString(it) == string)
-                return it
-        }
-        return Filter.NONE
-    }
-
     private fun getStrings(): List<String> = Filter.values().map { getString(it) }
     private fun getString(filter: Filter) = getString(filter.code)
-
-//    suspend fun apply(told: Filter) {
-//        currentPicture = told.process(currentPicture)
-//    }
-
-//    fun imageRepair(image: Bitmap): Bitmap {
-//        val repairImage = image.copy(Bitmap.Config.ARGB_8888, true)
-//        for (i in  0 until repairImage.width-1) {
-//            for (j in 0 until repairImage.height) {
-//                if (image.getPixel(i, j) == Color.BLACK) {
-//                    repairImage.setPixel(i, j, image.getPixel(i + 1, j))
-//                }
-//            }
-//        }
-//        return repairImage
-//    }
-//
-//    fun scaling(degree: Int) {
-//        val image = (imageView2.drawable as BitmapDrawable).bitmap
-//        val scaledImage = image.copy(Bitmap.Config.ARGB_8888, true)
-//
-//        val centerX = (image.width / 2.0).roundToInt()
-//        val centerY = (image.height / 2.0).roundToInt()
-//
-//        val a = (cos(degree*PI / 180) *(- centerX) - sin(degree*PI / 180)*(- centerY.toDouble()) + centerX).toInt()
-//        val b = (sin(degree*PI / 180) *(- centerX) + cos(degree*PI / 180)*(image.height - 1 - centerY.toDouble()) + centerY).toInt()
-//        val c = image.width - a
-//        val d = image.height - b
-//        val ratio = sqrt(a*a*1.0+b*b*1.0) / image.height
-//        val centeringPixels = ((scaledImage.width - scaledImage.width * ratio)/2)
-//
-//        Log.d("d", a.toString() + " " + b.toString() + " " + c.toString() + " "+ d.toString() + " "+ ((a*b + c*d)/1.0).toString()+ " " + ratio.toString())
-//        //ratio = 0.8
-//        for (i in 0 until scaledImage.width) {
-//            for (j in 0 until scaledImage.height) {
-//                if ((i * ratio + centeringPixels).toInt() >= 0 && (j * ratio + centeringPixels).toInt() >= 0 &&
-//                    (i * ratio + centeringPixels).toInt() < image.width && (j * ratio + centeringPixels).toInt() < image.height) {
-//                    scaledImage.setPixel(
-//                        (i * ratio + centeringPixels).toInt(),
-//                        (j * ratio + centeringPixels).toInt(),
-//                        image.getPixel(i, j)
-//                    )
-//                }
-//            }
-//        }
-//
-//        imageView2.setImageBitmap(scaledImage)
-//    }
 
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {

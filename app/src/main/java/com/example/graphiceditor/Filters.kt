@@ -3,23 +3,21 @@ package com.example.graphiceditor
 import android.util.Log
 
 enum class Filter(val code: Int, val process: suspend (PixelArray) -> PixelArray) {
-    NONE(R.string.none, { TODO() }),
-    BLUE(R.string.blueFilter, ::blue),
-    GRAY(R.string.grayFilter, ::grey),
     RED(R.string.redFilter, ::red),
     GREEN(R.string.greenFilter, ::green),
+    BLUE(R.string.blueFilter, ::blue),
+    GRAY(R.string.grayFilter, ::grey),
+    DIAGONAL_SEPIA(R.string.diagonalSepia, ::diagonalSepia),
     SWAP_COLORS(R.string.swapColors, ::swapColors),
     NEGATIVE(R.string.negative, ::negative),
     BLUR(R.string.blur, ::blur),
     EDGE_DETECTION(R.string.edgeDetection, ::edgeDetection),
     EMBOSS(R.string.emboss, ::emboss),
+
+    NONE(R.string.none, { TODO() }),
     UNSHARP(R.string.unsharp, ::unsharpFilter),
     SEPIA(R.string.sepia, ::sepia),
-    DIAGONAL_SEPIA(R.string.diagonalSepia, ::diagonalSepia),
     SOME_FILTER(R.string.someFilter, ::someFilter),
-
-    ZOOMING(R.string.zooming, { TODO() }),
-    ROTATE_90(R.string.rotate90, { TODO() });
 }
 
 private suspend fun diagonalSepia(image: PixelArray): PixelArray {

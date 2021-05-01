@@ -34,12 +34,6 @@
 
             </LinearLayout>
 
-            <Spinner
-                android:id="@+id/filters"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/difFilters" />
-
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="71dp"
@@ -111,17 +105,6 @@
 
 
                     <ImageButton
-                        android:id="@+id/btnBlur"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginRight="20dp"
-                        android:adjustViewBounds="false"
-                        android:background="@null"
-                        android:cropToPadding="false"
-                        android:scaleType="fitCenter"
-                        app:srcCompat="@drawable/blur" />
-
-                    <ImageButton
                         android:id="@+id/btnDiagonal"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
@@ -153,6 +136,17 @@
                         android:cropToPadding="false"
                         android:scaleType="fitCenter"
                         app:srcCompat="@drawable/negative" />
+
+                    <ImageButton
+                        android:id="@+id/btnBlur"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginRight="20dp"
+                        android:adjustViewBounds="false"
+                        android:background="@null"
+                        android:cropToPadding="false"
+                        android:scaleType="fitCenter"
+                        app:srcCompat="@drawable/blur" />
 
                     <ImageButton
                         android:id="@+id/btnEdge"
