@@ -1,6 +1,7 @@
 package com.example.graphiceditor
 
 import android.util.Log
+import androidx.core.graphics.component1
 
 enum class Filter(val code: Int, val process: suspend (PixelArray) -> PixelArray) {
     RED(R.string.redFilter, ::red),
@@ -34,19 +35,8 @@ private suspend fun diagonalSepia(image: PixelArray): PixelArray {
             if (newGreen > 255) newGreen = 255
             if (newBlue > 255) newBlue = 255
 
-            if (i < j - image.height / 2) {
-                // apply sepia at lower
-                image[i, j] = colorOf(newRed, newGreen, newBlue)
-
-
-            } else if ((i - (image.height / 2)) > j) {
-                // apply sepia upper
-                image[i, j] = colorOf(newRed, newGreen, newBlue)
-
-            } else {
-                //  don't apply sepia
-                image[i, j] = image[i, j]
-            }
+            if (i < j - image.height / 2 || (i - (image.height / 2)) > j)
+                image[i, j] = colorOf(image[i, j].component(alpha), newRed, newGreen, newBlue)
         }
     }
 
@@ -57,7 +47,7 @@ private suspend fun grey(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             val intensity = ((image[i, j].component(red) + image[i, j].component(green) + image[i, j].component(blue)) / 3)
-            image[i, j] = colorOf(intensity, intensity, intensity)
+            image[i, j] = colorOf(image[i, j].component(alpha), intensity, intensity, intensity)
         }
     }
 
@@ -74,16 +64,10 @@ private suspend fun sepia(image: PixelArray): PixelArray {
             var newBlue =
                 (0.272 * image[i, j].component(red) + 0.534 * image[i, j].component(green) + 0.131 * image[i, j].component(blue)).toInt()
 
-            if (newRed > 255) {
-                newRed = 255
-            }
-            if (newGreen > 255) {
-                newGreen = 255
-            }
-            if (newBlue > 255) {
-                newBlue = 255
-            }
-            image[i, j] = colorOf(newRed, newGreen, newBlue)
+            if (newRed > 255) newRed = 255
+            if (newGreen > 255) newGreen = 255
+            if (newBlue > 255) newBlue = 255
+            image[i, j] = colorOf(image[i, j].component(alpha), newRed, newGreen, newBlue)
 
         }
     }
@@ -96,6 +80,7 @@ private suspend fun blue(image: PixelArray): PixelArray {
         for (j in 0 until image.height) {
             if (image[i, j].component(blue) < 240) {
                 image[i, j] = colorOf(
+                    image[i, j].component(alpha),
                     image[i, j].component(red) * 7 / 10,
                     image[i, j].component(green) * 7 / 10,
                     image[i, j].component(blue)
@@ -112,6 +97,7 @@ private suspend fun red(image: PixelArray): PixelArray {
         for (j in 0 until image.height) {
             if (image[i, j].component(red) < 240) {
                 image[i, j] = colorOf(
+                    image[i, j].component(alpha),
                     image[i, j].component(red),
                     image[i, j].component(green) * 7 / 10,
                     image[i, j].component(blue) * 7 / 10
@@ -128,6 +114,7 @@ private suspend fun green(image: PixelArray): PixelArray {
         for (j in 0 until image.height) {
             if (image[i, j].component(green) < 240) {
                 image[i, j] = colorOf(
+                    image[i, j].component(alpha),
                     image[i, j].component(red) * 7 / 10,
                     image[i, j].component(green),
                     image[i, j].component(blue) * 7 / 10
@@ -143,6 +130,7 @@ private suspend fun swapColors(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             image[i, j] = colorOf(
+                image[i, j].component(alpha),
                 image[i, j].component(blue),
                 image[i, j].component(red),
                 image[i, j].component(green)
@@ -157,6 +145,7 @@ private suspend fun negative(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
             image[i, j] = colorOf(
+                image[i, j].component(alpha),
                 255 - image[i, j].component(red),
                 255 - image[i, j].component(green),
                 255 - image[i, j].component(blue)
@@ -184,7 +173,7 @@ private suspend fun blur(image: PixelArray): PixelArray {
                 return result / 9
             }
 
-            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
+            arrCopy[x, y] = colorOf(image[x, y].component(alpha), average(red), average(green), average(blue))
         }
     }
 
@@ -210,7 +199,7 @@ private suspend fun edgeDetection(image: PixelArray): PixelArray {
                 }
             }
 
-            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
+            arrCopy[x, y] = colorOf(image[x, y].component(alpha), average(red), average(green), average(blue))
         }
     }
 
@@ -234,7 +223,7 @@ private suspend fun emboss(image: PixelArray): PixelArray {
                 }
             }
 
-            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
+            arrCopy[x, y] = colorOf(image[x, y].component(alpha), average(red), average(green), average(blue))
         }
     }
 
@@ -268,7 +257,7 @@ private suspend fun someFilter(image: PixelArray): PixelArray {
                 }
             }
 
-            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
+            arrCopy[x, y] = colorOf(image[x, y].component(alpha), average(red), average(green), average(blue))
 
         }
     }
@@ -286,7 +275,7 @@ private suspend fun unsharpFilter(image: PixelArray): PixelArray {
             val k4 = 13
 
             fun average(component: Int): Int{
-                var result = k1 * image[x - 1, y - 1].component(component) +
+                val result = k1 * image[x - 1, y - 1].component(component) +
                         k1 * image[x + 1, y - 1].component(component) +
                         k1 * image[x - 1, y + 1].component(component) +
                         k1 * image[x + 1, y + 1].component(component) +
@@ -302,7 +291,7 @@ private suspend fun unsharpFilter(image: PixelArray): PixelArray {
                 }
             }
 
-            arrCopy[x, y] = colorOf(average(red), average(green), average(blue))
+            arrCopy[x, y] = colorOf(image[x, y].component(alpha), average(red), average(green), average(blue))
 
         }
     }
