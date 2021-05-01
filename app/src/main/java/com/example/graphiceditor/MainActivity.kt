@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.get
 import androidx.core.graphics.toColor
 import kotlinx.android.synthetic.main.editor.*
+import kotlinx.android.synthetic.main.editor_v2.*
 import java.io.File.separator
 
 import java.io.FileOutputStream
@@ -47,6 +48,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setContentView(R.layout.editor_v2)
+
+
+
+        //filters preview
+        val images = listOf(
+            R.drawable.hippo,
+            R.drawable.filter,
+            R.drawable.v
+        )
+
+        val adapter2 = ViewPagerAdapter(images)
+        viewPager.adapter = adapter2
         setContentView(R.layout.activity_main)
 
         imageView2.setImageResource(R.drawable.hippo)

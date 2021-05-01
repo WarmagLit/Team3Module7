@@ -4,9 +4,12 @@
     <string name="button_camera">Camera</string>
     <string name="image_content_description">Just Image</string>
     <string name="permission_denied">Permission denied</string>
-    <string name="save_image">Save image</string>
+    <string name="save_image">Save</string>
     <string name="button">Button</string>
     <string name="about">About</string>
+    <string name="menu">Menu</string>
+    <string name="imprt">Import Image</string>
+    <string name="goBack">Go back</string>
     <string-array name="item_list">
         <item>-Не выбрано-</item>
         <item>KK</item>
