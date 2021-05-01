@@ -53,21 +53,11 @@
                     android:layout_height="100dp"
                     android:layout_marginRight="20dp"
                     android:adjustViewBounds="false"
+                    android:background="@null"
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
-                    android:background="@null"
                     app:srcCompat="@drawable/model" />
 
-                <ImageButton
-                    android:id="@+id/btnBlue"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginRight="20dp"
-                    android:adjustViewBounds="false"
-                    android:cropToPadding="false"
-                    android:scaleType="fitCenter"
-                    android:background="@null"
-                    app:srcCompat="@drawable/bluefilter" />
 
                 <ImageButton
                     android:id="@+id/btnRed"
@@ -75,10 +65,32 @@
                     android:layout_height="100dp"
                     android:layout_marginRight="20dp"
                     android:adjustViewBounds="false"
+                    android:background="@null"
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
-                    android:background="@null"
                     app:srcCompat="@drawable/redfilter" />
+
+                <ImageButton
+                    android:id="@+id/btnGreen"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/greenfilter" />
+
+                <ImageButton
+                    android:id="@+id/btnBlue"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/bluefilter" />
 
                 <ImageButton
                     android:id="@+id/btnGray"
@@ -86,16 +98,81 @@
                     android:layout_height="100dp"
                     android:layout_marginRight="20dp"
                     android:adjustViewBounds="false"
+                    android:background="@null"
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
-                    android:background="@null"
                     app:srcCompat="@drawable/greyfilter" />
 
 
+                <ImageButton
+                    android:id="@+id/btnBlur"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/blur" />
+
+                <ImageButton
+                    android:id="@+id/btnDiagonal"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/diagonalsepia" />
+
+                <ImageButton
+                    android:id="@+id/btnSwap"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/swapcolors" />
+
+                <ImageButton
+                    android:id="@+id/btnNegative"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/negative" />
+
+                <ImageButton
+                    android:id="@+id/btnEdge"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/edgedetection" />
+
+                <ImageButton
+                    android:id="@+id/btnEmboss"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginRight="20dp"
+                    android:adjustViewBounds="false"
+                    android:background="@null"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/emboss" />
 
 
             </LinearLayout>
-         </HorizontalScrollView>
+        </HorizontalScrollView>
 
     </LinearLayout>
 

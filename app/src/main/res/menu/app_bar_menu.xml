@@ -18,7 +18,7 @@
     <item
         android:id="@+id/addCamera"
         android:icon="@drawable/ic_photo_camera_black_24dp"
-        android:title="Import"
+        android:title="Camera"
         app:showAsAction="ifRoom"
         tools:context=".MainActivity" />
 

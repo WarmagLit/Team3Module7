@@ -98,6 +98,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initButtons() {
+        filtersLayout.btnMain.setOnClickListener {
+            imageView2.setImageResource(R.drawable.hippo)
+            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        }
+
         filtersLayout.btnBlue.setOnClickListener {
             val filter = of("Blue filter")
             Log.d("TAG", filter.toString())
@@ -121,6 +126,71 @@ class MainActivity : AppCompatActivity() {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
             }
         }
+
+        filtersLayout.btnGreen.setOnClickListener {
+            val filter = of("Green filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnGreen.setOnClickListener {
+            val filter = of("Green filter")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnBlur.setOnClickListener {
+            val filter = of("Blur")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnDiagonal.setOnClickListener {
+            val filter = of("Diagonal sepia")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnSwap.setOnClickListener {
+            val filter = of("Swap colors")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnNegative.setOnClickListener {
+            val filter = of("Negative")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnEdge.setOnClickListener {
+            val filter = of("Edge detection")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
+        filtersLayout.btnEmboss.setOnClickListener {
+            val filter = of("Emboss")
+            Log.d("TAG", filter.toString())
+            if (filter != Filter.NONE) {
+                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+            }
+        }
+
     }
 
 
