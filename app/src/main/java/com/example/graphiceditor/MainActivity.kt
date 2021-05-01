@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnBlue.setOnClickListener {
-            val filter = of("Blue filter")
+            val filter = of("Синий фильтр")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnRed.setOnClickListener {
-            val filter = of("Red filter")
+            val filter = of("Красный фильтр")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnGray.setOnClickListener {
-            val filter = of("Gray filter")
+            val filter = of("Серый фильтр")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -129,15 +129,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnGreen.setOnClickListener {
-            val filter = of("Green filter")
-            Log.d("TAG", filter.toString())
-            if (filter != Filter.NONE) {
-                CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-            }
-        }
-
-        filtersLayout.btnGreen.setOnClickListener {
-            val filter = of("Green filter")
+            val filter = of("Зелёный фильтр")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -145,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnBlur.setOnClickListener {
-            val filter = of("Blur")
+            val filter = of("Размытие")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -153,7 +145,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnDiagonal.setOnClickListener {
-            val filter = of("Diagonal sepia")
+            val filter = of("Сепия по диагонали")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -161,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnSwap.setOnClickListener {
-            val filter = of("Swap colors")
+            val filter = of("Сменить цвета")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -169,7 +161,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnNegative.setOnClickListener {
-            val filter = of("Negative")
+            val filter = of("Негатив")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -177,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnEdge.setOnClickListener {
-            val filter = of("Edge detection")
+            val filter = of("Обнаружение краёв")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -185,7 +177,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         filtersLayout.btnEmboss.setOnClickListener {
-            val filter = of("Emboss")
+            val filter = of("Рельеф")
             Log.d("TAG", filter.toString())
             if (filter != Filter.NONE) {
                 CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
@@ -460,6 +452,7 @@ class MainActivity : AppCompatActivity() {
             super.onActivityResult(requestCode, resultCode, data)
             val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
             imageView2.setImageBitmap(thumbNail)
+            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
