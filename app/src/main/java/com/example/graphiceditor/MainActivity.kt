@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //setContentView(R.layout.editor_v2)
 
         imageView2.setImageResource(R.drawable.hippo)
         currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
