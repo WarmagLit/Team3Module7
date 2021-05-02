@@ -30,6 +30,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.createBitmap
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.*
@@ -45,6 +46,7 @@ private const val PERMISSION_CAMERA_CODE = 1002
 
 class MainActivity : AppCompatActivity() {
     var currentPicture = PixelArray(1, 1)
+    lateinit var originalImage : Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 
         imageView2.setImageResource(R.drawable.hippo)
         currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        originalImage = (imageView2.drawable as BitmapDrawable).bitmap
 
         initButtons()
         initZoomer()
@@ -93,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initButtons() {
         filtersLayout.btnMain.setOnClickListener {
-            imageView2.setImageResource(R.drawable.hippo)
+            imageView2.setImageBitmap(originalImage)
             currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
         }
 
@@ -332,10 +335,12 @@ class MainActivity : AppCompatActivity() {
             val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
             imageView2.setImageBitmap(thumbNail)
             currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+            originalImage = (imageView2.drawable as BitmapDrawable).bitmap
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
             currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+            originalImage = (imageView2.drawable as BitmapDrawable).bitmap
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
