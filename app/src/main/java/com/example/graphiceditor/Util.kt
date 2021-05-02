@@ -48,8 +48,8 @@ fun rotateMatrix(angle: Double): Array<DoubleArray>{
     }
 
     return arrayOf(
-        doubleArrayOf(0.0, -1.0, 0.0),
-        doubleArrayOf(1.0, 0.0, 0.0),
+        doubleArrayOf(cos(angle.toRad()), -sin(angle.toRad()), 0.0),
+        doubleArrayOf(sin(angle.toRad()), cos(angle.toRad()), 0.0),
         doubleArrayOf(0.0, 0.0, 1.0)
     )
 }

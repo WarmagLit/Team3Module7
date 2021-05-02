@@ -21,7 +21,7 @@ class Rotation {
 
             val rotateTransformations = AffineTransformations(transMatrix)
 
-            return rotateTransformations.transformWithoutFiltering(currentPicture)
+            return rotateTransformations.transformWithBilinearFiltering(currentPicture)
         }
     }
 

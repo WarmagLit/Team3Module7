@@ -79,14 +79,13 @@ class PixelArray : Cloneable{
 
                     val bottomRight =
                         if (topLeftY + 1 < 2*height)
-                            mipmap[topLeftX][topLeftY + 1]
+                            mipmap[topLeftX + 1][topLeftY + 1]
                         else topRight
 
-                    fun average(component: Int) =
-                        (topLeft.component(component) +
-                                topRight.component(component) +
-                                bottomLeft.component(component) +
-                                bottomRight.component(component)) / 4
+                    fun average(component: Int) = (topLeft.component(component) +
+                            topRight.component(component) +
+                            bottomLeft.component(component) +
+                            bottomRight.component(component)) / 4
 
                     mipmap[x][y] = colorOf(
                         average(alpha),

@@ -28,8 +28,8 @@ class AffineTransformations {
         )
 
         matrix = multiplyMatrices(
-            oldSystemInverseMatrix,
-            newSystemMatrix
+            newSystemMatrix,
+            oldSystemInverseMatrix
         )
         inverseMatrix = calculateInverseMatrix(matrix)
     }
@@ -39,15 +39,15 @@ class AffineTransformations {
         val det = calculateDet(matrix)
 
         inverseMatrix[0][0] = (matrix[1][1]*matrix[2][2] - matrix[1][2]*matrix[2][1])/det
-        inverseMatrix[0][1] = -(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])/det
-        inverseMatrix[0][2] = (matrix[1][0]*matrix[2][1] - matrix[1][1]*matrix[2][0])/det
+        inverseMatrix[1][0] = -(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])/det
+        inverseMatrix[2][0] = (matrix[1][0]*matrix[2][1] - matrix[1][1]*matrix[2][0])/det
 
-        inverseMatrix[1][0] = -(matrix[0][1]*matrix[2][2] - matrix[0][2]*matrix[2][1])/det
+        inverseMatrix[0][1] = -(matrix[0][1]*matrix[2][2] - matrix[0][2]*matrix[2][1])/det
         inverseMatrix[1][1] = (matrix[0][0]*matrix[2][2] - matrix[0][2]*matrix[2][0])/det
-        inverseMatrix[1][2] = -(matrix[0][0]*matrix[2][1] - matrix[0][1]*matrix[2][0])/det
+        inverseMatrix[2][1] = -(matrix[0][0]*matrix[2][1] - matrix[0][1]*matrix[2][0])/det
 
-        inverseMatrix[2][0] = (matrix[0][1]*matrix[1][2] - matrix[0][2]*matrix[1][1])/det
-        inverseMatrix[2][1] = -(matrix[0][0]*matrix[1][2] - matrix[0][2]*matrix[1][0])/det
+        inverseMatrix[0][2] = (matrix[0][1]*matrix[1][2] - matrix[0][2]*matrix[1][1])/det
+        inverseMatrix[1][2] = -(matrix[0][0]*matrix[1][2] - matrix[0][2]*matrix[1][0])/det
         inverseMatrix[2][2] = (matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0])/det
 
         return inverseMatrix
@@ -55,18 +55,12 @@ class AffineTransformations {
 
     private fun calculateDet(matrix: Array<DoubleArray>): Double{
         var det = 0.0
-        for(i in 0..2){
-            for(j in 0..2){
-                if (j == i) continue
-                for(k in 0..2){
-                    if (k == i || k == j) continue
-                    det += matrix[0][i]*matrix[1][j]*matrix[2][k]
-                }
-            }
-        }
+        det += matrix[0][0]*(matrix[1][1]*matrix[2][2] - matrix[1][2]*matrix[2][1])
+        det -= matrix[0][1]*(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])
+        det += matrix[0][2]*(matrix[1][0]*matrix[2][1] - matrix[1][1]*matrix[2][0])
+
         return det
     }
-
 
     private fun makeTransition(oldSystem: IntArray): DoubleArray{
         val newSystem = DoubleArray(3)
@@ -82,7 +76,7 @@ class AffineTransformations {
         val oldSystem = DoubleArray(3)
         for (i in 0..2){
             for (j in 0..2){
-                oldSystem[j] += inverseMatrix[i][j] * newSystem[i]
+                oldSystem[i] += inverseMatrix[i][j] * newSystem[j]
             }
         }
         return oldSystem
@@ -202,7 +196,7 @@ class AffineTransformations {
                     oldY1 > currentPicture.height / zoomingFactor1 - 1 ||
                     oldX1 < leftDistance1 ||
                     oldY2 < 0){
-                    currentPicture[x, y] = 0
+                    currentPicture[x, y] = colorOf(0,0,0)
                     continue
                 }
 
