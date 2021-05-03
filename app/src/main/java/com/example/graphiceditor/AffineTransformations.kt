@@ -196,7 +196,7 @@ class AffineTransformations {
                     oldY1 > currentPicture.height / zoomingFactor1 - 1 ||
                     oldX1 < leftDistance1 ||
                     oldY2 < 0){
-                    currentPicture[x, y] = colorOf(0,0,0)
+                    currentPicture[x, y] = 0
                     continue
                 }
 
@@ -205,10 +205,22 @@ class AffineTransformations {
                 val oldXCeil = intArrayOf(ceil(oldX1).toInt(), ceil(oldX2).toInt())
                 val oldYCeil = intArrayOf(ceil(oldY1).toInt(), ceil(oldY2).toInt())
 
-                val leftDif = if (oldXCeil[0] != oldXFloor[0]) oldX1 - oldXFloor[0] else 1.0
-                val topDif = if (oldYCeil[0] != oldYFloor[0]) oldY1 - oldYFloor[0] else 1.0
-                val rightDif = if (oldXCeil[0] != oldXFloor[0]) oldXCeil[0] - oldX1 else 0.0
-                val bottomDif = if (oldYCeil[0] != oldYFloor[0]) oldYCeil[0] - oldY1 else 0.0
+                val leftDif = doubleArrayOf(
+                    if (oldXCeil[0] != oldXFloor[0]) oldX1 - oldXFloor[0] else 1.0,
+                    if (oldXCeil[1] != oldXFloor[1]) oldX2 - oldXFloor[1] else 1.0
+                )
+                val topDif = doubleArrayOf(
+                    if (oldYCeil[0] != oldYFloor[0]) oldY1 - oldYFloor[0] else 1.0,
+                    if (oldYCeil[1] != oldYFloor[1]) oldY2 - oldYFloor[1] else 1.0
+                )
+                val rightDif = doubleArrayOf(
+                    if (oldXCeil[0] != oldXFloor[0]) oldXCeil[0] - oldX1 else 0.0,
+                    if (oldXCeil[1] != oldXFloor[1]) oldXCeil[1] - oldX2 else 0.0
+                )
+                val bottomDif = doubleArrayOf(
+                    if (oldYCeil[0] != oldYFloor[0]) oldYCeil[0] - oldY1 else 0.0,
+                    if (oldYCeil[1] != oldYFloor[1]) oldYCeil[1] - oldY2 else 0.0
+                )
 
                 val topLeft = intArrayOf(mipmapPicture[oldXFloor[0], oldYFloor[0]],
                     mipmapPicture[oldXFloor[1], oldYFloor[1]])
@@ -221,19 +233,24 @@ class AffineTransformations {
 
                 fun average(component: Int): Int{
                     var middle = 0.0
-                    middle += (zoomingFactor2 - k) * topDif *
-                            (leftDif * topLeft[0].component(component) +
-                                    rightDif * topRight[0].component(component)) +
-                            bottomDif *
-                            (leftDif * bottomLeft[0].component(component) +
-                                    rightDif * bottomRight[0].component(component))
+                    middle += (zoomingFactor2 - k) * (
+                            topDif[0] *
+                            (leftDif[0] * topLeft[0].component(component) +
+                                    rightDif[0] * topRight[0].component(component)) +
+                            bottomDif[0] *
+                            (leftDif[0] * bottomLeft[0].component(component) +
+                                    rightDif[0] * bottomRight[0].component(component))
+                            )
 
-                    middle += (k - zoomingFactor1) * topDif *
-                            (leftDif * topLeft[1].component(component) +
-                                    rightDif * topRight[1].component(component)) +
-                            bottomDif *
-                            (leftDif * bottomLeft[1].component(component) +
-                                    rightDif * bottomRight[1].component(component))
+                    middle += (k - zoomingFactor1) * (
+                            topDif[1] *
+                            (leftDif[1] * topLeft[1].component(component) +
+                                    rightDif[1] * topRight[1].component(component)) +
+                            bottomDif[1] *
+                            (leftDif[1] * bottomLeft[1].component(component) +
+                                    rightDif[1] * bottomRight[1].component(component))
+                            )
+
                     middle /= zoomingFactor1
                     
                     return middle.toInt()
