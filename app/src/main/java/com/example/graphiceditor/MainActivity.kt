@@ -284,36 +284,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun applyTransformation(){
-        val oldSystemX = doubleArrayOf(
-            x1.text.toDouble(),
-            x2.text.toDouble(),
-            x3.text.toDouble()
-        )
+        val oldSystemX = doubleArrayOf(x1.text.toDouble(), x2.text.toDouble(), x3.text.toDouble())
+        val oldSystemY = doubleArrayOf(y1.text.toDouble(), y2.text.toDouble(), y3.text.toDouble())
+        val newSystemX = doubleArrayOf(x4.text.toDouble(), x5.text.toDouble(), x6.text.toDouble())
+        val newSystemY = doubleArrayOf(y4.text.toDouble(), y5.text.toDouble(), y6.text.toDouble())
 
-        val oldSystemY = doubleArrayOf(
-            y1.text.toDouble(),
-            y2.text.toDouble(),
-            y3.text.toDouble()
-        )
+        val transformations = AffineTransformations(oldSystemX, oldSystemY, newSystemX, newSystemY)
 
-        val newSystemX = doubleArrayOf(
-            x4.text.toDouble(),
-            x5.text.toDouble(),
-            x6.text.toDouble()
-        )
-
-        val newSystemY = doubleArrayOf(
-            y4.text.toDouble(),
-            y5.text.toDouble(),
-            y6.text.toDouble()
-        )
-
-        val transformations = AffineTransformations(
-            oldSystemX, oldSystemY,
-            newSystemX, newSystemY
-        )
-
-        currentPicture = transformations.transformWithBilinearFiltering(currentPicture)
+        currentPicture = transformations.transformWithTrilinearFiltering(currentPicture)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
