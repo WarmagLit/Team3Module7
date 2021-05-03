@@ -224,10 +224,11 @@ class MainActivity : AppCompatActivity() {
     private fun initZoomer() {
         zoomingInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
+                if(zoomingInput.text.isEmpty()) return@setOnFocusChangeListener
+
                 val zoomFactor = zoomingInput.text.toDouble()
-                if (abs(zoomFactor - 1.0) < 0.01) {
-                    return@setOnFocusChangeListener
-                }
+                if (abs(zoomFactor - 1.0) < 0.01) return@setOnFocusChangeListener
+
                 CoroutineScope(EmptyCoroutineContext).async { applyZoom(zoomFactor) }
                 zoomingInput.setText("1.0")
             }
@@ -237,10 +238,11 @@ class MainActivity : AppCompatActivity() {
     private fun initRotater() {
         rotationInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
+                if(rotationInput.text.isEmpty()) return@setOnFocusChangeListener
+
                 val angle = rotationInput.text.toDouble()
-                if (abs(angle - 0.0) < 0.01) {
-                    return@setOnFocusChangeListener
-                }
+                if (abs(angle - 0.0) < 0.01) return@setOnFocusChangeListener
+
                 CoroutineScope(EmptyCoroutineContext).async { applyRotate(angle) }
                 rotationInput.setText("0.0")
             }
@@ -257,6 +259,25 @@ class MainActivity : AppCompatActivity() {
             }
 
             CoroutineScope(EmptyCoroutineContext).async { applyTransformation() }
+        }
+
+        inverseButton.setOnClickListener {
+            val oldCoordinates = arrayOf(
+                x1.text, x2.text, x3.text,
+                y1.text, y2.text, y3.text
+            )
+            x1.text = x4.text
+            x2.text = x5.text
+            x3.text = x6.text
+            x4.text = oldCoordinates[0]
+            x5.text = oldCoordinates[1]
+            x6.text = oldCoordinates[2]
+            y1.text = y4.text
+            y2.text = y5.text
+            y3.text = y6.text
+            y4.text = oldCoordinates[3]
+            y5.text = oldCoordinates[4]
+            y6.text = oldCoordinates[5]
         }
     }
 
