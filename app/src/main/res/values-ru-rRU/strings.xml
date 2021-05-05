@@ -26,6 +26,7 @@
     <string name="buttonGallery">Галерея</string>
     <string name="buttonCamera">Камера</string>
     <string name="imageContentDescription">Изображение</string>
+    <string name="filters">Фильтры</string>
     <string name="permissionDenied">Нет доступа</string>
     <string name="saveImage">Сохранить изображение</string>
     <string name="blueFilter">Синий фильтр</string>
@@ -46,4 +47,6 @@
     <string name="someFilter">Какой-то фильтр</string>
     <string name="unsharp">Сглаживание</string>
     <string name="diagonalSepia">Сепия по диагонали</string>
+    <string name="draw">Рисование</string>
+    <string name="other">Другое</string>
 </resources>

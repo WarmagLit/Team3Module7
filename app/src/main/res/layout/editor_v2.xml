@@ -8,15 +8,19 @@
     android:background="@color/colorBackground"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8sp"
-        android:text="Go back" />
+        android:background="@color/colorAccent"
+        app:navigationIcon="@drawable/ic_menu_black_24dp"
+        app:menu="@menu/toolbarmenu"
+        />
+
+
 
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/iamgi"
         android:layout_width="400dp"
         android:layout_height="400dp"
         android:layout_gravity="center_horizontal"

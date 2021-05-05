@@ -7,9 +7,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        app:menu="@menu/toolbarmenu"
+        app:navigationIcon="@drawable/ic_menu_black_24dp"
+        app:title="Editor"
+        app:titleTextColor="#FFFFFF" />
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp">
+
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,16 +41,10 @@
                 app:srcCompat="@drawable/hippo" />
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-            </LinearLayout>
-
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="71dp"
+                android:layout_marginTop="5dp"
                 android:ems="10"
                 android:inputType="numberDecimal"
                 android:text="1.0" >
@@ -180,11 +188,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="numberDecimal"
-                android:text="1.0" /><![CDATA[
-            android:layout_height="100dp"
-            app:layout_constraintVertical_bias="0.654">
-
-            ]]>
+                android:text="1.0" />
 
             <EditText
                 android:id="@+id/rotationInput"
@@ -352,14 +356,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="50dp" /><![CDATA[
-
-
-                android:layout_height="100dp"
-                app:layout_constraintVertical_bias="0.654">
-
-
-        ]]>
+                android:layout_height="50dp" />
         </LinearLayout>
     </ScrollView>
 

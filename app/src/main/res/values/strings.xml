@@ -6,6 +6,7 @@
     <string name="imageContentDescription">Just Image</string>
     <string name="permissionDenied">Permission denied</string>
     <string name="saveImage">Save image</string>
+    <string name="filters">Filters</string>
     <string name="button" translatable="false">Button</string>
     <string name="about" translatable="false">About</string>
 
@@ -51,5 +52,7 @@
     <string name="someFilter">Some filter</string>
     <string name="unsharp">Unsharp</string>
     <string name="diagonalSepia">Diagonal sepia</string>
+    <string name="draw">Draw</string>
+    <string name="other">Other</string>
 
 </resources>

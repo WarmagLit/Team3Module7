@@ -29,8 +29,12 @@ import java.lang.Exception
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
+import com.davemorrissey.labs.subscaleview.ImageSource
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.*
@@ -53,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         imageView2.setImageResource(R.drawable.hippo)
+
         currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
         originalImage = (imageView2.drawable as BitmapDrawable).bitmap
 
@@ -62,31 +67,61 @@ class MainActivity : AppCompatActivity() {
         initTransformator()
 
         setupNavigation()
+
+        setSupportActionBar(toolbar)
+
+        toolbar.setNavigationOnClickListener {
+            Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        var inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.toolbarmenu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+
+        when(itemview) {
+            R.id.addGallery -> {
+                //Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+                pickImageFromGallery()
+                true
+            }
+            R.id.addCamera-> {
+                //Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+                if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    startActivityForResult(intent, CAMERA_REQUEST_CODE)
+                }
+                true
+            }
+            R.id.saveImg-> {
+                //Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+                saveImage()
+                true
+            }
+            else -> true
+        }
+        return true
     }
 
     private fun setupNavigation() {
         val navView: BottomNavigationView = findViewById(R.id.bottomNavBar)
         navView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.menuAbout -> {
+                R.id.chooseFilters -> {
                     Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+                    setContentView(R.layout.editor_v2)
                     true
                 }
-                R.id.addGallery -> {
-                    pickImageFromGallery()
+                R.id.chooseDraw -> {
                     true
                 }
-                R.id.addCamera -> {
-                    Log.d("TAG", "Camera button click")
+                R.id.chooseOther -> {
 
-                    if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
-                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        startActivityForResult(intent, CAMERA_REQUEST_CODE)
-                    }
-                    true
-                }
-                R.id.saveImg -> {
-                    saveImage()
                     true
                 }
                 else -> true
