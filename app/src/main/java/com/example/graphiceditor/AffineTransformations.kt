@@ -1,5 +1,6 @@
 package com.example.graphiceditor
 
+import android.graphics.Bitmap
 import kotlin.math.*
 
 class AffineTransformations {
@@ -102,11 +103,11 @@ class AffineTransformations {
         return newPicture
     }
 
-    fun transformWithBilinearFiltering(currentPicture: PixelArray): PixelArray{
-        val newPicture = PixelArray(currentPicture.width, currentPicture.height)
+    fun transformWithBilinearFiltering(currentPicture: PixelArray, width: Int, height: Int): PixelArray{
+        val newPicture = PixelArray(width, height)
 
-        for (x in 0 until newPicture.width) {
-            for (y in 0 until newPicture.height) {
+        for (x in 0 until width) {
+            for (y in 0 until height) {
                 val oldCoordinates = inverseTransition(intArrayOf(x, y, 1))
                 val oldX = oldCoordinates[0]
                 val oldY = oldCoordinates[1]
@@ -151,11 +152,12 @@ class AffineTransformations {
         return newPicture
     }
 
-    fun transformWithTrilinearFiltering(currentPicture: PixelArray): PixelArray{
+    fun transformWithTrilinearFiltering(currentPicture: PixelArray, width: Int, height: Int): PixelArray{
+        val newPicture = PixelArray(width, height)
         val mipmapPicture = currentPicture.getMipmap()
 
-        for (x in 0 until currentPicture.width) {
-            for (y in 0 until currentPicture.height) {
+        for (x in 0 until width) {
+            for (y in 0 until height) {
                 val oldCoordinatesNearbyX =
                     if(x != 0) inverseTransition(intArrayOf(x - 1, y, 1))
                     else inverseTransition(intArrayOf(x + 1, y, 1))
@@ -169,20 +171,20 @@ class AffineTransformations {
 
                 val kX = abs(oldCoordinatesNearbyX[0] - oldX)
                 val kY = abs(oldCoordinatesNearbyY[1] - oldY)
-                val k = (kX + kY) / 2
+                val k = if ((kX + kY) / 2 > 1.0) ((kX + kY) / 2) else 1.0
 
                 val lod = log2(k)
                 val lowLod = floor(lod).toInt()
 
                 var leftDistance1 = 0
-                var width = currentPicture.width
+                var lodWidth = currentPicture.width
 
                 for(i in 0 until lowLod){
-                    leftDistance1 += width
-                    width /= 2
+                    leftDistance1 += lodWidth
+                    lodWidth /= 2
                 }
 
-                val leftDistance2 = leftDistance1 + width
+                val leftDistance2 = leftDistance1 + lodWidth
 
                 val zoomingFactor1 = 2.0.pow(lowLod)
                 val zoomingFactor2 = zoomingFactor1 * 2
@@ -192,7 +194,7 @@ class AffineTransformations {
                 val oldX2 = leftDistance2 + oldX / zoomingFactor2
                 val oldY2 = oldY / zoomingFactor2
 
-                if(oldX2 > leftDistance2 + width / 2 ||
+                if(oldX2 > leftDistance2 + lodWidth / 2 ||
                     oldY1 > currentPicture.height / zoomingFactor1 - 1 ||
                     oldX1 < leftDistance1 ||
                     oldY2 < 0){
@@ -256,7 +258,7 @@ class AffineTransformations {
                     return middle.toInt()
                 }
 
-                currentPicture[x, y] = colorOf(
+                newPicture[x, y] = colorOf(
                     average(alpha),
                     average(red),
                     average(green),
@@ -265,6 +267,6 @@ class AffineTransformations {
             }
         }
 
-        return currentPicture
+        return newPicture
     }
 }

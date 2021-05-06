@@ -1,6 +1,7 @@
 package com.example.graphiceditor
 
 import android.Manifest.permission.*
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
@@ -29,6 +30,8 @@ import java.lang.Exception
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
+import android.view.MotionEvent
+import android.view.View
 import androidx.annotation.RequiresApi
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -44,7 +47,19 @@ private const val WRITE_STORAGE_CODE = 100
 private const val PERMISSION_CAMERA_CODE = 1002
 
 class MainActivity : AppCompatActivity() {
-    var currentPicture = PixelArray(1, 1)
+    private var currentPicture = PixelArray(1, 1)
+    private var currentPlacePoint = 0
+    private var affineOldPoints = Array(3){ IntArray(2) }
+    private var affineNewPoints = Array(3){ IntArray(2) }
+    private val pointColor = intArrayOf(
+        colorOf(255, 140, 0, 0),
+        colorOf(255, 0, 140, 0),
+        colorOf(255, 0, 0, 140),
+        colorOf(120, 240, 60, 60),
+        colorOf(120, 60, 240, 60),
+        colorOf(120, 60, 60, 240)
+    )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         initButtons()
         initZoomer()
         initRotater()
-        initTransformator()
+        initTransformer()
 
         setupNavigation()
     }
@@ -76,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.addCamera -> {
                     Log.d("TAG", "Camera button click")
 
-                    if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
+                    if (checkPermission(CAMERA, CAMERA_REQUEST_CODE)) {
                         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         startActivityForResult(intent, CAMERA_REQUEST_CODE)
                     }
@@ -91,40 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initButtons() {
-        filtersLayout.btnMain.setOnClickListener {
-            imageView2.setImageResource(R.drawable.hippo)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        }
-
-        val arrayBtn = arrayOf(
-            filtersLayout.btnRed,
-            filtersLayout.btnGreen,
-            filtersLayout.btnBlue,
-            filtersLayout.btnGray,
-            filtersLayout.btnDiagonal,
-            filtersLayout.btnSwap,
-            filtersLayout.btnNegative,
-            filtersLayout.btnBlur,
-            filtersLayout.btnEdge,
-            filtersLayout.btnEmboss
-        )
-
-        val arrayStrings = getStrings()
-
-        for (i in arrayBtn.indices){
-            arrayBtn[i].setOnClickListener {
-                val filter = of(arrayStrings[i])
-                Log.d("TAG", filter.toString())
-                if (filter != Filter.NONE) {
-                    CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-                }
-            }
-        }
-    }
-
-
-    private fun checkPermission(permission: String, requestCode: Int): Boolean{
+    private fun checkPermission(permission: String, requestCode: Int): Boolean {
         if (checkSelfPermission(permission) == PERMISSION_GRANTED)
             return true
 
@@ -135,9 +117,13 @@ class MainActivity : AppCompatActivity() {
 
 
     // is called after checkPermission gets the result of asking the permission.
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == PERMISSION_CAMERA_CODE) {
+        if (requestCode == PERMISSION_CAMERA_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
                 pickImageFromGallery()
             } else {
@@ -152,18 +138,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveImage() {
         val bitmap = (imageView2.drawable as BitmapDrawable).bitmap
-        val imageUri:Uri? = bitmap.saveImage(this)
+        val imageUri: Uri? = bitmap.saveImage(this)
         Toast.makeText(
             this,
             getString(R.string.savedImage, imageUri),
             Toast.LENGTH_SHORT
         ).show()
     }
+
     private fun Bitmap.saveImage(context: Context): Uri? {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return saveFileNewSDK(context)
+        return if (Build.VERSION.SDK_INT >= 29) {
+            saveFileNewSDK(context)
         } else {
-            return saveFileOldSDK(context)
+            saveFileOldSDK(context)
         }
     }
 
@@ -202,10 +189,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun Bitmap.saveFileOldSDK(context: Context): Uri? {
         val directory =
-            File(context.getExternalFilesDir(DIRECTORY_PICTURES).toString() +
-                    separator + "test_pictures"
+            File(
+                context.getExternalFilesDir(DIRECTORY_PICTURES).toString() +
+                        separator + "test_pictures"
             )
         if (!directory.exists())
             directory.mkdirs()
@@ -221,10 +210,63 @@ class MainActivity : AppCompatActivity() {
         return Uri.fromFile(file)
     }
 
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
+            super.onActivityResult(requestCode, resultCode, data)
+            val thumbNail: Bitmap = data?.extras?.get("data") as Bitmap
+            imageView2.setImageBitmap(thumbNail)
+            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        }
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
+            imageView2.setImageURI(data?.data)
+            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun initButtons() {
+        filtersLayout.btnMain.setOnClickListener {
+            imageView2.setImageResource(R.drawable.hippo)
+            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        }
+
+        val arrayBtn = arrayOf(
+            filtersLayout.btnRed,
+            filtersLayout.btnGreen,
+            filtersLayout.btnBlue,
+            filtersLayout.btnGray,
+            filtersLayout.btnDiagonal,
+            filtersLayout.btnSwap,
+            filtersLayout.btnNegative,
+            filtersLayout.btnBlur,
+            filtersLayout.btnEdge,
+            filtersLayout.btnEmboss
+        )
+
+        val arrayStrings = getStrings()
+
+        for (i in arrayBtn.indices) {
+            arrayBtn[i].setOnClickListener {
+                val filter = of(arrayStrings[i])
+                Log.d("TAG", filter.toString())
+                if (filter != Filter.NONE) {
+                    CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+                }
+            }
+        }
+    }
+
     private fun initZoomer() {
         zoomingInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
-                if(zoomingInput.text.isEmpty()) return@setOnFocusChangeListener
+                if (zoomingInput.text.isEmpty()) return@setOnFocusChangeListener
 
                 val zoomFactor = zoomingInput.text.toDouble()
                 if (abs(zoomFactor - 1.0) < 0.01) return@setOnFocusChangeListener
@@ -238,7 +280,7 @@ class MainActivity : AppCompatActivity() {
     private fun initRotater() {
         rotationInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
-                if(rotationInput.text.isEmpty()) return@setOnFocusChangeListener
+                if (rotationInput.text.isEmpty()) return@setOnFocusChangeListener
 
                 val angle = rotationInput.text.toDouble()
                 if (abs(angle - 0.0) < 0.01) return@setOnFocusChangeListener
@@ -249,36 +291,58 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initTransformator() {
-        affineButton.setOnClickListener {
-            if (x1.text.isEmpty() || x2.text.isEmpty() || x3.text.isEmpty() ||
-                x4.text.isEmpty() || x5.text.isEmpty() || x6.text.isEmpty() ||
-                y1.text.isEmpty() || y2.text.isEmpty() || y3.text.isEmpty() ||
-                y4.text.isEmpty() || y5.text.isEmpty() || y6.text.isEmpty()){
-                return@setOnClickListener
-            }
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initTransformer() {
 
+        pointsField.setOnTouchListener{ _, event ->
+            onTouchPointsField(event)
+        }
+
+        placePointsButton.setOnClickListener {
+            allowPlacePoints()
+        }
+
+        affineButton.setOnClickListener {
             CoroutineScope(EmptyCoroutineContext).async { applyTransformation() }
+            prohibitPlacePoints()
         }
 
         inverseButton.setOnClickListener {
-            val oldCoordinates = arrayOf(
-                x1.text, x2.text, x3.text,
-                y1.text, y2.text, y3.text
-            )
-            x1.text = x4.text
-            x2.text = x5.text
-            x3.text = x6.text
-            x4.text = oldCoordinates[0]
-            x5.text = oldCoordinates[1]
-            x6.text = oldCoordinates[2]
-            y1.text = y4.text
-            y2.text = y5.text
-            y3.text = y6.text
-            y4.text = oldCoordinates[3]
-            y5.text = oldCoordinates[4]
-            y6.text = oldCoordinates[5]
+            val oldCopy = affineOldPoints
+            affineOldPoints = affineNewPoints
+            affineNewPoints = oldCopy
+            val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
+            for (i in 0..2) {
+                pointsBitmap.addPoint(
+                    affineOldPoints[i][0],
+                    affineOldPoints[i][1],
+                    pointColor[i]
+                )
+                pointsBitmap.addPoint(
+                    affineNewPoints[i][0],
+                    affineNewPoints[i][1],
+                    pointColor[i + 3]
+                )
+            }
+            pointsField.setImageBitmap(pointsBitmap)
         }
+    }
+
+    private fun onTouchPointsField(event: MotionEvent): Boolean{
+        if (event.action != MotionEvent.ACTION_UP) return false
+        if (currentPlacePoint == 0) return false
+
+        val x = (event.x - pointsField.x).toInt()
+        val y = (event.y - pointsField.y).toInt()
+        val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
+
+        pointsBitmap.addPoint(x, y, pointColor[currentPlacePoint - 1])
+        if (currentPlacePoint in 1..3) affineOldPoints[currentPlacePoint - 1] = intArrayOf(x, y)
+        else affineNewPoints[currentPlacePoint - 4] = intArrayOf(x, y)
+
+        currentPlacePoint = (currentPlacePoint + 1) % 7
+        pointsField.setImageBitmap(pointsBitmap)
+        return false
     }
 
     private fun of(string: String): Filter{
@@ -288,6 +352,9 @@ class MainActivity : AppCompatActivity() {
         }
         return Filter.NONE
     }
+
+    private fun getStrings(): List<String> = Filter.values().map { getString(it) }
+    private fun getString(filter: Filter) = getString(filter.code)
 
     private suspend fun apply(filter: Filter) {
         currentPicture = filter.process(currentPicture)
@@ -305,38 +372,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun applyTransformation(){
-        val oldSystemX = doubleArrayOf(x1.text.toDouble(), x2.text.toDouble(), x3.text.toDouble())
-        val oldSystemY = doubleArrayOf(y1.text.toDouble(), y2.text.toDouble(), y3.text.toDouble())
-        val newSystemX = doubleArrayOf(x4.text.toDouble(), x5.text.toDouble(), x6.text.toDouble())
-        val newSystemY = doubleArrayOf(y4.text.toDouble(), y5.text.toDouble(), y6.text.toDouble())
+        val oldSystemX = doubleArrayOf(affineOldPoints[0][0].toDouble(), affineOldPoints[1][0].toDouble(), affineOldPoints[2][0].toDouble())
+        val oldSystemY = doubleArrayOf(affineOldPoints[0][1].toDouble(), affineOldPoints[1][1].toDouble(), affineOldPoints[2][1].toDouble())
+        val newSystemX = doubleArrayOf(affineNewPoints[0][0].toDouble(), affineNewPoints[1][0].toDouble(), affineNewPoints[2][0].toDouble())
+        val newSystemY = doubleArrayOf(affineNewPoints[0][1].toDouble(), affineNewPoints[1][1].toDouble(), affineNewPoints[2][1].toDouble())
 
         val transformations = AffineTransformations(oldSystemX, oldSystemY, newSystemX, newSystemY)
 
-        currentPicture = transformations.transformWithTrilinearFiltering(currentPicture)
+        currentPicture = transformations.transformWithTrilinearFiltering(currentPicture, currentPicture.width, currentPicture.height)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    private fun getStrings(): List<String> = Filter.values().map { getString(it) }
-    private fun getString(filter: Filter) = getString(filter.code)
+    private fun allowPlacePoints(){
+        currentPlacePoint = 1
+        val pointsBitmap = Bitmap.createBitmap(
+            currentPicture.width,
+            currentPicture.height,
+            Bitmap.Config.ARGB_8888
+        )
 
-    private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, IMAGE_PICK_CODE)
+        pointsField.setImageBitmap(pointsBitmap)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
-            super.onActivityResult(requestCode, resultCode, data)
-            val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
-            imageView2.setImageBitmap(thumbNail)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        }
-        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            imageView2.setImageURI(data?.data)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
+    private fun prohibitPlacePoints(){
+        currentPlacePoint = 0
+        val pointsBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+
+        pointsField.setImageBitmap(pointsBitmap)
+    }
+
+    private fun Bitmap.addPoint(x: Int, y: Int, color: Int){
+        val r = 20
+
+        for (i in x-r..x+r){
+            if (i !in 0 until width) continue
+            for (j in y-r..y+r){
+                if (j !in 0 until height || (x - i) * (x - i) + (y - j) * (y - j) > r * r) continue
+                setPixel(i, j, color)
+            }
         }
     }
+
 }
