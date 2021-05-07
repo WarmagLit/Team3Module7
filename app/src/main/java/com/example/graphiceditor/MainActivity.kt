@@ -34,7 +34,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
+import androidx.fragment.app.Fragment
 import com.davemorrissey.labs.subscaleview.ImageSource
+import com.example.graphiceditor.Fragments.filterFragment
+import com.example.graphiceditor.Fragments.otherFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.*
@@ -52,9 +55,14 @@ class MainActivity : AppCompatActivity() {
     var currentPicture = PixelArray(1, 1)
     lateinit var originalImage : Bitmap
 
+    val filterFrag = filterFragment()
+    val otherFrag = otherFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        makeCurrentFragment(filterFrag)
 
         imageView2.setImageResource(R.drawable.hippo)
 
@@ -105,13 +113,20 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    private fun makeCurrentFragment(fragment: Fragment) =
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.fl_wrapper, fragment)
+            commit()
+        }
+
+
+
     private fun setupNavigation() {
         val navView: BottomNavigationView = findViewById(R.id.bottomNavBar)
         navView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.chooseFilters -> {
-                    Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
-                    setContentView(R.layout.editor_v2)
+                    makeCurrentFragment(filterFrag)
                     true
                 }
                 R.id.chooseTransform -> {
@@ -119,14 +134,10 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.chooseDraw -> {
-                    val imgUri = saveImage(false)
-                    val intentToDraw = Intent(this@MainActivity, DrawActivity::class.java)
-                    intentToDraw.putExtra("image", imgUri.toString())
-                    startActivity(intentToDraw)
                     true
                 }
                 R.id.chooseOther -> {
-
+                    makeCurrentFragment(otherFrag)
                     true
                 }
                 else -> true
