@@ -86,12 +86,10 @@ class MainActivity : AppCompatActivity() {
 
         when(itemview) {
             R.id.addGallery -> {
-                //Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
                 pickImageFromGallery()
                 true
             }
             R.id.addCamera-> {
-                //Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
                 if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
                     val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                     startActivityForResult(intent, CAMERA_REQUEST_CODE)
@@ -99,8 +97,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.saveImg-> {
-                //Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
-                saveImage()
+                saveImage(true)
                 true
             }
             else -> true
@@ -117,7 +114,15 @@ class MainActivity : AppCompatActivity() {
                     setContentView(R.layout.editor_v2)
                     true
                 }
+                R.id.chooseTransform -> {
+
+                    true
+                }
                 R.id.chooseDraw -> {
+                    val imgUri = saveImage(false)
+                    val intentToDraw = Intent(this@MainActivity, DrawActivity::class.java)
+                    intentToDraw.putExtra("image", imgUri.toString())
+                    startActivity(intentToDraw)
                     true
                 }
                 R.id.chooseOther -> {
@@ -188,14 +193,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImage() {
+    private fun saveImage(withText: Boolean):Uri? {
         val bitmap = (imageView2.drawable as BitmapDrawable).bitmap
         val imageUri:Uri? = bitmap.saveImage(this)
-        Toast.makeText(
+        if (withText) {
+
+            Toast.makeText(
             this,
             getString(R.string.savedImage, imageUri),
             Toast.LENGTH_SHORT
         ).show()
+        }
+        return imageUri
     }
     private fun Bitmap.saveImage(context: Context): Uri? {
         if (Build.VERSION.SDK_INT >= 29) {

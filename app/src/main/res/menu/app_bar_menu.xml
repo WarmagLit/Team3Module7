@@ -11,6 +11,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/chooseTransform"
+        android:icon="@drawable/ic_photo_size_select_small_black_24dp"
+        android:title="@string/transform"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/chooseDraw"
         android:icon="@drawable/ic_mode_edit_black_24dp"
         android:title="@string/draw"

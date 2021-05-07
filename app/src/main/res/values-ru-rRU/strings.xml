@@ -49,4 +49,6 @@
     <string name="diagonalSepia">Сепия по диагонали</string>
     <string name="draw">Рисование</string>
     <string name="other">Другое</string>
+    <string name="transform">Изменить</string>
+
 </resources>
