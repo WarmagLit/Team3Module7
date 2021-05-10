@@ -83,11 +83,11 @@ class AffineTransformations {
         return oldSystem
     }
 
-    fun transformWithoutFiltering(currentPicture: PixelArray): PixelArray {
-        val newPicture = PixelArray(currentPicture.width, currentPicture.height)
+    fun transformWithoutFiltering(currentPicture: PixelArray, width: Int, height: Int): PixelArray {
+        val newPicture = PixelArray(width, height)
 
-        for (x in 0 until newPicture.width) {
-            for (y in 0 until newPicture.height) {
+        for (x in 0 until width) {
+            for (y in 0 until height) {
                 val oldCoordinates = inverseTransition(intArrayOf(x, y, 1))
                 val oldX = oldCoordinates[0].toInt()
                 val oldY = oldCoordinates[1].toInt()
@@ -135,7 +135,7 @@ class AffineTransformations {
                     return(
                             topDif *
                                     (leftDif * topLeft.component(component) + rightDif * topRight.component(component))
-                            + bottomDif *
+                    + bottomDif *
                                     (leftDif * bottomLeft.component(component) + rightDif * bottomRight.component(component))
                             ).toInt()
                 }

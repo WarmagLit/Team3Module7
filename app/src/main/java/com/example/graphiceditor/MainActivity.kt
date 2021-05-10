@@ -31,7 +31,6 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
 import android.view.MotionEvent
-import android.view.View
 import androidx.annotation.RequiresApi
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -59,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         colorOf(120, 60, 240, 60),
         colorOf(120, 60, 60, 240)
     )
+    private var currentBrush = "red"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
         initZoomer()
         initRotater()
         initTransformer()
+        initBrush()
 
         setupNavigation()
     }
@@ -328,13 +329,75 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onTouchPointsField(event: MotionEvent): Boolean{
-        if (event.action != MotionEvent.ACTION_UP) return false
-        if (currentPlacePoint == 0) return false
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initBrush(){
+        val arrayBtn = arrayOf(
+            btnBlurBrush,
+            btnRedBrush,
+            btnGreenBrush,
+            btnBlueBrush
+        )
 
-        val x = (event.x - pointsField.x).toInt()
-        val y = (event.y - pointsField.y).toInt()
+        val arrayStrings = arrayOf(
+            "blur",
+            "red",
+            "green",
+            "blue"
+        )
+
+        for (i in arrayBtn.indices){
+            arrayBtn[i].setOnClickListener {
+                currentBrush = arrayStrings[i]
+            }
+        }
+
+        drawingField.setOnTouchListener { _, event ->
+            onTouchDrawingField(event)
+        }
+
+        drawButton.setOnClickListener {
+            val drawingBitmap = Bitmap.createBitmap(
+                currentPicture.width,
+                currentPicture.height,
+                Bitmap.Config.ARGB_8888
+            )
+
+            drawingField.setImageBitmap(drawingBitmap)
+        }
+
+        applyDrawingButton.setOnClickListener {
+            val changes = PixelArray((drawingField.drawable as BitmapDrawable).bitmap)
+            for (x in 0 until changes.width){
+                for (y in 0 until changes.height){
+                    if (changes[x, y] != 0) {
+                        currentPicture[x, y] = changes[x, y]
+                    }
+                }
+            }
+            val drawingBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+
+            drawingField.setImageBitmap(drawingBitmap)
+            imageView2.setImageBitmap(currentPicture.bitmap)
+        }
+    }
+
+
+    private fun onTouchPointsField(event: MotionEvent): Boolean{
+        if (event.action != MotionEvent.ACTION_MOVE) return false
+        if (currentPlacePoint == 0) return false
         val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
+
+        /*val isHorizontal = (pointsBitmap.height < pointsBitmap.width)
+        val verticalDifference =
+            if(isHorizontal) 0
+            else (pointsBitmap.height - pointsField.height * pointsBitmap.width / pointsField.width) / 2
+        val horizontalDifference =
+            if(isHorizontal) (pointsBitmap.width - pointsField.width * pointsBitmap.height / pointsField.height) / 2
+            else 0*/
+
+
+        val x = event.x.toInt() * pointsBitmap.width / pointsField.width// - verticalDifference
+        val y = event.y.toInt() * pointsBitmap.height / pointsField.height// - horizontalDifference
 
         pointsBitmap.addPoint(x, y, pointColor[currentPlacePoint - 1])
         if (currentPlacePoint in 1..3) affineOldPoints[currentPlacePoint - 1] = intArrayOf(x, y)
@@ -342,6 +405,18 @@ class MainActivity : AppCompatActivity() {
 
         currentPlacePoint = (currentPlacePoint + 1) % 7
         pointsField.setImageBitmap(pointsBitmap)
+        return false
+    }
+
+    private fun onTouchDrawingField(event: MotionEvent): Boolean{
+        if (event.action == MotionEvent.ACTION_UP) return false
+        val x = event.x.toInt()
+        val y = event.y.toInt()
+        val drawingBitmap = (drawingField.drawable as BitmapDrawable).bitmap
+
+        Paintbrush.draw(currentPicture, drawingBitmap, x, y, 30, currentBrush)
+        drawingField.setImageBitmap(drawingBitmap)
+
         return false
     }
 
