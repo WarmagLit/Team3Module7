@@ -45,6 +45,16 @@ class PixelArray : Cloneable{
         pixels = Array(width){ IntArray(height){ 0 } }
     }
 
+    constructor(pixelArray: PixelArray, width: Int, height: Int) {
+        this.width = width
+        this.height = height
+        this.pixels = Array(width){ x ->
+            IntArray(height) { y ->
+                if(x < width && y < height) pixelArray[x, y] else 0
+            }
+        }
+    }
+
     public override fun clone() = PixelArray(pixels)
 
     fun getMipmap(): PixelArray{
@@ -79,14 +89,13 @@ class PixelArray : Cloneable{
 
                     val bottomRight =
                         if (topLeftY + 1 < 2*height)
-                            mipmap[topLeftX][topLeftY + 1]
+                            mipmap[topLeftX + 1][topLeftY + 1]
                         else topRight
 
-                    fun average(component: Int) =
-                        (topLeft.component(component) +
-                                topRight.component(component) +
-                                bottomLeft.component(component) +
-                                bottomRight.component(component)) / 4
+                    fun average(component: Int) = (topLeft.component(component) +
+                            topRight.component(component) +
+                            bottomLeft.component(component) +
+                            bottomRight.component(component)) / 4
 
                     mipmap[x][y] = colorOf(
                         average(alpha),

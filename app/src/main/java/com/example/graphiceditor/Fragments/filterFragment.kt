@@ -17,7 +17,9 @@ import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.android.synthetic.main.fragment_filter.view.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlin.coroutines.EmptyCoroutineContext
 
 
@@ -36,9 +38,8 @@ class filterFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_filter, container, false)
     }
 
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         imageView2.setImageResource(R.drawable.hippo)
 
@@ -47,6 +48,7 @@ class filterFragment : Fragment() {
 
         initButtons()
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -79,7 +81,7 @@ class filterFragment : Fragment() {
                 val filter = of(arrayStrings[i])
                 Log.d("TAG", filter.toString())
                 if (filter != Filter.NONE) {
-                    CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
+                    CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) { apply(filter) }
 
                 }
             }

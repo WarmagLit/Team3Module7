@@ -43,13 +43,9 @@ fun transportMatrix(transportX: Double, transportY: Double) = arrayOf(
 )
 
 fun rotateMatrix(angle: Double): Array<DoubleArray>{
-    fun Double.toRad(): Double{
-        return (this * PI / 180)
-    }
-
     return arrayOf(
-        doubleArrayOf(0.0, -1.0, 0.0),
-        doubleArrayOf(1.0, 0.0, 0.0),
+        doubleArrayOf(cos(angle.toRad()), -sin(angle.toRad()), 0.0),
+        doubleArrayOf(sin(angle.toRad()), cos(angle.toRad()), 0.0),
         doubleArrayOf(0.0, 0.0, 1.0)
     )
 }
@@ -59,3 +55,7 @@ fun zoomMatrix(zoomX: Double, zoomY: Double): Array<DoubleArray> = arrayOf(
     doubleArrayOf(0.0, zoomY, 0.0),
     doubleArrayOf(0.0, 0.0, 1.0)
 )
+
+fun Double.toRad(): Double{
+    return (this * PI / 180)
+}
