@@ -38,8 +38,10 @@ import androidx.fragment.app.Fragment
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.example.graphiceditor.Fragments.filterFragment
 import com.example.graphiceditor.Fragments.otherFragment
+import com.example.graphiceditor.Fragments.transformFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 import kotlin.math.*
@@ -52,10 +54,11 @@ private const val WRITE_STORAGE_CODE = 100
 private const val PERMISSION_CAMERA_CODE = 1002
 
 class MainActivity : AppCompatActivity() {
-    var currentPicture = PixelArray(1, 1)
-    lateinit var originalImage : Bitmap
+    var mainCurrentPicture = PixelArray(1, 1)
+    lateinit var mainOriginalImage : Bitmap
 
     val filterFrag = filterFragment()
+    val transformFrag = transformFragment()
     val otherFrag = otherFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,15 +67,15 @@ class MainActivity : AppCompatActivity() {
 
         makeCurrentFragment(filterFrag)
 
-        imageView2.setImageResource(R.drawable.hippo)
+        //imageView2.setImageResource(R.drawable.hippo)
 
-        currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        originalImage = (imageView2.drawable as BitmapDrawable).bitmap
+        //currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        //originalImage = (imageView2.drawable as BitmapDrawable).bitmap
 
-        initButtons()
-        initZoomer()
-        initRotater()
-        initTransformator()
+        //initButtons()
+        //initZoomer()
+        //initRotater()
+        //initTransformator()
 
         setupNavigation()
 
@@ -130,10 +133,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.chooseTransform -> {
-
+                    makeCurrentFragment(transformFrag)
                     true
                 }
                 R.id.chooseDraw -> {
+
                     true
                 }
                 R.id.chooseOther -> {
@@ -144,7 +148,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+/*
     private fun initButtons() {
         filtersLayout.btnMain.setOnClickListener {
             imageView2.setImageBitmap(originalImage)
@@ -177,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+*/
     private fun checkPermission(permission: String, requestCode: Int): Boolean{
         if (checkSelfPermission(permission) == PERMISSION_GRANTED)
             return true
@@ -278,7 +282,7 @@ class MainActivity : AppCompatActivity() {
 
         return Uri.fromFile(file)
     }
-
+/*
     private fun initZoomer() {
         zoomingInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -325,7 +329,8 @@ class MainActivity : AppCompatActivity() {
         }
         return Filter.NONE
     }
-
+    */
+/*
     private suspend fun apply(filter: Filter) {
         currentPicture = filter.process(currentPicture)
         imageView2.setImageBitmap(currentPicture.bitmap)
@@ -374,7 +379,7 @@ class MainActivity : AppCompatActivity() {
         currentPicture = transformations.transformWithBilinearFiltering(currentPicture)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
-
+*/
     private fun getStrings(): List<String> = Filter.values().map { getString(it) }
     private fun getString(filter: Filter) = getString(filter.code)
 
@@ -389,13 +394,13 @@ class MainActivity : AppCompatActivity() {
             super.onActivityResult(requestCode, resultCode, data)
             val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
             imageView2.setImageBitmap(thumbNail)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-            originalImage = (imageView2.drawable as BitmapDrawable).bitmap
+            mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+            mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-            originalImage = (imageView2.drawable as BitmapDrawable).bitmap
+            mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+            mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
