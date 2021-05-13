@@ -67,6 +67,11 @@ class MainActivity : AppCompatActivity() {
 
         imageView2.setImageResource(R.drawable.hippo)
         currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+        val drawingBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        drawingField.setImageBitmap(drawingBitmap)
+        val pointsBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        pointsField.setImageBitmap(pointsBitmap)
+
 
         initButtons()
         initZoomer()
@@ -331,18 +336,31 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initBrush(){
+
+        btnClearBrush.setOnClickListener {
+            val drawingBitmap = Bitmap.createBitmap(
+                currentPicture.width,
+                currentPicture.height,
+                Bitmap.Config.ARGB_8888
+            )
+
+            drawingField.setImageBitmap(drawingBitmap)
+        }
+
         val arrayBtn = arrayOf(
             btnBlurBrush,
             btnRedBrush,
             btnGreenBrush,
-            btnBlueBrush
+            btnBlueBrush,
+            btnGrayBrush
         )
 
         val arrayStrings = arrayOf(
             "blur",
             "red",
             "green",
-            "blue"
+            "blue",
+            "gray"
         )
 
         for (i in arrayBtn.indices){
@@ -383,7 +401,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun onTouchPointsField(event: MotionEvent): Boolean{
-        if (event.action != MotionEvent.ACTION_MOVE) return false
+        if (event.action != MotionEvent.ACTION_UP) return false
         if (currentPlacePoint == 0) return false
         val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
 
@@ -396,8 +414,8 @@ class MainActivity : AppCompatActivity() {
             else 0*/
 
 
-        val x = event.x.toInt() * pointsBitmap.width / pointsField.width// - verticalDifference
-        val y = event.y.toInt() * pointsBitmap.height / pointsField.height// - horizontalDifference
+        val x = event.x.toInt()// * pointsBitmap.width / pointsField.width - horizontalDifference
+        val y = event.y.toInt()// * pointsBitmap.height / pointsField.height - verticalDifference
 
         pointsBitmap.addPoint(x, y, pointColor[currentPlacePoint - 1])
         if (currentPlacePoint in 1..3) affineOldPoints[currentPlacePoint - 1] = intArrayOf(x, y)
@@ -409,12 +427,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onTouchDrawingField(event: MotionEvent): Boolean{
-        if (event.action == MotionEvent.ACTION_UP) return false
-        val x = event.x.toInt()
-        val y = event.y.toInt()
+        if (event.action != MotionEvent.ACTION_MOVE) return false
         val drawingBitmap = (drawingField.drawable as BitmapDrawable).bitmap
 
-        Paintbrush.draw(currentPicture, drawingBitmap, x, y, 30, currentBrush)
+        /*val isHorizontal = (drawingBitmap.height < drawingBitmap.width)
+        val verticalDifference =
+            if(isHorizontal) (drawingField.height * drawingBitmap.width / drawingField.width - drawingBitmap.height) / 2
+            else 0
+        val horizontalDifference =
+            if(isHorizontal) 0
+            else (drawingField.width * drawingBitmap.height / drawingField.height - drawingBitmap.width) / 2*/
+
+        val x = event.x.toInt()// * drawingBitmap.width / drawingField.width - horizontalDifference
+        val y = event.y.toInt()// * drawingBitmap.height / drawingField.height - verticalDifference
+
+        val r = radiusInput.text.toDouble().toInt()
+        val centering = centeringInput.text.toDouble()
+
+        Paintbrush.draw(currentPicture, drawingBitmap, x, y, r, centering, currentBrush)
         drawingField.setImageBitmap(drawingBitmap)
 
         return false
