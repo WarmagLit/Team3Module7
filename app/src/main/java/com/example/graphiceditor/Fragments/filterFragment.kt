@@ -1,15 +1,21 @@
 package com.example.graphiceditor.Fragments
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
+import androidx.fragment.app.Fragment
 import com.example.graphiceditor.Filter
+import com.example.graphiceditor.ImageStorageManager.Companion.deleteImageFromInternalStorage
+import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
+import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
+import com.example.graphiceditor.MainActivity
 import com.example.graphiceditor.PixelArray
 import com.example.graphiceditor.R
 import kotlinx.android.synthetic.main.activity_main.*
@@ -18,8 +24,9 @@ import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.android.synthetic.main.fragment_filter.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
 import kotlin.coroutines.EmptyCoroutineContext
 
 
@@ -41,10 +48,11 @@ class filterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        imageView2.setImageResource(R.drawable.hippo)
+        originalImage = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
+        currentPicture = PixelArray(originalImage)
 
-        currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        originalImage = (imageView2.drawable as BitmapDrawable).bitmap
+        imageView2.setImageBitmap(originalImage)
+        deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
 
         initButtons()
     }
@@ -53,7 +61,12 @@ class filterFragment : Fragment() {
     override fun onPause() {
         super.onPause()
 
+        val bit = (imageView2.drawable as BitmapDrawable).bitmap
+
+        saveToInternalStorage(getActivity()!!.applicationContext, bit, "myImage")
     }
+
+
 
     private fun initButtons() {
         filtersLayoutFilt.btnMain.setOnClickListener {
@@ -86,8 +99,24 @@ class filterFragment : Fragment() {
                 }
             }
         }
+
     }
 
+    fun createImageFromBitmap(bitmap: Bitmap): String? {
+        var fileName: String? = "myImage" //no .png or .jpg needed
+        try {
+            val bytes = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+            val fo: FileOutputStream = view!!.getContext().openFileOutput(fileName, Context.MODE_PRIVATE)
+            fo.write(bytes.toByteArray())
+            // remember close file output
+            fo.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            fileName = null
+        }
+        return fileName
+    }
 
     private fun of(string: String): Filter{
         Filter.values().forEach {

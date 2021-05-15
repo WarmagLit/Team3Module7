@@ -1,53 +1,52 @@
 package com.example.graphiceditor
 
 import android.Manifest.permission.*
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.content.Intent
-import android.os.Build
-import android.util.Log
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
-import android.graphics.drawable.BitmapDrawable
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment.DIRECTORY_PICTURES
 import android.os.SystemClock
 import android.provider.MediaStore
-import android.widget.*
-import kotlinx.android.synthetic.main.editor.*
-import kotlinx.android.synthetic.main.editor_v2.*
-
-import java.io.File.separator
-
-import java.io.FileOutputStream
-import java.io.OutputStream
-import java.lang.Exception
-
-import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore.Images.Media.*
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.MotionEvent
+import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.graphics.createBitmap
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import com.davemorrissey.labs.subscaleview.ImageSource
+import com.example.graphiceditor.Fragments.drawFragment
 import com.example.graphiceditor.Fragments.filterFragment
 import com.example.graphiceditor.Fragments.otherFragment
 import com.example.graphiceditor.Fragments.transformFragment
+import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
+import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.internal.ContextUtils.getActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.editor.*
+import kotlinx.android.synthetic.main.editor_v2.*
 import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.coroutines.*
+import java.io.File
+import java.io.File.separator
+import java.io.FileOutputStream
+import java.io.OutputStream
 import kotlin.coroutines.*
 import kotlin.math.*
+
 
 private const val REQUEST_CODE = 42
 private const val CAMERA_REQUEST_CODE = 42
@@ -58,11 +57,14 @@ private const val PERMISSION_CAMERA_CODE = 1002
 
 class MainActivity : AppCompatActivity() {
     var mainCurrentPicture = PixelArray(1, 1)
-    lateinit var mainOriginalImage : Bitmap
+    var mainOriginalImage = mainCurrentPicture.bitmap
 
     val filterFrag = filterFragment()
     val transformFrag = transformFragment()
+    val drawFrag = drawFragment()
     val otherFrag = otherFragment()
+
+    var currentFragment = "filterFragment"
 
     private var currentPicture = PixelArray(1, 1)
     private var currentPlacePoint = 0
@@ -85,19 +87,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         makeCurrentFragment(filterFrag)
+        
 
-        //imageView2.setImageResource(R.drawable.hippo)
+        var myDrawable = ContextCompat.getDrawable(this, R.drawable.hippo)
+        // convert the drawable to a bitmap
+        val bitmap = myDrawable!!.toBitmap()
+        currentPicture = PixelArray(bitmap)
+        saveToInternalStorage(this, bitmap, "myImage")
 
-        //currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        //originalImage = (imageView2.drawable as BitmapDrawable).bitmap
-
-        //initButtons()
-        //initZoomer()
-        //initRotater()
-        //initTransformer()
-
-        //initBrush()
-
+        makeCurrentFragment(filterFrag)
 
         setupNavigation()
 
@@ -151,18 +149,22 @@ class MainActivity : AppCompatActivity() {
         navView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.chooseFilters -> {
+                    currentFragment = "filterFragment"
                     makeCurrentFragment(filterFrag)
                     true
                 }
                 R.id.chooseTransform -> {
+                    currentFragment = "transformFragment"
                     makeCurrentFragment(transformFrag)
                     true
                 }
                 R.id.chooseDraw -> {
-
+                    currentFragment = "drawFragment"
+                    makeCurrentFragment(drawFrag)
                     true
                 }
                 R.id.chooseOther -> {
+                    currentFragment = "otherFragment"
                     makeCurrentFragment(otherFrag)
                     true
                 }
@@ -513,11 +515,14 @@ class MainActivity : AppCompatActivity() {
             imageView2.setImageBitmap(thumbNail)
             mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
             mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
+            saveToInternalStorage(this, mainOriginalImage, "myImage")
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
             mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
             mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
+            saveToInternalStorage(this, mainOriginalImage, "myImage")
+
         } else {
             super.onActivityResult(requestCode, resultCode, data)
             }
