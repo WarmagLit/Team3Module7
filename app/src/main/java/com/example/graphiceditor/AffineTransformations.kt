@@ -13,7 +13,7 @@ class AffineTransformations {
     }
 
     constructor(oldSystemX: DoubleArray, oldSystemY: DoubleArray,
-        newSystemX: DoubleArray, newSystemY: DoubleArray){
+                newSystemX: DoubleArray, newSystemY: DoubleArray){
         val oldSystemInverseMatrix = calculateInverseMatrix(
             arrayOf(
                 doubleArrayOf(oldSystemX[0], oldSystemX[1], oldSystemX[2]),
@@ -135,7 +135,7 @@ class AffineTransformations {
                     return(
                             topDif *
                                     (leftDif * topLeft.component(component) + rightDif * topRight.component(component))
-                    + bottomDif *
+                                    + bottomDif *
                                     (leftDif * bottomLeft.component(component) + rightDif * bottomRight.component(component))
                             ).toInt()
                 }
@@ -237,24 +237,24 @@ class AffineTransformations {
                     var middle = 0.0
                     middle += (zoomingFactor2 - k) * (
                             topDif[0] *
-                            (leftDif[0] * topLeft[0].component(component) +
-                                    rightDif[0] * topRight[0].component(component)) +
-                            bottomDif[0] *
-                            (leftDif[0] * bottomLeft[0].component(component) +
-                                    rightDif[0] * bottomRight[0].component(component))
+                                    (leftDif[0] * topLeft[0].component(component) +
+                                            rightDif[0] * topRight[0].component(component)) +
+                                    bottomDif[0] *
+                                    (leftDif[0] * bottomLeft[0].component(component) +
+                                            rightDif[0] * bottomRight[0].component(component))
                             )
 
                     middle += (k - zoomingFactor1) * (
                             topDif[1] *
-                            (leftDif[1] * topLeft[1].component(component) +
-                                    rightDif[1] * topRight[1].component(component)) +
-                            bottomDif[1] *
-                            (leftDif[1] * bottomLeft[1].component(component) +
-                                    rightDif[1] * bottomRight[1].component(component))
+                                    (leftDif[1] * topLeft[1].component(component) +
+                                            rightDif[1] * topRight[1].component(component)) +
+                                    bottomDif[1] *
+                                    (leftDif[1] * bottomLeft[1].component(component) +
+                                            rightDif[1] * bottomRight[1].component(component))
                             )
 
                     middle /= zoomingFactor1
-                    
+
                     return middle.toInt()
                 }
 

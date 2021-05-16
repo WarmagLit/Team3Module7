@@ -1,42 +1,49 @@
 package com.example.graphiceditor
 
 import android.Manifest.permission.*
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.content.Intent
-import android.os.Build
-import android.util.Log
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
-import android.graphics.drawable.BitmapDrawable
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment.DIRECTORY_PICTURES
 import android.os.SystemClock
 import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.*
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.fragment.app.Fragment
+import com.example.graphiceditor.Fragments.drawFragment
+import com.example.graphiceditor.Fragments.filterFragment
+import com.example.graphiceditor.Fragments.otherFragment
+import com.example.graphiceditor.Fragments.transformFragment
+import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.internal.ContextUtils.getActivity
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.editor.*
 import kotlinx.android.synthetic.main.editor_v2.*
-
+import kotlinx.android.synthetic.main.fragment_filter.*
+import kotlinx.coroutines.*
+import java.io.File
 import java.io.File.separator
-
 import java.io.FileOutputStream
 import java.io.OutputStream
-import java.lang.Exception
-
-import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.os.Environment.DIRECTORY_PICTURES
-import android.provider.MediaStore.Images.Media.*
-import android.view.MotionEvent
-import androidx.annotation.RequiresApi
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main.view.*
-import kotlinx.coroutines.*
 import kotlin.coroutines.*
 import kotlin.math.*
+
 
 private const val REQUEST_CODE = 42
 private const val CAMERA_REQUEST_CODE = 42
@@ -46,6 +53,16 @@ private const val WRITE_STORAGE_CODE = 100
 private const val PERMISSION_CAMERA_CODE = 1002
 
 class MainActivity : AppCompatActivity() {
+    var mainCurrentPicture = PixelArray(1, 1)
+    var mainOriginalImage = mainCurrentPicture.bitmap
+
+    val filterFrag = filterFragment()
+    val transformFrag = transformFragment()
+    val drawFrag = drawFragment()
+    val otherFrag = otherFragment()
+
+    var currentFragment = "filterFragment"
+
     private var currentPicture = PixelArray(1, 1)
     private var currentPlacePoint = 0
     private var affineOldPoints = Array(3){ IntArray(2) }
@@ -61,50 +78,91 @@ class MainActivity : AppCompatActivity() {
     private var currentBrush = "red"
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        imageView2.setImageResource(R.drawable.hippo)
-        currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        val drawingBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-        drawingField.setImageBitmap(drawingBitmap)
-        val pointsBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-        pointsField.setImageBitmap(pointsBitmap)
+        makeCurrentFragment(filterFrag)
 
 
-        initButtons()
-        initZoomer()
-        initRotater()
-        initTransformer()
-        initBrush()
+        var myDrawable = ContextCompat.getDrawable(this, R.drawable.hippo)
+        // convert the drawable to a bitmap
+        val bitmap = myDrawable!!.toBitmap()
+        currentPicture = PixelArray(bitmap)
+        saveToInternalStorage(this, bitmap, "myImage")
+
+        makeCurrentFragment(filterFrag)
 
         setupNavigation()
+
+        setSupportActionBar(toolbar)
+
+        toolbar.setNavigationOnClickListener {
+            Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+        }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        var inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.toolbarmenu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+
+        when(itemview) {
+            R.id.addGallery -> {
+                pickImageFromGallery()
+                true
+            }
+            R.id.addCamera-> {
+                if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    startActivityForResult(intent, CAMERA_REQUEST_CODE)
+                }
+                true
+            }
+            R.id.saveImg-> {
+                saveImage(true)
+                true
+            }
+            else -> true
+        }
+        return true
+    }
+
+    private fun makeCurrentFragment(fragment: Fragment) =
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.fl_wrapper, fragment)
+            commit()
+        }
+
+
 
     private fun setupNavigation() {
         val navView: BottomNavigationView = findViewById(R.id.bottomNavBar)
         navView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.menuAbout -> {
-                    Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+                R.id.chooseFilters -> {
+                    currentFragment = "filterFragment"
+                    makeCurrentFragment(filterFrag)
                     true
                 }
-                R.id.addGallery -> {
-                    pickImageFromGallery()
+                R.id.chooseTransform -> {
+                    currentFragment = "transformFragment"
+                    makeCurrentFragment(transformFrag)
                     true
                 }
-                R.id.addCamera -> {
-                    Log.d("TAG", "Camera button click")
-
-                    if (checkPermission(CAMERA, CAMERA_REQUEST_CODE)) {
-                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        startActivityForResult(intent, CAMERA_REQUEST_CODE)
-                    }
+                R.id.chooseDraw -> {
+                    currentFragment = "drawFragment"
+                    makeCurrentFragment(drawFrag)
                     true
                 }
-                R.id.saveImg -> {
-                    saveImage()
+                R.id.chooseOther -> {
+                    currentFragment = "otherFragment"
+                    makeCurrentFragment(otherFrag)
                     true
                 }
                 else -> true
@@ -112,7 +170,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermission(permission: String, requestCode: Int): Boolean {
+    private fun checkPermission(permission: String, requestCode: Int): Boolean{
+
         if (checkSelfPermission(permission) == PERMISSION_GRANTED)
             return true
 
@@ -142,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImage() {
+    private fun saveImage(withText: Boolean):Uri? {
         val bitmap = (imageView2.drawable as BitmapDrawable).bitmap
         val imageUri: Uri? = bitmap.saveImage(this)
         Toast.makeText(
@@ -150,6 +209,7 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.savedImage, imageUri),
             Toast.LENGTH_SHORT
         ).show()
+        return imageUri
     }
 
     private fun Bitmap.saveImage(context: Context): Uri? {
@@ -216,59 +276,13 @@ class MainActivity : AppCompatActivity() {
         return Uri.fromFile(file)
     }
 
+
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
-            super.onActivityResult(requestCode, resultCode, data)
-            val thumbNail: Bitmap = data?.extras?.get("data") as Bitmap
-            imageView2.setImageBitmap(thumbNail)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        }
-        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            imageView2.setImageURI(data?.data)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-    private fun initButtons() {
-        filtersLayout.btnMain.setOnClickListener {
-            imageView2.setImageResource(R.drawable.hippo)
-            currentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
-        }
-
-        val arrayBtn = arrayOf(
-            filtersLayout.btnRed,
-            filtersLayout.btnGreen,
-            filtersLayout.btnBlue,
-            filtersLayout.btnGray,
-            filtersLayout.btnDiagonal,
-            filtersLayout.btnSwap,
-            filtersLayout.btnNegative,
-            filtersLayout.btnBlur,
-            filtersLayout.btnEdge,
-            filtersLayout.btnEmboss
-        )
-
-        val arrayStrings = getStrings()
-
-        for (i in arrayBtn.indices) {
-            arrayBtn[i].setOnClickListener {
-                val filter = of(arrayStrings[i])
-                Log.d("TAG", filter.toString())
-                if (filter != Filter.NONE) {
-                    CoroutineScope(EmptyCoroutineContext).async { apply(filter) }
-                }
-            }
-        }
-    }
-
+/*
     private fun initZoomer() {
         zoomingInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -296,7 +310,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    */
 
+
+/*
     @SuppressLint("ClickableViewAccessibility")
     private fun initTransformer() {
 
@@ -336,31 +353,18 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initBrush(){
-
-        btnClearBrush.setOnClickListener {
-            val drawingBitmap = Bitmap.createBitmap(
-                currentPicture.width,
-                currentPicture.height,
-                Bitmap.Config.ARGB_8888
-            )
-
-            drawingField.setImageBitmap(drawingBitmap)
-        }
-
         val arrayBtn = arrayOf(
             btnBlurBrush,
             btnRedBrush,
             btnGreenBrush,
-            btnBlueBrush,
-            btnGrayBrush
+            btnBlueBrush
         )
 
         val arrayStrings = arrayOf(
             "blur",
             "red",
             "green",
-            "blue",
-            "gray"
+            "blue"
         )
 
         for (i in arrayBtn.indices){
@@ -398,10 +402,11 @@ class MainActivity : AppCompatActivity() {
             imageView2.setImageBitmap(currentPicture.bitmap)
         }
     }
+*/
 
-
+/*
     private fun onTouchPointsField(event: MotionEvent): Boolean{
-        if (event.action != MotionEvent.ACTION_UP) return false
+        if (event.action != MotionEvent.ACTION_MOVE) return false
         if (currentPlacePoint == 0) return false
         val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
 
@@ -414,8 +419,8 @@ class MainActivity : AppCompatActivity() {
             else 0*/
 
 
-        val x = event.x.toInt()// * pointsBitmap.width / pointsField.width - horizontalDifference
-        val y = event.y.toInt()// * pointsBitmap.height / pointsField.height - verticalDifference
+        val x = event.x.toInt() * pointsBitmap.width / pointsField.width// - verticalDifference
+        val y = event.y.toInt() * pointsBitmap.height / pointsField.height// - horizontalDifference
 
         pointsBitmap.addPoint(x, y, pointColor[currentPlacePoint - 1])
         if (currentPlacePoint in 1..3) affineOldPoints[currentPlacePoint - 1] = intArrayOf(x, y)
@@ -427,24 +432,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onTouchDrawingField(event: MotionEvent): Boolean{
-        if (event.action != MotionEvent.ACTION_MOVE) return false
+        if (event.action == MotionEvent.ACTION_UP) return false
+        val x = event.x.toInt()
+        val y = event.y.toInt()
         val drawingBitmap = (drawingField.drawable as BitmapDrawable).bitmap
 
-        /*val isHorizontal = (drawingBitmap.height < drawingBitmap.width)
-        val verticalDifference =
-            if(isHorizontal) (drawingField.height * drawingBitmap.width / drawingField.width - drawingBitmap.height) / 2
-            else 0
-        val horizontalDifference =
-            if(isHorizontal) 0
-            else (drawingField.width * drawingBitmap.height / drawingField.height - drawingBitmap.width) / 2*/
-
-        val x = event.x.toInt()// * drawingBitmap.width / drawingField.width - horizontalDifference
-        val y = event.y.toInt()// * drawingBitmap.height / drawingField.height - verticalDifference
-
-        val r = radiusInput.text.toDouble().toInt()
-        val centering = centeringInput.text.toDouble()
-
-        Paintbrush.draw(currentPicture, drawingBitmap, x, y, r, centering, currentBrush)
+        Paintbrush.draw(currentPicture, drawingBitmap, x, y, 30, currentBrush)
         drawingField.setImageBitmap(drawingBitmap)
 
         return false
@@ -457,6 +450,10 @@ class MainActivity : AppCompatActivity() {
         }
         return Filter.NONE
     }
+
+    */
+
+
 
     private fun getStrings(): List<String> = Filter.values().map { getString(it) }
     private fun getString(filter: Filter) = getString(filter.code)
@@ -488,6 +485,7 @@ class MainActivity : AppCompatActivity() {
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
+    /*
     private fun allowPlacePoints(){
         currentPlacePoint = 1
         val pointsBitmap = Bitmap.createBitmap(
@@ -499,11 +497,50 @@ class MainActivity : AppCompatActivity() {
         pointsField.setImageBitmap(pointsBitmap)
     }
 
+
+
     private fun prohibitPlacePoints(){
         currentPlacePoint = 0
         val pointsBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-
         pointsField.setImageBitmap(pointsBitmap)
+    }
+*/
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
+            super.onActivityResult(requestCode, resultCode, data)
+            val thumbNail: Bitmap = data!!.extras!!.get("data") as Bitmap
+            imageView2.setImageBitmap(thumbNail)
+            mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+            mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
+            saveToInternalStorage(this, mainOriginalImage, "myImage")
+            if(currentFragment == "filterFragment") {
+                filterFrag.reloadImage()
+            }
+            if(currentFragment == "drawFragment") {
+                drawFrag.reloadImage()
+            }
+            if(currentFragment == "transformFragment") {
+                transformFrag.reloadImage()
+            }
+        }
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
+            imageView2.setImageURI(data?.data)
+            mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
+            mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
+            saveToInternalStorage(this, mainOriginalImage, "myImage")
+            if(currentFragment == "filterFragment") {
+                filterFrag.reloadImage()
+            }
+            if(currentFragment == "drawFragment") {
+                drawFrag.reloadImage()
+            }
+            if(currentFragment == "transformFragment") {
+                transformFrag.reloadImage()
+            }
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+            }
     }
 
     private fun Bitmap.addPoint(x: Int, y: Int, color: Int){
@@ -515,6 +552,7 @@ class MainActivity : AppCompatActivity() {
                 if (j !in 0 until height || (x - i) * (x - i) + (y - j) * (y - j) > r * r) continue
                 setPixel(i, j, color)
             }
+
         }
     }
 

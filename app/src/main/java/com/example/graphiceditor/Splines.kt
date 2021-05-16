@@ -80,7 +80,6 @@ class Splines {
         val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         bitmap.recycle()
         for (point in pointsList){
-            newBitmap.
         }
     }
 }

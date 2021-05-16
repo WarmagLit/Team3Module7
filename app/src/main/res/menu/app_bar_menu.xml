@@ -3,29 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menuAbout"
-        android:icon="@drawable/ic_menu_black_24dp"
-        android:title="Menu"
-        tools:context=".MainActivity"
+
+    <item
+        android:id="@+id/chooseFilters"
+        android:icon="@drawable/ic_photo_filter_black_24dp"
+        android:title="@string/filters"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/addGallery"
+    <item
+        android:id="@+id/chooseTransform"
+        android:icon="@drawable/ic_photo_size_select_small_black_24dp"
+        android:title="@string/transform"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/chooseDraw"
+        android:icon="@drawable/ic_mode_edit_black_24dp"
+        android:title="@string/draw"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/chooseOther"
         android:icon="@drawable/ic_add_black_24dp"
-        android:title="Import"
-        tools:context=".MainActivity"
+        android:title="@string/other"
         app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/addCamera"
-        android:icon="@drawable/ic_photo_camera_black_24dp"
-        android:title="Camera"
-        app:showAsAction="ifRoom"
-        tools:context=".MainActivity" />
-
-    <item
-        android:id="@+id/saveImg"
-        android:icon="@drawable/ic_save_black_24dp"
-        android:title="@string/saveImage"
-        app:showAsAction="ifRoom"
-        tools:context=".MainActivity" />
 </menu>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.drawFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        tools:context=".drawFragment">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/imageContentDescription"
+                android:gravity="end"
+                android:src="@drawable/ic_launcher_background"
+                app:srcCompat="@drawable/hippo" />
+
+            <ImageView
+                android:id="@+id/drawingField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:srcCompat="@android:drawable/divider_horizontal_dim_dark" />
+        </FrameLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/drawButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Хочу рисовать" />
+
+                <Button
+                    android:id="@+id/applyDrawingButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Порисовал, спасибо" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/radiusInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:text="25" />
+
+                    <EditText
+                        android:id="@+id/centeringInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="numberDecimal"
+                        android:text="0.0" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/btnClearBrush"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="false"
+                            android:background="@null"
+                            android:cropToPadding="false"
+                            android:scaleType="fitCenter"
+                            app:srcCompat="@drawable/model" />
+
+                        <ImageButton
+                            android:id="@+id/btnBlurBrush"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="false"
+                            android:background="@null"
+                            android:cropToPadding="false"
+                            android:scaleType="fitCenter"
+                            app:srcCompat="@drawable/blur" />
+
+                        <ImageButton
+                            android:id="@+id/btnRedBrush"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="false"
+                            android:background="@null"
+                            android:cropToPadding="false"
+                            android:scaleType="fitCenter"
+                            app:srcCompat="@drawable/redfilter" />
+
+                        <ImageButton
+                            android:id="@+id/btnGreenBrush"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="false"
+                            android:background="@null"
+                            android:cropToPadding="false"
+                            android:scaleType="fitCenter"
+                            app:srcCompat="@drawable/greenfilter" />
+
+                        <ImageButton
+                            android:id="@+id/btnBlueBrush"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="false"
+                            android:background="@null"
+                            android:cropToPadding="false"
+                            android:scaleType="fitCenter"
+                            app:srcCompat="@drawable/bluefilter" />
+
+                        <ImageButton
+                            android:id="@+id/btnGrayBrush"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="false"
+                            android:background="@null"
+                            android:cropToPadding="false"
+                            android:scaleType="fitCenter"
+                            app:srcCompat="@drawable/greyfilter" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+            </LinearLayout>
+        </ScrollView>
+
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+    </ScrollView>
+
+
+</FrameLayout>
