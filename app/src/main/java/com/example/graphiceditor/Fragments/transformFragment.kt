@@ -101,4 +101,10 @@ class transformFragment : Fragment() {
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
+    fun reloadImage () {
+        originalImages = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
+        currentPicture = PixelArray(originalImages)
+        deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
+    }
+
 }

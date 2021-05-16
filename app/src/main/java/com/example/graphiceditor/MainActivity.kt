@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
@@ -16,7 +15,6 @@ import android.os.Environment.DIRECTORY_PICTURES
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.*
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -30,7 +28,6 @@ import com.example.graphiceditor.Fragments.drawFragment
 import com.example.graphiceditor.Fragments.filterFragment
 import com.example.graphiceditor.Fragments.otherFragment
 import com.example.graphiceditor.Fragments.transformFragment
-import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
 import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.ContextUtils.getActivity
@@ -87,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         makeCurrentFragment(filterFrag)
-        
+
 
         var myDrawable = ContextCompat.getDrawable(this, R.drawable.hippo)
         // convert the drawable to a bitmap
@@ -516,12 +513,30 @@ class MainActivity : AppCompatActivity() {
             mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
             mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
             saveToInternalStorage(this, mainOriginalImage, "myImage")
+            if(currentFragment == "filterFragment") {
+                filterFrag.reloadImage()
+            }
+            if(currentFragment == "drawFragment") {
+                drawFrag.reloadImage()
+            }
+            if(currentFragment == "transformFragment") {
+                transformFrag.reloadImage()
+            }
         }
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView2.setImageURI(data?.data)
             mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
             mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
             saveToInternalStorage(this, mainOriginalImage, "myImage")
+            if(currentFragment == "filterFragment") {
+                filterFrag.reloadImage()
+            }
+            if(currentFragment == "drawFragment") {
+                drawFrag.reloadImage()
+            }
+            if(currentFragment == "transformFragment") {
+                transformFrag.reloadImage()
+            }
 
         } else {
             super.onActivityResult(requestCode, resultCode, data)

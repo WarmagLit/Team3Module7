@@ -10,6 +10,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.example.graphiceditor.*
+import com.example.graphiceditor.ImageStorageManager.Companion.deleteImageFromInternalStorage
+import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
+import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
 import kotlinx.android.synthetic.main.fragment_draw.*
 import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.android.synthetic.main.fragment_filter.imageView2
@@ -48,14 +51,14 @@ class drawFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        originalImage = ImageStorageManager.getImageFromInternalStorage(
+        originalImage = getImageFromInternalStorage(
             getActivity()!!.applicationContext,
             "myImage"
         )!!
         currentPicture = PixelArray(originalImage)
 
         imageView2.setImageBitmap(originalImage)
-        ImageStorageManager.deleteImageFromInternalStorage(
+        deleteImageFromInternalStorage(
             getActivity()!!.applicationContext,
             "myImage"
         )
@@ -68,7 +71,7 @@ class drawFragment : Fragment() {
 
         val bit = (imageView2.drawable as BitmapDrawable).bitmap
 
-        ImageStorageManager.saveToInternalStorage(
+        saveToInternalStorage(
             getActivity()!!.applicationContext,
             bit,
             "myImage"
@@ -243,6 +246,12 @@ class drawFragment : Fragment() {
             }
 
         }
+    }
+
+    fun reloadImage () {
+        originalImage = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
+        currentPicture = PixelArray(originalImage)
+        deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
     }
 
 

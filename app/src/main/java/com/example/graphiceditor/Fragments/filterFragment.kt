@@ -57,12 +57,18 @@ class filterFragment : Fragment() {
         initButtons()
     }
 
+    fun reloadImage () {
+        originalImage = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
+        currentPicture = PixelArray(originalImage)
+        imageView2.setImageBitmap(originalImage)
+        deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
+    }
+
 
     override fun onPause() {
         super.onPause()
 
         val bit = (imageView2.drawable as BitmapDrawable).bitmap
-
         saveToInternalStorage(getActivity()!!.applicationContext, bit, "myImage")
     }
 
