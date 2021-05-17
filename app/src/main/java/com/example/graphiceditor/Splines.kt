@@ -1,14 +1,17 @@
 package com.example.graphiceditor
 
 import android.graphics.Bitmap
-import java.lang.Integer.max
-import java.util.Collections.swap
 import kotlin.math.abs
-import kotlin.math.sign
-import kotlin.math.sqrt
 
 class Splines {
     private val pointsList: MutableList<IntArray>
+    private var selectedIndex = -1
+
+    constructor(){
+        pointsList = MutableList(0){
+            intArrayOf(0, 0)
+        }
+    }
 
     constructor(x0: Int, y0: Int){
         pointsList = mutableListOf(intArrayOf(x0, y0))
@@ -24,6 +27,25 @@ class Splines {
 
     fun add(points: MutableList<IntArray>){
         pointsList.addAll(points)
+    }
+
+    fun select(x: Int, y: Int, r: Int): Int{
+        selectedIndex = -1
+        val r2 = 2 * r
+        for (i in 0 until pointsList.size){
+            if (abs(pointsList[i][0] - x) <= r2 && abs(pointsList[i][1] - y) <= r2){
+                selectedIndex = i
+                break
+            }
+        }
+        return selectedIndex
+    }
+
+    fun checkSelected() = selectedIndex
+
+    fun changeSelected(x: Int, y: Int){
+        pointsList[selectedIndex] = intArrayOf(x, y)
+        selectedIndex = -1
     }
 
     fun getLine(x0: Int, y0: Int, x1: Int, y1: Int): Array<IntArray> {
@@ -63,7 +85,33 @@ class Splines {
             for (j in y - r..y + r) {
                 if (j !in 0 until this.height || (x - i) * (x - i) + (y - j) * (y - j) > r * r) continue
                 this.setPixel(
-                    i, j, colorOf(255, 255, 255)
+                    i, j, colorOf(0, 0, 0)
+                )
+            }
+        }
+    }
+
+    private fun Bitmap.drawNodePoint(x: Int, y: Int, r: Int){
+        val r2 = 3 * r / 2
+        for (i in x - r2..x + r2) {
+            if (i !in 0 until this.width) continue
+            for (j in y - r2..y + r2) {
+                if (j !in 0 until this.height || (x - i) * (x - i) + (y - j) * (y - j) > r2 * r2) continue
+                this.setPixel(
+                    i, j, colorOf(255, 0, 0)
+                )
+            }
+        }
+    }
+
+    private fun Bitmap.drawSelectedPoint(x: Int, y: Int, r: Int){
+        val r2 = 3 * r / 2
+        for (i in x - r2..x + r2) {
+            if (i !in 0 until this.width) continue
+            for (j in y - r2..y + r2) {
+                if (j !in 0 until this.height || (x - i) * (x - i) + (y - j) * (y - j) > r2 * r2) continue
+                this.setPixel(
+                    i, j, colorOf(125, 0, 0)
                 )
             }
         }
@@ -76,10 +124,22 @@ class Splines {
         }
     }
 
-    fun drawPoliline(r: Int, bitmap: Bitmap){
+    fun drawPoliline(r: Int, bitmap: Bitmap): Bitmap{
         val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         bitmap.recycle()
-        for (point in pointsList){
+
+        for (i in 0 until pointsList.size - 1){
+            newBitmap.drawLine(pointsList[i][0], pointsList[i][1], pointsList[i + 1][0], pointsList[i + 1][1], r)
+            newBitmap.drawNodePoint(pointsList[i][0], pointsList[i][1], r)
         }
+        newBitmap.drawNodePoint(pointsList.last()[0], pointsList.last()[1], r)
+        if (selectedIndex != -1){
+            newBitmap.drawSelectedPoint(
+                pointsList[selectedIndex][0],
+                pointsList[selectedIndex][1],
+                r
+            )
+        }
+        return newBitmap
     }
 }

@@ -20,13 +20,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlin.coroutines.EmptyCoroutineContext
 
-
 class drawFragment : Fragment() {
 
     var currentPicture = PixelArray(1, 1)
     lateinit var originalImage : Bitmap
 
     private var currentBrush = "red"
+    private var currentSpline = Splines()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +53,7 @@ class drawFragment : Fragment() {
         )
 
         initBrush()
+        initSpline()
     }
 
     override fun onPause() {
@@ -132,6 +133,24 @@ class drawFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initSpline(){
+        lineButton.setOnClickListener {
+            val splineBitmap = Bitmap.createBitmap(
+                currentPicture.width,
+                currentPicture.height,
+                Bitmap.Config.ARGB_8888
+            )
+
+            splineField.setImageBitmap(splineBitmap)
+            currentSpline = Splines()
+        }
+
+        splineField.setOnTouchListener { _, event ->
+            onTouchSplineField(event)
+        }
+    }
+
 
     private fun onTouchDrawingField(event: MotionEvent): Boolean{
         if (event.action != MotionEvent.ACTION_MOVE) return false
@@ -144,6 +163,46 @@ class drawFragment : Fragment() {
 
         Paintbrush.draw(currentPicture, drawingBitmap, x, y, r, centering, currentBrush)
         drawingField.setImageBitmap(drawingBitmap)
+
+        return false
+    }
+
+    private fun onTouchSplineField(event: MotionEvent): Boolean{
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val x = event.x.toInt()
+            val y = event.y.toInt()
+            val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
+
+            val r = radiusInput.text.toDouble().toInt()
+            val centering = centeringInput.text.toDouble()
+
+            if (currentSpline.select(x, y, r) == -1) currentSpline.add(x, y)
+
+            val newSplineBitmap = currentSpline.drawPoliline(r, splineBitmap)
+
+            splineField.setImageBitmap(newSplineBitmap)
+
+            return false
+        }
+
+        else if (event.action == MotionEvent.ACTION_UP) {
+            if (currentSpline.checkSelected() == -1) return false
+
+            val x = event.x.toInt()
+            val y = event.y.toInt()
+            val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
+
+            val r = radiusInput.text.toDouble().toInt()
+            val centering = centeringInput.text.toDouble()
+
+            currentSpline.changeSelected(x, y)
+
+            val newSplineBitmap = currentSpline.drawPoliline(r, splineBitmap)
+
+            splineField.setImageBitmap(newSplineBitmap)
+
+            return false
+        }
 
         return false
     }

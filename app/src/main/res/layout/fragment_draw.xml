@@ -33,6 +33,13 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 app:srcCompat="@android:drawable/divider_horizontal_dim_dark" />
+
+            <ImageView
+                android:id="@+id/splineField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:srcCompat="@android:drawable/divider_horizontal_dim_dark" />
         </FrameLayout>
 
         <ScrollView
@@ -163,6 +170,18 @@
 
                     </LinearLayout>
                 </HorizontalScrollView>
+
+                <Button
+                    android:id="@+id/lineButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Нарисовать ломаную" />
+
+                <Button
+                    android:id="@+id/splineButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Превратить в сплайн" />
 
             </LinearLayout>
         </ScrollView>
