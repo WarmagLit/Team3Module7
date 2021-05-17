@@ -124,13 +124,60 @@ class Splines {
         }
     }
 
+    fun Bitmap.drawBezierLine(
+        begin: IntArray,
+        p1: IntArray,
+        p2: IntArray,
+        end: IntArray,
+        r: Int
+    ){
+        if(abs(begin[0] - end[0]) <= 3 && abs(begin[1] - end[1]) <= 3){
+            this.drawPoint(begin[0], begin[1], r)
+            this.drawPoint(end[0], end[1], r)
+            return
+        }
+        val p = Array(4){
+            Array(4) {
+                IntArray(4)
+            }
+        }
+        p[0] = arrayOf(begin, p1, p2, end)
+        for (lvl in 1..3){
+            for (i in 0..3-lvl){
+                p[lvl][i] = intArrayOf(
+                    (p[lvl - 1][i][0] + p[lvl - 1][i + 1][0])/2,
+                    (p[lvl - 1][i][1] + p[lvl - 1][i + 1][1])/2
+                )
+            }
+        }
+        drawBezierLine(p[0][0], p[1][0], p[2][0], p[3][0], r)
+        drawBezierLine(p[3][0], p[2][1], p[1][2], p[0][3], r)
+    }
+
+
     fun drawPoliline(r: Int, bitmap: Bitmap): Bitmap{
         val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         bitmap.recycle()
 
         for (i in 0 until pointsList.size - 1){
-            newBitmap.drawLine(pointsList[i][0], pointsList[i][1], pointsList[i + 1][0], pointsList[i + 1][1], r)
+
+            newBitmap.drawBezierLine(
+                pointsList[i],
+                intArrayOf(
+                    (pointsList[i][0] + pointsList[i + 1][0])/2,
+                    (pointsList[i][1] + pointsList[i + 1][1])/2
+                ),
+                intArrayOf(
+                    pointsList[i][0] + (pointsList[i][0] - pointsList[i + 1][0])/2,
+                    pointsList[i + 1][1] + (pointsList[i][1] - pointsList[i + 1][1])/2
+                ),
+                pointsList[i + 1],
+                r
+            )
             newBitmap.drawNodePoint(pointsList[i][0], pointsList[i][1], r)
+
+            //newBitmap.drawLine(pointsList[i][0], pointsList[i][1], pointsList[i + 1][0], pointsList[i + 1][1], r)
+
         }
         newBitmap.drawNodePoint(pointsList.last()[0], pointsList.last()[1], r)
         if (selectedIndex != -1){
