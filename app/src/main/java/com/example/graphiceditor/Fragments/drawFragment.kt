@@ -64,6 +64,7 @@ class drawFragment : Fragment() {
         )
 
         initBrush()
+        initTransformer()
     }
 
     override fun onPause() {

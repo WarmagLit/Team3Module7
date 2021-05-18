@@ -11,13 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.graphiceditor.Filter
+import com.example.graphiceditor.*
 import com.example.graphiceditor.ImageStorageManager.Companion.deleteImageFromInternalStorage
 import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
 import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
-import com.example.graphiceditor.MainActivity
-import com.example.graphiceditor.PixelArray
-import com.example.graphiceditor.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_filter.*
@@ -55,6 +52,7 @@ class filterFragment : Fragment() {
         deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
 
         initButtons()
+        initUnsharp()
     }
 
     fun reloadImage () {
@@ -106,6 +104,13 @@ class filterFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun initUnsharp() {
+        unsharpButton.setOnClickListener {
+            currentPicture = Unsharp.unsharpFilter(currentPicture,unsharpSigma.text.toDouble(),koefK.text.toDouble())
+            imageView2.setImageBitmap(currentPicture.bitmap)
+        }
     }
 
     fun createImageFromBitmap(bitmap: Bitmap): String? {
