@@ -12,9 +12,9 @@
         android:label="@string/appName"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
-        <activity android:name=".DrawActivity"></activity>
+        android:theme="@style/AppTheme">
+        <activity android:name=".CubeActivity"></activity>
+        <activity android:name=".DrawActivity" />
         <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/SplashScreenTheme">
@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>
