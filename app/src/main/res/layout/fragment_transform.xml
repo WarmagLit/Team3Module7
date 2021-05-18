@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.transformFragment">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/scrollTransform"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -17,201 +16,94 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                tools:context=".transformFragment">
+                tools:context=".drawFragment">
 
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="400sp"
-                    android:layout_height="400sp"
-                    android:contentDescription="@string/imageContentDescription"
-                    android:src="@drawable/ic_launcher_background"
-                    app:srcCompat="@drawable/hippo" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
 
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/imageContentDescription"
+                        android:gravity="end"
+                        android:src="@drawable/ic_launcher_background"
+                        app:srcCompat="@drawable/hippo" />
 
-                <EditText
-                    android:id="@+id/zoomingInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    android:text="1.0" />
+                    <ImageView
+                        android:id="@+id/pointsField"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        app:srcCompat="@android:drawable/divider_horizontal_dim_dark" />
 
-                <EditText
-                    android:id="@+id/rotationInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    android:text="0.0" />
+                </FrameLayout>
 
-                <HorizontalScrollView
+                <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+
                     <LinearLayout
-                        android:id="@+id/affineLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal" >
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        tools:context=".transformFragment">
 
-                        <LinearLayout
-                            android:id="@+id/old1"
-                            android:layout_width="155dp"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
 
-                            <EditText
-                                android:id="@+id/x1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="oldX1"
-                                android:inputType="number" />
+                        <EditText
+                            android:id="@+id/zoomingInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:inputType="numberDecimal"
+                            android:text="1.0" />
 
-                            <EditText
-                                android:id="@+id/y1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="oldY1"
-                                android:inputType="number" />
-                        </LinearLayout>
+                        <EditText
+                            android:id="@+id/rotationInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:inputType="numberDecimal"
+                            android:text="0.0" />
 
-                        <LinearLayout
-                            android:id="@+id/old2"
-                            android:layout_width="155dp"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
+                        <Button
+                            android:id="@+id/placePointsButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Расставить точки" />
 
-                            <EditText
-                                android:id="@+id/x2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="oldX2"
-                                android:inputType="number" />
+                        <Button
+                            android:id="@+id/affineButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Применить" />
 
-                            <EditText
-                                android:id="@+id/y2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="oldY2"
-                                android:inputType="number" />
-                        </LinearLayout>
+                        <Button
+                            android:id="@+id/inverseButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="обратить координаты" />
 
-                        <LinearLayout
-                            android:id="@+id/old3"
-                            android:layout_width="155dp"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <EditText
-                                android:id="@+id/x3"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="oldX3"
-                                android:inputType="number" />
-
-                            <EditText
-                                android:id="@+id/y3"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="oldY3"
-                                android:inputType="number" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/new1"
-                            android:layout_width="155dp"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <EditText
-                                android:id="@+id/x4"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="newX1"
-                                android:inputType="number" />
-
-                            <EditText
-                                android:id="@+id/y4"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="newY1"
-                                android:inputType="number" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/new2"
-                            android:layout_width="155dp"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <EditText
-                                android:id="@+id/x5"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="newX2"
-                                android:inputType="number" />
-
-                            <EditText
-                                android:id="@+id/y5"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="newY2"
-                                android:inputType="number" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/new3"
-                            android:layout_width="155dp"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <EditText
-                                android:id="@+id/x6"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="newX3"
-                                android:inputType="number" />
-
-                            <EditText
-                                android:id="@+id/y6"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:hint="newY3"
-                                android:inputType="number" />
-                        </LinearLayout>
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp" />
                     </LinearLayout>
-                </HorizontalScrollView>
+                </ScrollView>
 
-                <Button
-                    android:id="@+id/affineButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Применить" />
 
                 <Space
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
+                    android:layout_height="100dp" />
             </LinearLayout>
         </ScrollView>
-
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
