@@ -6,10 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.graphiceditor.CubeActivity
-import com.example.graphiceditor.R
-import com.example.graphiceditor.SplashScreenActivity
-import com.example.graphiceditor.box
+import com.example.graphiceditor.*
 import kotlinx.android.synthetic.main.fragment_other.*
 
 
@@ -32,7 +29,7 @@ class otherFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         buttonFace.setOnClickListener {
-            val intent = Intent(getActivity(), SplashScreenActivity::class.java)
+            val intent = Intent(getActivity(), FaceDetect::class.java)
             startActivity(intent)
         }
         buttonCube.setOnClickListener {

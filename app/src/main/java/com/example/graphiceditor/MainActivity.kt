@@ -35,7 +35,6 @@ import com.google.android.material.internal.ContextUtils.getActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.editor.*
-import kotlinx.android.synthetic.main.editor_v2.*
 import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.coroutines.*
 import java.io.File
