@@ -184,6 +184,18 @@ class drawFragment : Fragment() {
             splineField.setImageBitmap(newSplineBitmap)
             imageView2.setImageBitmap(currentPicture.bitmap)
         }
+
+        deletePointButton.setOnClickListener {
+            val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
+            val r = radiusInput.text.toDouble().toInt()
+
+            currentSpline.removeSelectedPoint()
+
+            val newSplineBitmap = currentSpline.drawSpline(r, splineBitmap)
+            splineField.setImageBitmap(newSplineBitmap)
+
+            deletePointButton.visibility = View.INVISIBLE
+        }
     }
 
 
@@ -209,11 +221,19 @@ class drawFragment : Fragment() {
             val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
 
             val r = radiusInput.text.toDouble().toInt()
-            val centering = centeringInput.text.toDouble()
 
             if (isSpline) {
-                if (currentSpline.checkSelected()) currentSpline.changeSelectedPoint(x, y)
-                else if (currentSpline.select(x, y, r) == -1) currentSpline.add(x, y)
+                if (currentSpline.checkSelected()){
+                    currentSpline.changeSelectedPoint(x, y)
+                    deletePointButton.visibility = View.INVISIBLE
+                }
+                else if (currentSpline.select(x, y, r) == -1){
+                    currentSpline.add(x, y)
+                    deletePointButton.visibility = View.INVISIBLE
+                }
+                else if (currentSpline.getSelectedListNumber() == 0){
+                    deletePointButton.visibility = View.VISIBLE
+                }
             }
             else {
                 currentSpline.add(x, y)

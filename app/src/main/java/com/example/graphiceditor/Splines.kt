@@ -97,6 +97,8 @@ class Splines {
 
     fun checkSelected() = (selectedIndex != -1)
 
+    fun getSelectedListNumber() = selectedList
+
     private fun getSelectedList() = when(selectedList){
         1 -> additionPointsList1
         2 -> additionPointsList2
@@ -130,7 +132,7 @@ class Splines {
         selectedIndex = -1
     }
 
-    fun changeLength(index: Int, k: Double){
+    private fun changeLength(index: Int, k: Double){
         additionPointsList1[index - 1] = intArrayOf(
             (pointsList[index][0] + k * (additionPointsList1[index - 1][0] - pointsList[index][0])).toInt(),
             (pointsList[index][1] + k * (additionPointsList1[index - 1][1] - pointsList[index][1])).toInt()
@@ -140,6 +142,21 @@ class Splines {
             (pointsList[index][1] + k * (additionPointsList2[index - 1][1] - pointsList[index][1])).toInt()
         )
     }
+
+    fun removeSelectedPoint(){
+        if (selectedList != 0) return
+        pointsList.removeAt(selectedIndex)
+        if (additionPointsList1.isNotEmpty()){
+            additionPointsList1.remove(additionPointsList1.last())
+            additionPointsList2.remove(additionPointsList2.last())
+        }
+        for (i in selectedIndex - 2 until additionPointsList1.size){
+            calculateAdditionPoints(i)
+        }
+
+        selectedIndex = -1
+    }
+
 
     private fun getLine(x0: Int, y0: Int, x1: Int, y1: Int): Array<IntArray> {
         var x = x0
