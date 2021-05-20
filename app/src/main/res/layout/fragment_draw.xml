@@ -51,17 +51,25 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/drawButton"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Хочу рисовать" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/applyDrawingButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Порисовал, спасибо" />
+                    <TextView
+                        android:id="@+id/radiusText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Радиус:" />
+
+                    <TextView
+                        android:id="@+id/centeringText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Центрирование:" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -75,7 +83,7 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number"
-                        android:text="25" />
+                        android:text="5" />
 
                     <EditText
                         android:id="@+id/centeringInput"
@@ -84,8 +92,20 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="numberDecimal"
-                        android:text="0.0" />
+                        android:text="0.5" />
                 </LinearLayout>
+
+                <Button
+                    android:id="@+id/drawButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Хочу рисовать" />
+
+                <Button
+                    android:id="@+id/applyDrawingButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Порисовал, спасибо" />
 
                 <HorizontalScrollView
                     android:layout_width="match_parent"
@@ -182,6 +202,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Превратить в сплайн" />
+
+                <Button
+                    android:id="@+id/applySplineButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Приделать сплайн к картинке" />
 
             </LinearLayout>
         </ScrollView>
