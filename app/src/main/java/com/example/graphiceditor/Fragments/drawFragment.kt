@@ -51,6 +51,7 @@ class drawFragment : Fragment() {
 
         initBrush()
         initSpline()
+
     }
 
     override fun onPause() {

@@ -28,13 +28,13 @@ import com.example.graphiceditor.Fragments.drawFragment
 import com.example.graphiceditor.Fragments.filterFragment
 import com.example.graphiceditor.Fragments.otherFragment
 import com.example.graphiceditor.Fragments.transformFragment
+import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
 import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.ContextUtils.getActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.editor.*
-import kotlinx.android.synthetic.main.editor_v2.*
 import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.coroutines.*
 import java.io.File
@@ -202,7 +202,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveImage(withText: Boolean):Uri? {
-        val bitmap = (imageView2.drawable as BitmapDrawable).bitmap
+        var bitmap = (imageView2.drawable as BitmapDrawable).bitmap
+        //val bitmap = getImageFromInternalStorage(this, "myImage")!!
+        if(currentFragment == "filterFragment") {
+            bitmap = filterFrag.currentPicture.bitmap
+        }
+        if(currentFragment == "drawFragment") {
+            bitmap = drawFrag.currentPicture.bitmap
+        }
+        if(currentFragment == "transformFragment") {
+            bitmap = transformFrag.currentPicture.bitmap
+        }
         val imageUri: Uri? = bitmap.saveImage(this)
         Toast.makeText(
             this,
