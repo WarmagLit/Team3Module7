@@ -4,29 +4,10 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_face_detect.*
-import kotlinx.android.synthetic.main.fragment_filter.*
-import okhttp3.MultipartBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.File
-import java.lang.StringBuilder
-import java.net.URISyntaxException
-import java.util.jar.Manifest
 
 private const val IMAGE_PICK_CODE = 1000
 private const val CAMERA_REQUEST_CODE = 42
