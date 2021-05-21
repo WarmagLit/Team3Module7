@@ -75,8 +75,6 @@ class MainActivity : AppCompatActivity() {
         colorOf(120, 60, 240, 60),
         colorOf(120, 60, 60, 240)
     )
-    private var currentBrush = "red"
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
