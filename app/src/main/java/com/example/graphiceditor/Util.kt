@@ -43,9 +43,23 @@ fun transportMatrix(transportX: Double, transportY: Double) = arrayOf(
 )
 
 fun rotateMatrix(angle: Double): Array<DoubleArray>{
+    val cos = when(angle){
+        90.0 -> 0.0
+        180.0 -> -1.0
+        270.0 -> 0.0
+        360.0 -> 1.0
+        else -> cos(angle.toRad())
+    }
+    val sin = when(angle){
+        90.0 -> 1.0
+        180.0 -> 0.0
+        270.0 -> -1.0
+        360.0 -> 0.0
+        else -> sin(angle.toRad())
+    }
     return arrayOf(
-        doubleArrayOf(cos(angle.toRad()), -sin(angle.toRad()), 0.0),
-        doubleArrayOf(sin(angle.toRad()), cos(angle.toRad()), 0.0),
+        doubleArrayOf(cos, -sin, 0.0),
+        doubleArrayOf(sin, cos, 0.0),
         doubleArrayOf(0.0, 0.0, 1.0)
     )
 }

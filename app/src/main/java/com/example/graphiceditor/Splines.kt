@@ -15,7 +15,7 @@ class Splines {
     private var selectedList = 0
 
     constructor(){
-        pointsList = mutableListOf(intArrayOf(0, 0), intArrayOf(0, 0))
+        pointsList = mutableListOf(intArrayOf(5, 5), intArrayOf(5, 5))
         additionPointsList1 = MutableList(0){
             intArrayOf(0, 0)
         }
@@ -25,7 +25,7 @@ class Splines {
     }
 
     constructor(x0: Int, y0: Int){
-        pointsList = mutableListOf(intArrayOf(x0, y0), intArrayOf(0, 0))
+        pointsList = mutableListOf(intArrayOf(x0, y0), intArrayOf(5, 5))
         additionPointsList1 = MutableList(0){
             intArrayOf(0, 0)
         }
@@ -37,7 +37,7 @@ class Splines {
     fun add(x: Int, y: Int){
         pointsList.remove(pointsList.last())
         pointsList.add(intArrayOf(x, y))
-        pointsList.add(intArrayOf(0, 0))
+        pointsList.add(intArrayOf(5, 5))
 
         if (pointsList.size < 3) return
 
@@ -154,7 +154,7 @@ class Splines {
             calculateAdditionPoints(i)
         }
 
-        selectedIndex = -1
+        selectedIndex = -1 
     }
 
 
@@ -207,8 +207,16 @@ class Splines {
         this.drawPoint(x, y, r, colorOf(0, 255, 0))
     }
 
+    private fun Bitmap.drawEndPoint(x: Int, y: Int, r: Int) {
+        this.drawPoint(x, y, r, colorOf(0, 0, 255))
+    }
+
     private fun Bitmap.drawSelectedNode(x: Int, y: Int, r: Int){
-        if (selectedList == 0) this.drawPoint(x, y, r * 3 / 2, colorOf(125, 0, 0))
+        if (selectedList == 0){
+            if (selectedIndex == 0 || selectedIndex == pointsList.size - 1)
+                this.drawPoint(x, y, r, colorOf(0, 0, 125))
+            else this.drawPoint(x, y, r * 3 / 2, colorOf(125, 0, 0))
+        }
         else this.drawPoint(x, y, r, colorOf(0, 125, 0))
     }
 
@@ -302,6 +310,9 @@ class Splines {
             newBitmap.drawAddPoint(additionPointsList2[i - 1][0], additionPointsList2[i - 1][1], r)
             newBitmap.drawNodePoint(pointsList[i][0], pointsList[i][1], r)
         }
+
+        newBitmap.drawEndPoint(pointsList[0][0], pointsList[0][1], r)
+        newBitmap.drawEndPoint(pointsList[pointsList.size - 1][0], pointsList[pointsList.size - 1][1], r)
 
         if (checkSelected()){
             val list = getSelectedList()
