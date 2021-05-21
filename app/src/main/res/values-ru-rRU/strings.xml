@@ -50,5 +50,6 @@
     <string name="draw">Рисование</string>
     <string name="other">Другое</string>
     <string name="transform">Изменить</string>
+    <string name="convertion">Преобразовать</string>
 
 </resources>

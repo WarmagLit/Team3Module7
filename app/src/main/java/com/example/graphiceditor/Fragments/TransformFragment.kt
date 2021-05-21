@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import com.example.graphiceditor.*
 import com.example.graphiceditor.ImageStorageManager.Companion.deleteImageFromInternalStorage
 import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
@@ -88,6 +89,7 @@ class TransformFragment : Fragment() {
     }
 
     private fun initRotater() {
+
         rotationInput.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 if (rotationInput.text.isEmpty()) return@setOnFocusChangeListener
@@ -99,6 +101,23 @@ class TransformFragment : Fragment() {
                 rotationInput.setText("0.0")
             }
         }
+
+        seekBarRotate.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                rotationInput.setText((i.toDouble()).toString())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+        })
     }
 
     @SuppressLint("ClickableViewAccessibility")

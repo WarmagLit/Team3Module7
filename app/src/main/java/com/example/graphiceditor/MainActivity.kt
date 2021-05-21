@@ -24,10 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import com.example.graphiceditor.Fragments.DrawFragment
-import com.example.graphiceditor.Fragments.FilterFragment
-import com.example.graphiceditor.Fragments.OtherFragment
-import com.example.graphiceditor.Fragments.TransformFragment
+import com.example.graphiceditor.Fragments.*
 import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -52,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     val filterFrag = FilterFragment()
     val transformFrag = TransformFragment()
     val drawFrag = DrawFragment()
+    val convertionFrag = ConvertionFragment()
     val otherFrag = OtherFragment()
 
     var currentFragment = "filterFragment"
@@ -68,8 +66,6 @@ class MainActivity : AppCompatActivity() {
         colorOf(120, 60, 240, 60),
         colorOf(120, 60, 60, 240)
     )
-    private var currentBrush = "red"
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,6 +149,11 @@ class MainActivity : AppCompatActivity() {
                     makeCurrentFragment(drawFrag)
                     true
                 }
+                R.id.chooseСonversions -> {
+                    currentFragment = "conversionFragment"
+                    makeCurrentFragment(convertionFrag)
+                    true
+                }
                 R.id.chooseOther -> {
                     currentFragment = "otherFragment"
                     makeCurrentFragment(otherFrag)
@@ -206,6 +207,7 @@ class MainActivity : AppCompatActivity() {
         if(currentFragment == "transformFragment") {
             bitmap = transformFrag.currentPicture.bitmap
         }
+        saveToInternalStorage(this.applicationContext, bitmap, "myImage")
         val imageUri: Uri? = bitmap.saveImage(this)
         Toast.makeText(
             this,

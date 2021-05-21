@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.graphiceditor.*
 import com.example.graphiceditor.ImageStorageManager.Companion.deleteImageFromInternalStorage
@@ -49,7 +51,6 @@ class FilterFragment : Fragment() {
         currentPicture = PixelArray(originalImage)
 
         imageView2.setImageBitmap(originalImage)
-        deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
 
         initButtons()
         initUnsharp()
@@ -111,6 +112,42 @@ class FilterFragment : Fragment() {
             currentPicture = Unsharp.unsharpFilter(currentPicture,unsharpSigma.text.toDouble(),koefK.text.toDouble())
             imageView2.setImageBitmap(currentPicture.bitmap)
         }
+
+        seekBarSigma.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                unsharpSigma.setText((i.toDouble() / 100).toString())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+        })
+
+        seekBarKoef.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                koefK.setText((i.toDouble() / 100).toString())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+        })
     }
 
     fun createImageFromBitmap(bitmap: Bitmap): String? {
