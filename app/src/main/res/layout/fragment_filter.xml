@@ -14,8 +14,11 @@
 
 
         <ScrollView
+            android:id="@+id/scrollView2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_anchor="@+id/scrollView2"
+            app:layout_anchorGravity="center">
 
 
             <LinearLayout
@@ -40,7 +43,7 @@
                     android:layout_marginTop="5dp"
                     android:ems="10"
                     android:inputType="numberDecimal"
-                    android:text="1.0" >
+                    android:text="1.0">
 
                     <LinearLayout
                         android:id="@+id/filtersLayoutFilt"
@@ -175,9 +178,23 @@
                     </LinearLayout>
                 </HorizontalScrollView>
 
+                <Button
+                    android:id="@+id/unsharpButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginTop="30dp"
+                    android:text="Применить нерезкое маскирование" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
+
                 <EditText
                     android:id="@+id/unsharpSigma"
-                    android:layout_width="129dp"
+                    android:layout_width="104dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="clip_vertical|left"
 
@@ -185,16 +202,9 @@
                     android:inputType="number"
                     android:text="1.0" />
 
-                <Button
-                    android:id="@+id/unsharpButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:text="Button" />
-
                 <EditText
                     android:id="@+id/koefK"
-                    android:layout_width="127dp"
+                    android:layout_width="102dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:ems="10"
@@ -203,7 +213,6 @@
 
             </LinearLayout>
         </ScrollView>
-
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

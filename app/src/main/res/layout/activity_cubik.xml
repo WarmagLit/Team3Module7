@@ -19,7 +19,8 @@
             android:text="Go back"
             />
 
-        <com.example.graphiceditor.box
+        <com.example.graphiceditor.Box
+            android:id="@+id/canvasBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="20dp"
