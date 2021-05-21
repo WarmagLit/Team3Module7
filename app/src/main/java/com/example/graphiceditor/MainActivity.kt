@@ -24,25 +24,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import com.example.graphiceditor.Fragments.drawFragment
-import com.example.graphiceditor.Fragments.filterFragment
-import com.example.graphiceditor.Fragments.otherFragment
-import com.example.graphiceditor.Fragments.transformFragment
-import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
+import com.example.graphiceditor.Fragments.DrawFragment
+import com.example.graphiceditor.Fragments.FilterFragment
+import com.example.graphiceditor.Fragments.OtherFragment
+import com.example.graphiceditor.Fragments.TransformFragment
 import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.internal.ContextUtils.getActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
-import kotlinx.android.synthetic.main.editor.*
 import kotlinx.android.synthetic.main.fragment_filter.*
-import kotlinx.coroutines.*
 import java.io.File
 import java.io.File.separator
 import java.io.FileOutputStream
 import java.io.OutputStream
-import kotlin.coroutines.*
-import kotlin.math.*
 
 
 private const val REQUEST_CODE = 42
@@ -56,10 +49,10 @@ class MainActivity : AppCompatActivity() {
     var mainCurrentPicture = PixelArray(1, 1)
     var mainOriginalImage = mainCurrentPicture.bitmap
 
-    val filterFrag = filterFragment()
-    val transformFrag = transformFragment()
-    val drawFrag = drawFragment()
-    val otherFrag = otherFragment()
+    val filterFrag = FilterFragment()
+    val transformFrag = TransformFragment()
+    val drawFrag = DrawFragment()
+    val otherFrag = OtherFragment()
 
     var currentFragment = "filterFragment"
 

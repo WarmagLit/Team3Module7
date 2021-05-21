@@ -10,7 +10,7 @@ import com.example.graphiceditor.*
 import kotlinx.android.synthetic.main.fragment_other.*
 
 
-class otherFragment : Fragment() {
+class OtherFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -16,7 +16,7 @@ import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalSto
 import kotlinx.android.synthetic.main.fragment_draw.*
 import kotlinx.android.synthetic.main.fragment_filter.imageView2
 
-class drawFragment : Fragment() {
+class DrawFragment : Fragment() {
 
     var currentPicture = PixelArray(1, 1)
     lateinit var originalImage : Bitmap

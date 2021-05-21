@@ -15,7 +15,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class box : View {
+class Box : View {
 
     constructor(context: Context) : super(context)
 
