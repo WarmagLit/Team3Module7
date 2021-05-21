@@ -188,7 +188,7 @@ class ConvertionFragment : Fragment() {
                     currentSpline.add(x, y)
                     deletePointButton.visibility = View.INVISIBLE
                 }
-                else if (currentSpline.getSelectedListNumber() == 0){
+                else if (!currentSpline.checkIsSettingPoint()){
                     deletePointButton.visibility = View.VISIBLE
                 }
             }
