@@ -24,8 +24,6 @@ class DrawFragment : Fragment() {
     lateinit var originalImage : Bitmap
 
     private var currentBrush = "red"
-    private var currentSpline = Splines()
-    private var isSpline = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,8 +50,6 @@ class DrawFragment : Fragment() {
         )
 
         initBrush()
-        initSpline()
-
     }
 
     override fun onPause() {
@@ -169,75 +165,6 @@ class DrawFragment : Fragment() {
         })
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun initSpline(){
-        lineButton.setOnClickListener {
-            val splineBitmap = Bitmap.createBitmap(
-                currentPicture.width,
-                currentPicture.height,
-                Bitmap.Config.ARGB_8888
-            )
-
-            splineField.setImageBitmap(splineBitmap)
-            currentSpline = Splines()
-            isSpline = false
-        }
-
-        splineField.setOnTouchListener { _, event ->
-            onTouchSplineField(event)
-        }
-
-        splineButton.setOnClickListener {
-            if (isSpline) return@setOnClickListener
-
-            val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
-            val r = radiusInput.text.toDouble().toInt()
-
-            val newSplineBitmap = currentSpline.drawSpline(r, splineBitmap)
-            splineField.setImageBitmap(newSplineBitmap)
-
-            isSpline = true
-        }
-
-        applySplineButton.setOnClickListener {
-            val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
-            val r = radiusInput.text.toDouble().toInt()
-            val changes = PixelArray(currentSpline.drawSplineWithoutSettings(r, splineBitmap))
-
-            for (x in 0 until changes.width){
-                for (y in 0 until changes.height){
-                    val k = changes[x, y].component(alpha)
-                    fun newColor(component: Int) =
-                        (k * changes[x, y].component(component) +
-                                (255 - k) * currentPicture[x, y].component(component)) / 255
-                    currentPicture[x, y] = colorOf(
-                        currentPicture[x, y].component(alpha),
-                        newColor(red),
-                        newColor(green),
-                        newColor(blue)
-                    )
-                }
-            }
-            val newSplineBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-
-            splineField.setImageBitmap(newSplineBitmap)
-            imageView2.setImageBitmap(currentPicture.bitmap)
-        }
-
-        deletePointButton.setOnClickListener {
-            val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
-            val r = radiusInput.text.toDouble().toInt()
-
-            currentSpline.removeSelectedPoint()
-
-            val newSplineBitmap = currentSpline.drawSpline(r, splineBitmap)
-            splineField.setImageBitmap(newSplineBitmap)
-
-            deletePointButton.visibility = View.INVISIBLE
-        }
-    }
-
-
     private fun onTouchDrawingField(event: MotionEvent): Boolean{
         if (event.action != MotionEvent.ACTION_MOVE) return false
         val x = event.x.toInt()
@@ -249,43 +176,6 @@ class DrawFragment : Fragment() {
 
         Paintbrush.draw(currentPicture, drawingBitmap, x, y, r, centering, currentBrush)
         drawingField.setImageBitmap(drawingBitmap)
-
-        return false
-    }
-
-    private fun onTouchSplineField(event: MotionEvent): Boolean{
-        if (event.action == MotionEvent.ACTION_UP) {
-            val x = event.x.toInt()
-            val y = event.y.toInt()
-            val splineBitmap = (splineField.drawable as BitmapDrawable).bitmap
-
-            val r = radiusInput.text.toDouble().toInt()
-
-            if (isSpline) {
-                if (currentSpline.checkSelected()){
-                    currentSpline.changeSelectedPoint(x, y)
-                    deletePointButton.visibility = View.INVISIBLE
-                }
-                else if (currentSpline.select(x, y, r) == -1){
-                    currentSpline.add(x, y)
-                    deletePointButton.visibility = View.INVISIBLE
-                }
-                else if (currentSpline.getSelectedListNumber() == 0){
-                    deletePointButton.visibility = View.VISIBLE
-                }
-            }
-            else {
-                currentSpline.add(x, y)
-            }
-
-            val newSplineBitmap =
-                if(isSpline) currentSpline.drawSpline(r, splineBitmap)
-                else currentSpline.drawPolyline(r, splineBitmap)
-
-            splineField.setImageBitmap(newSplineBitmap)
-
-            return false
-        }
 
         return false
     }

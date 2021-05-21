@@ -11,9 +11,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import com.example.graphiceditor.*
+import kotlinx.android.synthetic.main.fragment_convertion.*
+import kotlinx.android.synthetic.main.fragment_convertion.imageView2
+import kotlinx.android.synthetic.main.fragment_convertion.radiusInput
+import kotlinx.android.synthetic.main.fragment_convertion.seekBarRadius
+import kotlinx.android.synthetic.main.fragment_convertion.splineField
 import kotlinx.android.synthetic.main.fragment_draw.*
-import kotlinx.android.synthetic.main.fragment_filter.*
-import kotlinx.android.synthetic.main.fragment_filter.imageView2
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.EmptyCoroutineContext
 
 
 class ConvertionFragment : Fragment() {
@@ -23,6 +30,19 @@ class ConvertionFragment : Fragment() {
 
     private var currentSpline = Splines()
     private var isSpline = false
+
+    private var currentPlacePoint = 0
+    private var affineOldPoints = Array(3){ IntArray(2) }
+    private var affineNewPoints = Array(3){ IntArray(2) }
+    private val pointColor = intArrayOf(
+        colorOf(255, 140, 0, 0),
+        colorOf(255, 0, 140, 0),
+        colorOf(255, 0, 0, 140),
+        colorOf(120, 240, 60, 60),
+        colorOf(120, 60, 240, 60),
+        colorOf(120, 60, 60, 240)
+    )
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,7 +69,7 @@ class ConvertionFragment : Fragment() {
         )
 
         initSpline()
-
+        initTransformer()
     }
 
     override fun onPause() {
@@ -66,6 +86,24 @@ class ConvertionFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initSpline(){
+        seekBarRadius.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                radiusInput.setText(((i.toDouble() / 20).toInt()).toString())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+        })
+
         lineButton.setOnClickListener {
             val splineBitmap = Bitmap.createBitmap(
                 currentPicture.width,
@@ -74,6 +112,7 @@ class ConvertionFragment : Fragment() {
             )
 
             splineField.setImageBitmap(splineBitmap)
+            prohibitPlacePoints()
             currentSpline = Splines()
             isSpline = false
         }
@@ -167,6 +206,104 @@ class ConvertionFragment : Fragment() {
         }
 
         return false
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initTransformer() {
+
+        pointsField.setOnTouchListener{ _, event ->
+            onTouchPointsField(event)
+        }
+
+        placePointsButton.setOnClickListener {
+            val newSplineBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+            splineField.setImageBitmap(newSplineBitmap)
+            allowPlacePoints()
+        }
+
+        affineButton.setOnClickListener {
+            CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) { applyTransformation() }
+            prohibitPlacePoints()
+        }
+
+        inverseButton.setOnClickListener {
+            val oldCopy = affineOldPoints
+            affineOldPoints = affineNewPoints
+            affineNewPoints = oldCopy
+            val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
+            for (i in 0..2) {
+                pointsBitmap.addPoint(
+                    affineOldPoints[i][0],
+                    affineOldPoints[i][1],
+                    pointColor[i]
+                )
+                pointsBitmap.addPoint(
+                    affineNewPoints[i][0],
+                    affineNewPoints[i][1],
+                    pointColor[i + 3]
+                )
+            }
+            pointsField.setImageBitmap(pointsBitmap)
+        }
+    }
+
+    private fun allowPlacePoints(){
+        currentPlacePoint = 1
+        val pointsBitmap = Bitmap.createBitmap(
+            currentPicture.width,
+            currentPicture.height,
+            Bitmap.Config.ARGB_8888
+        )
+
+        pointsField.setImageBitmap(pointsBitmap)
+    }
+
+    private suspend fun applyTransformation(){
+        val oldSystemX = doubleArrayOf(affineOldPoints[0][0].toDouble(), affineOldPoints[1][0].toDouble(), affineOldPoints[2][0].toDouble())
+        val oldSystemY = doubleArrayOf(affineOldPoints[0][1].toDouble(), affineOldPoints[1][1].toDouble(), affineOldPoints[2][1].toDouble())
+        val newSystemX = doubleArrayOf(affineNewPoints[0][0].toDouble(), affineNewPoints[1][0].toDouble(), affineNewPoints[2][0].toDouble())
+        val newSystemY = doubleArrayOf(affineNewPoints[0][1].toDouble(), affineNewPoints[1][1].toDouble(), affineNewPoints[2][1].toDouble())
+
+        val transformations = AffineTransformations(oldSystemX, oldSystemY, newSystemX, newSystemY)
+
+        currentPicture = transformations.transformWithTrilinearFiltering(currentPicture, currentPicture.width, currentPicture.height)
+        imageView2.setImageBitmap(currentPicture.bitmap)
+    }
+
+    private fun prohibitPlacePoints(){
+        currentPlacePoint = 0
+        val pointsBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        pointsField.setImageBitmap(pointsBitmap)
+    }
+
+    private fun onTouchPointsField(event: MotionEvent): Boolean{
+        if (event.action != MotionEvent.ACTION_UP) return false
+        if (currentPlacePoint == 0) return false
+        val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
+
+        val x = event.x.toInt()
+        val y = event.y.toInt()
+
+        pointsBitmap.addPoint(x, y, pointColor[currentPlacePoint - 1])
+        if (currentPlacePoint in 1..3) affineOldPoints[currentPlacePoint - 1] = intArrayOf(x, y)
+        else affineNewPoints[currentPlacePoint - 4] = intArrayOf(x, y)
+
+        currentPlacePoint = (currentPlacePoint + 1) % 7
+        pointsField.setImageBitmap(pointsBitmap)
+        return false
+    }
+
+    private fun Bitmap.addPoint(x: Int, y: Int, color: Int){
+        val r = 20
+
+        for (i in x-r..x+r){
+            if (i !in 0 until width) continue
+            for (j in y-r..y+r){
+                if (j !in 0 until height || (x - i) * (x - i) + (y - j) * (y - j) > r * r) continue
+                setPixel(i, j, color)
+            }
+
+        }
     }
 
     fun reloadImage () {
