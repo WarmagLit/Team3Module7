@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:foregroundTint="@color/colorTap"
     tools:context=".Fragments.FilterFragment">
 
 
@@ -40,7 +41,7 @@
                     android:layout_marginTop="5dp"
                     android:ems="10"
                     android:inputType="numberDecimal"
-                    android:text="1.0" >
+                    android:text="1.0">
 
                     <LinearLayout
                         android:id="@+id/filtersLayoutFilt"
@@ -180,7 +181,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Unsharp"
+                    android:text="@string/unsharp"
+                    android:textColor="@color/colorText"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -191,11 +193,12 @@
                         android:id="@+id/unsharpSigma"
                         android:layout_width="129dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="clip_vertical|left"
-
+                        android:layout_gravity="clip_vertical|start"
                         android:ems="10"
                         android:inputType="number"
-                        android:text="1.0" />
+                        android:shadowColor="@color/colorText"
+                        android:text="@string/_1_0"
+                        android:textColor="@color/colorText" />
 
                     <TextView
                         android:id="@+id/textView"
@@ -203,23 +206,30 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="Sigma" />
+                        android:text="@string/sigma"
+                        android:textColor="@color/colorText" />
 
                 </LinearLayout>
 
                 <SeekBar
                     android:id="@+id/seekBarSigma"
+                    style="@style/Widget.AppCompat.SeekBar"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:foregroundTint="#000000"
                     android:max="5000"
                     android:min="0"
-                    android:layout_height="wrap_content" />
+                    android:progressBackgroundTint="#8C8C8C"
+                    android:progressTint="#1F008D"
+                    android:secondaryProgressTint="#FF0000"
+                    android:thumbTint="@color/colorSeek" />
 
                 <Button
                     android:id="@+id/unsharpButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:text="Unsharp" />
+                    android:layout_gravity="start"
+                    android:text="@string/unsharp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -229,30 +239,34 @@
                         android:id="@+id/koefK"
                         android:layout_width="127dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left"
+                        android:layout_gravity="start"
                         android:ems="10"
                         android:inputType="number"
-                        android:text="0.7" />
+                        android:text="@string/_0_7"
+                        android:textColor="@color/colorText" />
 
                     <TextView
                         android:id="@+id/textView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_gravity="center"
-                        android:text="Coefficient" />
+                        android:layout_weight="1"
+                        android:text="@string/coefficient"
+                        android:textColor="@color/colorText" />
                 </LinearLayout>
 
                 <SeekBar
                     android:id="@+id/seekBarKoef"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:max="1000"
                     android:min="0"
-                    android:layout_height="wrap_content" />
+                    android:progressBackgroundTint="#8C8C8C"
+                    android:progressTint="#1F008D"
+                    android:thumbTint="@color/colorSeek" />
 
             </LinearLayout>
         </ScrollView>
-
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

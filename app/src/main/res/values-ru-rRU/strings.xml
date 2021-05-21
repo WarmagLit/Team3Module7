@@ -51,5 +51,14 @@
     <string name="other">Другое</string>
     <string name="transform">Изменить</string>
     <string name="convertion">Преобразовать</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="defaultTxt">Default</string>
+    <string name="_0_7">0.7</string>
+    <string name="coefficient">Coefficient</string>
+    <string name="sigma">Sigma</string>
+    <string name="_1_0">1.0</string>
+    <string name="_0_5">0.5</string>
+    <string name="centering">Центрирование:</string>
 
 </resources>

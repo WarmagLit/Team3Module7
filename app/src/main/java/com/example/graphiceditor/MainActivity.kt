@@ -5,7 +5,9 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -21,6 +23,7 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -35,11 +38,9 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 
 
-private const val REQUEST_CODE = 42
+
 private const val CAMERA_REQUEST_CODE = 42
 private const val IMAGE_PICK_CODE = 1000
-private const val READ_STORAGE_CODE = 1001
-private const val WRITE_STORAGE_CODE = 100
 private const val PERMISSION_CAMERA_CODE = 1002
 
 class MainActivity : AppCompatActivity() {
@@ -55,25 +56,23 @@ class MainActivity : AppCompatActivity() {
     var currentFragment = "filterFragment"
 
     private var currentPicture = PixelArray(1, 1)
-    private var currentPlacePoint = 0
     private var affineOldPoints = Array(3){ IntArray(2) }
     private var affineNewPoints = Array(3){ IntArray(2) }
-    private val pointColor = intArrayOf(
-        colorOf(255, 140, 0, 0),
-        colorOf(255, 0, 140, 0),
-        colorOf(255, 0, 0, 140),
-        colorOf(120, 240, 60, 60),
-        colorOf(120, 60, 240, 60),
-        colorOf(120, 60, 60, 240)
-    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        makeCurrentFragment(filterFrag)
+        val appSettingPrefs: SharedPreferences = getSharedPreferences("AppSettingPrefs", 0)
+        val isNightModeOn: Boolean = appSettingPrefs.getBoolean("NightMode", false)
+        if(isNightModeOn){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
 
+        makeCurrentFragment(filterFrag)
 
         var myDrawable = ContextCompat.getDrawable(this, R.drawable.hippo)
         // convert the drawable to a bitmap
@@ -88,7 +87,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         toolbar.setNavigationOnClickListener {
-            Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Menu selected", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -216,6 +217,7 @@ class MainActivity : AppCompatActivity() {
         ).show()
         return imageUri
     }
+
 
     private fun Bitmap.saveImage(context: Context): Uri? {
         return if (Build.VERSION.SDK_INT >= 29) {
@@ -560,5 +562,8 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
+
+
 
 }

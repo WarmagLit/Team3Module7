@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:foregroundTint="@color/colorTap"
     tools:context=".Fragments.FilterFragment">
 
 
@@ -198,6 +199,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/colorText"
                     android:text="Unsharp"
                     android:textSize="16sp" />
 
@@ -210,7 +212,7 @@
                         android:layout_width="129dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="clip_vertical|left"
-
+                        android:textColor="@color/colorText"
                         android:ems="10"
                         android:inputType="number"
                         android:text="1.0" />
@@ -220,6 +222,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:textColor="@color/colorText"
                         android:layout_weight="1"
                         android:text="Sigma" />
 
@@ -230,7 +233,11 @@
                     android:layout_width="match_parent"
                     android:max="5000"
                     android:min="0"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:progressBackgroundTint="#8C8C8C"
+                    android:progressTint="#1F008D"
+                    android:secondaryProgressTint="#FF0000"
+                    android:thumbTint="@color/colorSeek"/>
 
                 <Button
                     android:id="@+id/unsharpButton"
@@ -250,6 +257,7 @@
                         android:layout_gravity="left"
                         android:ems="10"
                         android:inputType="number"
+                        android:textColor="@color/colorText"
                         android:text="0.7" />
 
                     <TextView
@@ -258,6 +266,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_gravity="center"
+                        android:textColor="@color/colorText"
                         android:text="Coefficient" />
                 </LinearLayout>
 
@@ -266,7 +275,11 @@
                     android:layout_width="match_parent"
                     android:max="1000"
                     android:min="0"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:progressBackgroundTint="#8C8C8C"
+                    android:progressTint="#1F008D"
+                    android:secondaryProgressTint="#FF0000"
+                    android:thumbTint="@color/colorSeek"/>
 
             </LinearLayout>
         </ScrollView>

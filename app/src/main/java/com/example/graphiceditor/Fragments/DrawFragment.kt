@@ -136,7 +136,7 @@ class DrawFragment : Fragment() {
 
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 // Display the current progress of SeekBar
-                radiusInput.setText((i.toDouble() / 100).toString())
+                radiusInput.setText(((i.toDouble() / 20).toInt()).toString())
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {

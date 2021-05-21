@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".CubeActivity">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
+        android:background="@color/colorBackground"
         android:layout_height="match_parent">
 
         <Button
@@ -20,7 +22,9 @@
             />
 
         <com.example.graphiceditor.Box
+            android:id="@+id/canvasBox"
             android:layout_width="match_parent"
+            android:background="@color/colorBackground"
             android:layout_height="match_parent"
             android:paddingLeft="20dp"
             android:paddingBottom="40dp"

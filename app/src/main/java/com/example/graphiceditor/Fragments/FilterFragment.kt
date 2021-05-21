@@ -1,9 +1,8 @@
 package com.example.graphiceditor.Fragments
 
 import android.content.Context
-import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
@@ -44,10 +43,12 @@ class FilterFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_filter, container, false)
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        originalImage = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
+        originalImage = getImageFromInternalStorage(activity!!.applicationContext, "myImage")!!
         currentPicture = PixelArray(originalImage)
 
         imageView2.setImageBitmap(originalImage)

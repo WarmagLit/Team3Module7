@@ -16,13 +16,14 @@
         app:menu="@menu/toolbarmenu"
         app:navigationIcon="@drawable/ic_menu_black_24dp"
         app:title="Editor"
-        app:titleTextColor="#FFFFFF" />
+        app:titleTextColor="#FBF8F8" />
 
     <FrameLayout
         android:id="@+id/fl_wrapper"
         android:layout_width="match_parent"
         android:layout_marginBottom="56dp"
         android:layout_marginTop="56dp"
+        android:background="@color/colorBackground"
         android:layout_height="match_parent"/>
 
 
@@ -32,8 +33,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:backgroundTint="@color/colorAccent"
-        app:itemIconTint="@color/material_on_background_emphasis_high_type"
-        app:itemTextColor="@color/material_on_background_emphasis_high_type"
+        app:itemIconTint="@color/colorTap"
+        app:itemTextColor="@color/colorTap"
         app:menu="@menu/app_bar_menu" />
 
 
