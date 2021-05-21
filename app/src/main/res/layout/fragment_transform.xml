@@ -66,6 +66,7 @@
                                 android:layout_width="100dp"
                                 android:layout_height="wrap_content"
                                 android:ems="10"
+                                android:textColor="@color/colorText"
                                 android:inputType="numberDecimal"
                                 android:text="1.0" />
 
@@ -79,14 +80,18 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="Zooming parameter"
+                                    android:textColor="@color/colorText"
                                     android:textSize="16sp" />
 
                                 <SeekBar
                                     android:id="@+id/seekBarZoom"
                                     android:layout_width="match_parent"
-                                    android:max="1000"
-                                    android:min="0"
-                                    android:layout_height="wrap_content" />
+                                    android:layout_height="wrap_content"
+                                    android:max="100"
+                                    android:min="1"
+                                    android:progressBackgroundTint="#8C8C8C"
+                                    android:progressTint="#1F008D"
+                                    android:thumbTint="@color/colorSeek" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -100,6 +105,7 @@
                                 android:layout_height="wrap_content"
                                 android:ems="10"
                                 android:inputType="numberDecimal"
+                                android:textColor="@color/colorText"
                                 android:text="0.0" />
 
                         <LinearLayout
@@ -113,17 +119,28 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="Rotating parameter"
+                                android:textColor="@color/colorText"
                                 android:textSize="16sp" />
 
                             <SeekBar
                                 android:id="@+id/seekBarRotate"
                                 android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:max="360"
                                 android:min="0"
-                                android:layout_height="wrap_content" />
+                                android:progressBackgroundTint="#8C8C8C"
+                                android:progressTint="#1F008D"
+                                android:thumbTint="@color/colorSeek" />
                         </LinearLayout>
 
+
                     </LinearLayout>
+
+                        <Button
+                            android:id="@+id/applyChangeButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Применить поворот/зум" />
 
                         <Button
                             android:id="@+id/placePointsButton"

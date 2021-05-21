@@ -19,7 +19,9 @@ import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.android.synthetic.main.fragment_filter.imageView2
 import kotlinx.android.synthetic.main.fragment_transform.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.lang.Math.abs
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -55,11 +57,11 @@ class TransformFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        originalImages = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
+        originalImages = getImageFromInternalStorage(activity!!.applicationContext, "myImage")!!
         currentPicture = PixelArray(originalImages)
 
         imageView2.setImageBitmap(originalImages)
-        deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
+        deleteImageFromInternalStorage(activity!!.applicationContext, "myImage")
 
         initRotater()
         initZoomer()
@@ -71,36 +73,32 @@ class TransformFragment : Fragment() {
 
         val bit = (imageView2.drawable as BitmapDrawable).bitmap
 
-        saveToInternalStorage(getActivity()!!.applicationContext, bit, "myImage")
+        saveToInternalStorage(activity!!.applicationContext, bit, "myImage")
     }
 
     private fun initZoomer() {
-        zoomingInput.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                if (zoomingInput.text.isEmpty()) return@setOnFocusChangeListener
 
-                val zoomFactor = zoomingInput.text.toDouble()
-                if (abs(zoomFactor - 1.0) < 0.01) return@setOnFocusChangeListener
+        seekBarZoom.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
-                CoroutineScope(EmptyCoroutineContext).async { applyZoom(zoomFactor) }
-                zoomingInput.setText("1.0")
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                zoomingInput.setText((i.toDouble() / 50).toString())
             }
-        }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+        })
     }
 
     private fun initRotater() {
 
-        rotationInput.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                if (rotationInput.text.isEmpty()) return@setOnFocusChangeListener
 
-                val angle = rotationInput.text.toDouble()
-                if (abs(angle - 0.0) < 0.01) return@setOnFocusChangeListener
-
-                CoroutineScope(EmptyCoroutineContext).async { applyRotate(angle) }
-                rotationInput.setText("0.0")
-            }
-        }
 
         seekBarRotate.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
@@ -132,8 +130,29 @@ class TransformFragment : Fragment() {
         }
 
         affineButton.setOnClickListener {
-            CoroutineScope(EmptyCoroutineContext).async { applyTransformation() }
+            CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) { applyTransformation() }
             prohibitPlacePoints()
+        }
+
+        applyChangeButton.setOnClickListener {
+            if (!rotationInput.text.isEmpty()) {
+                val angle = rotationInput.text.toDouble()
+                if (!(abs(angle - 0.0) < 0.01)) {
+
+                    CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) { applyRotate(angle) }
+                    rotationInput.setText("0.0")
+                }
+            }
+
+            if (!zoomingInput.text.isEmpty()) {
+                val zoomFactor = zoomingInput.text.toDouble()
+                if (!(abs(zoomFactor - 1.0) < 0.01)) {
+
+                    CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) { applyZoom(zoomFactor) }
+                    zoomingInput.setText("1.0")
+                }
+            }
+
         }
 
         inverseButton.setOnClickListener {
