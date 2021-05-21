@@ -9,11 +9,13 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import com.example.graphiceditor.*
 import com.example.graphiceditor.ImageStorageManager.Companion.deleteImageFromInternalStorage
 import com.example.graphiceditor.ImageStorageManager.Companion.getImageFromInternalStorage
 import com.example.graphiceditor.ImageStorageManager.Companion.saveToInternalStorage
 import kotlinx.android.synthetic.main.fragment_draw.*
+import kotlinx.android.synthetic.main.fragment_filter.*
 import kotlinx.android.synthetic.main.fragment_filter.imageView2
 
 class DrawFragment : Fragment() {
@@ -129,6 +131,42 @@ class DrawFragment : Fragment() {
             drawingField.setImageBitmap(drawingBitmap)
             imageView2.setImageBitmap(currentPicture.bitmap)
         }
+
+        seekBarRadius.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                radiusInput.setText((i.toDouble() / 100).toString())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+        })
+
+        seekBarCentring.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                centeringInput.setText((i.toDouble() / 100).toString())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+
+            }
+        })
     }
 
     @SuppressLint("ClickableViewAccessibility")

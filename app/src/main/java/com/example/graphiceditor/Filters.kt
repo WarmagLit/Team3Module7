@@ -78,14 +78,12 @@ private suspend fun sepia(image: PixelArray): PixelArray {
 private suspend fun blue(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
-            if (image[i, j].component(blue) < 240) {
-                image[i, j] = colorOf(
-                    image[i, j].component(alpha),
-                    image[i, j].component(red) * 7 / 10,
-                    image[i, j].component(green) * 7 / 10,
-                    image[i, j].component(blue)
-                )
-            }
+            image[i, j] = colorOf(
+                image[i, j].component(alpha),
+                image[i, j].component(red) * 7 / 10,
+                image[i, j].component(green) * 7 / 10,
+                image[i, j].component(blue)
+            )
         }
     }
 
@@ -95,14 +93,12 @@ private suspend fun blue(image: PixelArray): PixelArray {
 private suspend fun red(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
-            if (image[i, j].component(red) < 240) {
                 image[i, j] = colorOf(
                     image[i, j].component(alpha),
                     image[i, j].component(red),
                     image[i, j].component(green) * 7 / 10,
                     image[i, j].component(blue) * 7 / 10
                 )
-            }
         }
     }
 
@@ -112,14 +108,12 @@ private suspend fun red(image: PixelArray): PixelArray {
 private suspend fun green(image: PixelArray): PixelArray {
     for (i in 0 until image.width) {
         for (j in 0 until image.height) {
-            if (image[i, j].component(green) < 240) {
                 image[i, j] = colorOf(
                     image[i, j].component(alpha),
                     image[i, j].component(red) * 7 / 10,
                     image[i, j].component(green),
                     image[i, j].component(blue) * 7 / 10
                 )
-            }
         }
     }
 

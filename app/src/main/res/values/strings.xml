@@ -56,4 +56,5 @@
     <string name="draw">Draw</string>
     <string name="other">Other</string>
     <string name="transform">Transform</string>
+    <string name="convertion">Coversion</string>
 </resources>
