@@ -27,7 +27,7 @@ import java.io.FileOutputStream
 import kotlin.coroutines.EmptyCoroutineContext
 
 
-class filterFragment : Fragment() {
+class FilterFragment : Fragment() {
 
     var currentPicture = PixelArray(1, 1)
     lateinit var originalImage : Bitmap

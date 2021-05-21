@@ -23,7 +23,7 @@ import java.lang.Math.abs
 import kotlin.coroutines.EmptyCoroutineContext
 
 
-class transformFragment : Fragment() {
+class TransformFragment : Fragment() {
 
     private var currentPlacePoint = 0
     private var affineOldPoints = Array(3){ IntArray(2) }
