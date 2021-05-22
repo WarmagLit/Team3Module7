@@ -54,7 +54,7 @@
                                 android:layout_height="wrap_content"
                                 android:ems="10"
                                 android:inputType="numberDecimal"
-                                android:text="1.0"
+                                android:text="@string/_1_0"
                                 android:textColor="@color/colorText" />
 
                             <LinearLayout
@@ -67,7 +67,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Zooming parameter"
+                                    android:text="@string/zooming_parameter"
                                     android:textColor="@color/colorText"
                                     android:textSize="16sp" />
 
@@ -106,7 +106,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Rotating parameter"
+                                    android:text="@string/rotating_parameter"
                                     android:textColor="@color/colorText"
                                     android:textSize="16sp" />
 
@@ -128,7 +128,7 @@
                             android:id="@+id/applyChangeButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Применить поворот/зум" />
+                            android:text="@string/applyTransform" />
 
                         <Space
                             android:layout_width="match_parent"

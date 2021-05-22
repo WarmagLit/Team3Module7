@@ -69,4 +69,10 @@
     <string name="radius">Радиус:</string>
     <string name="rotatez">Rotate Z</string>
     <string name="go_back">Go back</string>
+    <string name="upload">Upload</string>
+    <string name="cube">Cube</string>
+    <string name="face_recognition">Face recognition</string>
+    <string name="zooming_parameter">Zooming parameter</string>
+    <string name="rotating_parameter">Rotating parameter</string>
+    <string name="applyTransform">Применить поворот/зум</string>
 </resources>

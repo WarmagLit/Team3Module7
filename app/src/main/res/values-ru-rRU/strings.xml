@@ -62,5 +62,12 @@
     <string name="centering">Центрирование:</string>
     <string name="rotatez">Повернуть по Z</string>
     <string name="go_back">Назад</string>
+    <string name="radius">Радиус:</string>
+    <string name="upload">Загрузить</string>
+    <string name="cube">Кубик</string>
+    <string name="face_recognition">Распознование лиц</string>
+    <string name="zooming_parameter">Zooming parameter</string>
+    <string name="rotating_parameter">Rotating parameter</string>
+    <string name="applyTransform">Применить поворот/зум</string>
 
 </resources>

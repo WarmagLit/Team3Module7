@@ -63,10 +63,6 @@ class ConvertionFragment : Fragment() {
         currentPicture = PixelArray(originalImage)
 
         imageView2.setImageBitmap(originalImage)
-        ImageStorageManager.deleteImageFromInternalStorage(
-            getActivity()!!.applicationContext,
-            "myImage"
-        )
 
         initSpline()
         initTransformer()

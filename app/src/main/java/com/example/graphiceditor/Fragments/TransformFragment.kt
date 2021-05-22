@@ -49,7 +49,6 @@ class TransformFragment : Fragment() {
         currentPicture = PixelArray(originalImages)
 
         imageView2.setImageBitmap(originalImages)
-        deleteImageFromInternalStorage(activity!!.applicationContext, "myImage")
 
         initRotater()
         initZoomer()

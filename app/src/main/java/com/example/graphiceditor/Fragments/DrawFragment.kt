@@ -44,10 +44,7 @@ class DrawFragment : Fragment() {
         currentPicture = PixelArray(originalImage)
 
         imageView2.setImageBitmap(originalImage)
-        deleteImageFromInternalStorage(
-            getActivity()!!.applicationContext,
-            "myImage"
-        )
+
 
         initBrush()
     }
