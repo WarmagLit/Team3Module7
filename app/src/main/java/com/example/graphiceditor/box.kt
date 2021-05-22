@@ -23,8 +23,6 @@ class Box : View {
         defStyle
     )
 
-
-    lateinit var testCanvas: Canvas
     private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val backgroundColor = Color.WHITE
     private var nodeColor = Color.BLUE
@@ -137,7 +135,6 @@ class Box : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        testCanvas = canvas
         canvas.drawColor(backgroundColor)
         refreshCanvas(canvas)
         rotateZ3D(0.0)
@@ -211,8 +208,6 @@ class Box : View {
             num.y = (y * cosTheta - x * sinTheta)
             numbers[n] = num
         }
-        testCanvas.translate((testCanvas.width / 2).toFloat(), (testCanvas.height / 2).toFloat())
-        refreshCanvas(testCanvas)
     }
 
 
