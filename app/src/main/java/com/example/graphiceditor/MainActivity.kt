@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -24,6 +23,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -41,6 +41,7 @@ import java.io.OutputStream
 private const val CAMERA_REQUEST_CODE = 42
 private const val IMAGE_PICK_CODE = 1000
 private const val PERMISSION_CAMERA_CODE = 1002
+private const val IMAGE_SAVE_CODE = 1001
 
 class MainActivity : AppCompatActivity() {
     var mainCurrentPicture = PixelArray(1, 1)
@@ -103,7 +104,9 @@ class MainActivity : AppCompatActivity() {
 
         when (itemview) {
             R.id.addGallery -> {
-                pickImageFromGallery()
+                if (checkPermission(READ_EXTERNAL_STORAGE, IMAGE_PICK_CODE)) {
+                    pickImageFromGallery()
+                }
                 true
             }
             R.id.addCamera -> {
@@ -114,7 +117,9 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.saveImg -> {
-                saveImage(true)
+                if (checkPermission(WRITE_EXTERNAL_STORAGE, IMAGE_SAVE_CODE)) {
+                    saveImage(true)
+                }
                 true
             }
             else -> true
@@ -287,177 +292,6 @@ class MainActivity : AppCompatActivity() {
         intent.type = "image/*"
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
-/*
-    private fun initZoomer() {
-        zoomingInput.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                if (zoomingInput.text.isEmpty()) return@setOnFocusChangeListener
-
-                val zoomFactor = zoomingInput.text.toDouble()
-                if (abs(zoomFactor - 1.0) < 0.01) return@setOnFocusChangeListener
-
-                CoroutineScope(EmptyCoroutineContext).async { applyZoom(zoomFactor) }
-                zoomingInput.setText("1.0")
-            }
-        }
-    }
-
-    private fun initRotater() {
-        rotationInput.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                if (rotationInput.text.isEmpty()) return@setOnFocusChangeListener
-
-                val angle = rotationInput.text.toDouble()
-                if (abs(angle - 0.0) < 0.01) return@setOnFocusChangeListener
-
-                CoroutineScope(EmptyCoroutineContext).async { applyRotate(angle) }
-                rotationInput.setText("0.0")
-            }
-        }
-    }
-    */
-
-
-/*
-    @SuppressLint("ClickableViewAccessibility")
-    private fun initTransformer() {
-
-        pointsField.setOnTouchListener{ _, event ->
-            onTouchPointsField(event)
-        }
-
-        placePointsButton.setOnClickListener {
-            allowPlacePoints()
-        }
-
-        affineButton.setOnClickListener {
-            CoroutineScope(EmptyCoroutineContext).async { applyTransformation() }
-            prohibitPlacePoints()
-        }
-
-        inverseButton.setOnClickListener {
-            val oldCopy = affineOldPoints
-            affineOldPoints = affineNewPoints
-            affineNewPoints = oldCopy
-            val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
-            for (i in 0..2) {
-                pointsBitmap.addPoint(
-                    affineOldPoints[i][0],
-                    affineOldPoints[i][1],
-                    pointColor[i]
-                )
-                pointsBitmap.addPoint(
-                    affineNewPoints[i][0],
-                    affineNewPoints[i][1],
-                    pointColor[i + 3]
-                )
-            }
-            pointsField.setImageBitmap(pointsBitmap)
-        }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun initBrush(){
-        val arrayBtn = arrayOf(
-            btnBlurBrush,
-            btnRedBrush,
-            btnGreenBrush,
-            btnBlueBrush
-        )
-
-        val arrayStrings = arrayOf(
-            "blur",
-            "red",
-            "green",
-            "blue"
-        )
-
-        for (i in arrayBtn.indices){
-            arrayBtn[i].setOnClickListener {
-                currentBrush = arrayStrings[i]
-            }
-        }
-
-        drawingField.setOnTouchListener { _, event ->
-            onTouchDrawingField(event)
-        }
-
-        drawButton.setOnClickListener {
-            val drawingBitmap = Bitmap.createBitmap(
-                currentPicture.width,
-                currentPicture.height,
-                Bitmap.Config.ARGB_8888
-            )
-
-            drawingField.setImageBitmap(drawingBitmap)
-        }
-
-        applyDrawingButton.setOnClickListener {
-            val changes = PixelArray((drawingField.drawable as BitmapDrawable).bitmap)
-            for (x in 0 until changes.width){
-                for (y in 0 until changes.height){
-                    if (changes[x, y] != 0) {
-                        currentPicture[x, y] = changes[x, y]
-                    }
-                }
-            }
-            val drawingBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-
-            drawingField.setImageBitmap(drawingBitmap)
-            imageView2.setImageBitmap(currentPicture.bitmap)
-        }
-    }
-*/
-
-/*
-    private fun onTouchPointsField(event: MotionEvent): Boolean{
-        if (event.action != MotionEvent.ACTION_MOVE) return false
-        if (currentPlacePoint == 0) return false
-        val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
-
-        /*val isHorizontal = (pointsBitmap.height < pointsBitmap.width)
-        val verticalDifference =
-            if(isHorizontal) 0
-            else (pointsBitmap.height - pointsField.height * pointsBitmap.width / pointsField.width) / 2
-        val horizontalDifference =
-            if(isHorizontal) (pointsBitmap.width - pointsField.width * pointsBitmap.height / pointsField.height) / 2
-            else 0*/
-
-
-        val x = event.x.toInt() * pointsBitmap.width / pointsField.width// - verticalDifference
-        val y = event.y.toInt() * pointsBitmap.height / pointsField.height// - horizontalDifference
-
-        pointsBitmap.addPoint(x, y, pointColor[currentPlacePoint - 1])
-        if (currentPlacePoint in 1..3) affineOldPoints[currentPlacePoint - 1] = intArrayOf(x, y)
-        else affineNewPoints[currentPlacePoint - 4] = intArrayOf(x, y)
-
-        currentPlacePoint = (currentPlacePoint + 1) % 7
-        pointsField.setImageBitmap(pointsBitmap)
-        return false
-    }
-
-    private fun onTouchDrawingField(event: MotionEvent): Boolean{
-        if (event.action == MotionEvent.ACTION_UP) return false
-        val x = event.x.toInt()
-        val y = event.y.toInt()
-        val drawingBitmap = (drawingField.drawable as BitmapDrawable).bitmap
-
-        Paintbrush.draw(currentPicture, drawingBitmap, x, y, 30, currentBrush)
-        drawingField.setImageBitmap(drawingBitmap)
-
-        return false
-    }
-
-    private fun of(string: String): Filter{
-        Filter.values().forEach {
-            if(getString(it) == string)
-                return it
-        }
-        return Filter.NONE
-    }
-
-    */
-
 
     private fun getStrings(): List<String> = Filter.values().map { getString(it) }
     private fun getString(filter: Filter) = getString(filter.code)
