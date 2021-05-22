@@ -51,14 +51,15 @@
     <string name="other">Другое</string>
     <string name="transform">Изменить</string>
     <string name="convertion">Преобразовать</string>
-    <string name="light">Light</string>
-    <string name="dark">Dark</string>
-    <string name="defaultTxt">Default</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Тёмная</string>
+    <string name="defaultTxt">Стандарт</string>
     <string name="_0_7">0.7</string>
-    <string name="coefficient">Coefficient</string>
-    <string name="sigma">Sigma</string>
+    <string name="coefficient">Коэффициент</string>
+    <string name="sigma">Сигма</string>
     <string name="_1_0">1.0</string>
     <string name="_0_5">0.5</string>
     <string name="centering">Центрирование:</string>
+    <string name="rotatez">Повернуть по Z</string>
 
 </resources>
