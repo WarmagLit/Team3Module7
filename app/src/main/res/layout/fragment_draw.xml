@@ -34,18 +34,6 @@
                 android:clickable="true"
                 app:srcCompat="@android:drawable/divider_horizontal_dim_dark" />
 
-            <ImageView
-                android:id="@+id/splineField"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                app:srcCompat="@android:drawable/divider_horizontal_dim_dark" />
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </ScrollView>
         </FrameLayout>
 
         <ScrollView
@@ -56,14 +44,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/deletePointButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Удалить эту пресловутую точку"
-                    android:visibility="invisible"
-                    tools:visibility="invisible" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -125,7 +105,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:max="1000"
-                        android:min="1"
+                        android:min="20"
                         android:progressBackgroundTint="#8C8C8C"
                         android:progressTint="#1F008D"
                         android:thumbTint="@color/colorSeek" />
@@ -239,24 +219,6 @@
 
                     </LinearLayout>
                 </HorizontalScrollView>
-
-                <Button
-                    android:id="@+id/lineButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Нарисовать ломаную" />
-
-                <Button
-                    android:id="@+id/splineButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Превратить в сплайн" />
-
-                <Button
-                    android:id="@+id/applySplineButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Приделать сплайн к картинке" />
 
             </LinearLayout>
         </ScrollView>

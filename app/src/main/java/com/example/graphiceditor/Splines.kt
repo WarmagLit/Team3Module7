@@ -97,7 +97,9 @@ class Splines {
 
     fun checkSelected() = (selectedIndex != -1)
 
-    fun getSelectedListNumber() = selectedList
+    fun checkIsSettingPoint() = (selectedList != 0 ||
+            selectedIndex == pointsList.size - 1 ||
+            selectedIndex == 0)
 
     private fun getSelectedList() = when(selectedList){
         1 -> additionPointsList1
@@ -144,7 +146,7 @@ class Splines {
     }
 
     fun removeSelectedPoint(){
-        if (selectedList != 0) return
+        if (selectedList != 0 || selectedIndex == 0 || selectedIndex == pointsList.size - 1) return
         pointsList.removeAt(selectedIndex)
         if (additionPointsList1.isNotEmpty()){
             additionPointsList1.remove(additionPointsList1.last())
