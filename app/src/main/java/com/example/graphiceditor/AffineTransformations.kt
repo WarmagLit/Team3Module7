@@ -7,13 +7,15 @@ class AffineTransformations {
     private var matrix: Array<DoubleArray>
     private var inverseMatrix: Array<DoubleArray>
 
-    constructor(transMatrix: Array<DoubleArray>){
+    constructor(transMatrix: Array<DoubleArray>) {
         matrix = transMatrix
         inverseMatrix = calculateInverseMatrix(matrix)
     }
 
-    constructor(oldSystemX: DoubleArray, oldSystemY: DoubleArray,
-                newSystemX: DoubleArray, newSystemY: DoubleArray){
+    constructor(
+        oldSystemX: DoubleArray, oldSystemY: DoubleArray,
+        newSystemX: DoubleArray, newSystemY: DoubleArray
+    ) {
         val oldSystemInverseMatrix = calculateInverseMatrix(
             arrayOf(
                 doubleArrayOf(oldSystemX[0], oldSystemX[1], oldSystemX[2]),
@@ -35,48 +37,48 @@ class AffineTransformations {
         inverseMatrix = calculateInverseMatrix(matrix)
     }
 
-    private fun calculateInverseMatrix(matrix: Array<DoubleArray>): Array<DoubleArray>{
+    private fun calculateInverseMatrix(matrix: Array<DoubleArray>): Array<DoubleArray> {
         val inverseMatrix = arrayOf(DoubleArray(3), DoubleArray(3), DoubleArray(3))
         val det = calculateDet(matrix)
 
-        inverseMatrix[0][0] = (matrix[1][1]*matrix[2][2] - matrix[1][2]*matrix[2][1])/det
-        inverseMatrix[1][0] = -(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])/det
-        inverseMatrix[2][0] = (matrix[1][0]*matrix[2][1] - matrix[1][1]*matrix[2][0])/det
+        inverseMatrix[0][0] = (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) / det
+        inverseMatrix[1][0] = -(matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) / det
+        inverseMatrix[2][0] = (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]) / det
 
-        inverseMatrix[0][1] = -(matrix[0][1]*matrix[2][2] - matrix[0][2]*matrix[2][1])/det
-        inverseMatrix[1][1] = (matrix[0][0]*matrix[2][2] - matrix[0][2]*matrix[2][0])/det
-        inverseMatrix[2][1] = -(matrix[0][0]*matrix[2][1] - matrix[0][1]*matrix[2][0])/det
+        inverseMatrix[0][1] = -(matrix[0][1] * matrix[2][2] - matrix[0][2] * matrix[2][1]) / det
+        inverseMatrix[1][1] = (matrix[0][0] * matrix[2][2] - matrix[0][2] * matrix[2][0]) / det
+        inverseMatrix[2][1] = -(matrix[0][0] * matrix[2][1] - matrix[0][1] * matrix[2][0]) / det
 
-        inverseMatrix[0][2] = (matrix[0][1]*matrix[1][2] - matrix[0][2]*matrix[1][1])/det
-        inverseMatrix[1][2] = -(matrix[0][0]*matrix[1][2] - matrix[0][2]*matrix[1][0])/det
-        inverseMatrix[2][2] = (matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0])/det
+        inverseMatrix[0][2] = (matrix[0][1] * matrix[1][2] - matrix[0][2] * matrix[1][1]) / det
+        inverseMatrix[1][2] = -(matrix[0][0] * matrix[1][2] - matrix[0][2] * matrix[1][0]) / det
+        inverseMatrix[2][2] = (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]) / det
 
         return inverseMatrix
     }
 
-    private fun calculateDet(matrix: Array<DoubleArray>): Double{
+    private fun calculateDet(matrix: Array<DoubleArray>): Double {
         var det = 0.0
-        det += matrix[0][0]*(matrix[1][1]*matrix[2][2] - matrix[1][2]*matrix[2][1])
-        det -= matrix[0][1]*(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])
-        det += matrix[0][2]*(matrix[1][0]*matrix[2][1] - matrix[1][1]*matrix[2][0])
+        det += matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1])
+        det -= matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0])
+        det += matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0])
 
         return det
     }
 
-    private fun makeTransition(oldSystem: IntArray): DoubleArray{
+    private fun makeTransition(oldSystem: IntArray): DoubleArray {
         val newSystem = DoubleArray(3)
-        for (i in 0..2){
-            for (j in 0..2){
+        for (i in 0..2) {
+            for (j in 0..2) {
                 newSystem[i] += matrix[i][j] * oldSystem[j]
             }
         }
         return newSystem
     }
 
-    private fun inverseTransition(newSystem: IntArray): DoubleArray{
+    private fun inverseTransition(newSystem: IntArray): DoubleArray {
         val oldSystem = DoubleArray(3)
-        for (i in 0..2){
-            for (j in 0..2){
+        for (i in 0..2) {
+            for (j in 0..2) {
                 oldSystem[i] += inverseMatrix[i][j] * newSystem[j]
             }
         }
@@ -96,14 +98,18 @@ class AffineTransformations {
                     continue
                 }
 
-                newPicture[x,y] = currentPicture[oldX, oldY]
+                newPicture[x, y] = currentPicture[oldX, oldY]
             }
         }
 
         return newPicture
     }
 
-    fun transformWithBilinearFiltering(currentPicture: PixelArray, width: Int, height: Int): PixelArray{
+    fun transformWithBilinearFiltering(
+        currentPicture: PixelArray,
+        width: Int,
+        height: Int
+    ): PixelArray {
         val newPicture = PixelArray(width, height)
 
         for (x in 0 until width) {
@@ -112,7 +118,7 @@ class AffineTransformations {
                 val oldX = oldCoordinates[0]
                 val oldY = oldCoordinates[1]
 
-                if (oldX < 0 || oldY < 0 || oldX > currentPicture.width - 1 || oldY > currentPicture.height - 1){
+                if (oldX < 0 || oldY < 0 || oldX > currentPicture.width - 1 || oldY > currentPicture.height - 1) {
                     continue
                 }
 
@@ -131,12 +137,16 @@ class AffineTransformations {
                 val bottomLeft = currentPicture[oldXFloor, oldYCeil]
                 val bottomRight = currentPicture[oldXCeil, oldYCeil]
 
-                fun average(component: Int): Int{
-                    return(
+                fun average(component: Int): Int {
+                    return (
                             topDif *
-                                    (leftDif * topLeft.component(component) + rightDif * topRight.component(component))
+                                    (leftDif * topLeft.component(component) + rightDif * topRight.component(
+                                        component
+                                    ))
                                     + bottomDif *
-                                    (leftDif * bottomLeft.component(component) + rightDif * bottomRight.component(component))
+                                    (leftDif * bottomLeft.component(component) + rightDif * bottomRight.component(
+                                        component
+                                    ))
                             ).toInt()
                 }
 
@@ -152,17 +162,21 @@ class AffineTransformations {
         return newPicture
     }
 
-    fun transformWithTrilinearFiltering(currentPicture: PixelArray, width: Int, height: Int): PixelArray{
+    fun transformWithTrilinearFiltering(
+        currentPicture: PixelArray,
+        width: Int,
+        height: Int
+    ): PixelArray {
         val newPicture = PixelArray(width, height)
         val mipmapPicture = currentPicture.getMipmap()
 
         for (x in 0 until width) {
             for (y in 0 until height) {
                 val oldCoordinatesNearbyX =
-                    if(x != 0) inverseTransition(intArrayOf(x - 1, y, 1))
+                    if (x != 0) inverseTransition(intArrayOf(x - 1, y, 1))
                     else inverseTransition(intArrayOf(x + 1, y, 1))
                 val oldCoordinatesNearbyY =
-                    if(x != 0) inverseTransition(intArrayOf(x, y - 1, 1))
+                    if (x != 0) inverseTransition(intArrayOf(x, y - 1, 1))
                     else inverseTransition(intArrayOf(x, y + 1, 1))
                 val oldCoordinates = inverseTransition(intArrayOf(x, y, 1))
 
@@ -179,7 +193,7 @@ class AffineTransformations {
                 var leftDistance1 = 0
                 var lodWidth = currentPicture.width
 
-                for(i in 0 until lowLod){
+                for (i in 0 until lowLod) {
                     leftDistance1 += lodWidth
                     lodWidth /= 2
                 }
@@ -194,10 +208,11 @@ class AffineTransformations {
                 val oldX2 = leftDistance2 + oldX / zoomingFactor2
                 val oldY2 = oldY / zoomingFactor2
 
-                if(oldX2 > leftDistance2 + lodWidth / 2 ||
+                if (oldX2 > leftDistance2 + lodWidth / 2 ||
                     oldY1 > currentPicture.height / zoomingFactor1 - 1 ||
                     oldX1 < leftDistance1 ||
-                    oldY2 < 0){
+                    oldY2 < 0
+                ) {
                     currentPicture[x, y] = 0
                     continue
                 }
@@ -224,16 +239,24 @@ class AffineTransformations {
                     if (oldYCeil[1] != oldYFloor[1]) oldYCeil[1] - oldY2 else 0.0
                 )
 
-                val topLeft = intArrayOf(mipmapPicture[oldXFloor[0], oldYFloor[0]],
-                    mipmapPicture[oldXFloor[1], oldYFloor[1]])
-                val topRight = intArrayOf(mipmapPicture[oldXCeil[0], oldYFloor[0]],
-                    mipmapPicture[oldXCeil[1], oldYFloor[1]])
-                val bottomLeft = intArrayOf(mipmapPicture[oldXFloor[0], oldYCeil[0]],
-                    mipmapPicture[oldXFloor[1], oldYCeil[1]])
-                val bottomRight = intArrayOf(mipmapPicture[oldXCeil[0], oldYCeil[0]],
-                    mipmapPicture[oldXCeil[1], oldYCeil[1]])
+                val topLeft = intArrayOf(
+                    mipmapPicture[oldXFloor[0], oldYFloor[0]],
+                    mipmapPicture[oldXFloor[1], oldYFloor[1]]
+                )
+                val topRight = intArrayOf(
+                    mipmapPicture[oldXCeil[0], oldYFloor[0]],
+                    mipmapPicture[oldXCeil[1], oldYFloor[1]]
+                )
+                val bottomLeft = intArrayOf(
+                    mipmapPicture[oldXFloor[0], oldYCeil[0]],
+                    mipmapPicture[oldXFloor[1], oldYCeil[1]]
+                )
+                val bottomRight = intArrayOf(
+                    mipmapPicture[oldXCeil[0], oldYCeil[0]],
+                    mipmapPicture[oldXCeil[1], oldYCeil[1]]
+                )
 
-                fun average(component: Int): Int{
+                fun average(component: Int): Int {
                     var middle = 0.0
                     middle += (zoomingFactor2 - k) * (
                             topDif[0] *

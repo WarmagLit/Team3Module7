@@ -12,9 +12,17 @@ class Zooming() {
             val zoomTransformations = AffineTransformations(transMatrix)
 
             return if (scale >= 0.5)
-                zoomTransformations.transformWithBilinearFiltering(currentPicture, newWidth, newHeight)
+                zoomTransformations.transformWithBilinearFiltering(
+                    currentPicture,
+                    newWidth,
+                    newHeight
+                )
             else
-                zoomTransformations.transformWithTrilinearFiltering(currentPicture, newWidth, newHeight)
+                zoomTransformations.transformWithTrilinearFiltering(
+                    currentPicture,
+                    newWidth,
+                    newHeight
+                )
         }
     }
 }

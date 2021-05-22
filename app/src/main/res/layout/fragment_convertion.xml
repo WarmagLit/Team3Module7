@@ -78,26 +78,26 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|center_horizontal"
                         android:layout_weight="1"
-                        android:textColor="@color/colorText"
-                        android:text="СПЛАЙНЫ:" />
+                        android:text="СПЛАЙНЫ:"
+                        android:textColor="@color/colorText" />
 
                     <TextView
                         android:id="@+id/radiusText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textColor="@color/colorText"
-                        android:text="Радиус:" />
+                        android:text="Радиус:"
+                        android:textColor="@color/colorText" />
 
                     <EditText
                         android:id="@+id/radiusInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textColor="@color/colorText"
                         android:ems="10"
                         android:inputType="number"
-                        android:text="5" />
+                        android:text="5"
+                        android:textColor="@color/colorText" />
 
                     <SeekBar
                         android:id="@+id/seekBarRadius"
@@ -108,7 +108,7 @@
                         android:min="20"
                         android:progressBackgroundTint="#8C8C8C"
                         android:progressTint="#1F008D"
-                        android:thumbTint="@color/colorSeek"/>
+                        android:thumbTint="@color/colorSeek" />
 
                     <Button
                         android:id="@+id/lineButton"
@@ -145,8 +145,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|center_horizontal"
                         android:layout_weight="1"
-                        android:textColor="@color/colorText"
-                        android:text="АФФИННЫЕ ПРЕОБРАОВАНИЯ:" />
+                        android:text="АФФИННЫЕ ПРЕОБРАОВАНИЯ:"
+                        android:textColor="@color/colorText" />
 
                     <Button
                         android:id="@+id/placePointsButton"

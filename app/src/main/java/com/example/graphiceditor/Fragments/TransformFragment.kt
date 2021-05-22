@@ -30,7 +30,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 class TransformFragment : Fragment() {
 
     var currentPicture = PixelArray(1, 1)
-    lateinit var originalImages : Bitmap
+    lateinit var originalImages: Bitmap
 
 
     override fun onCreateView(
@@ -105,7 +105,11 @@ class TransformFragment : Fragment() {
                 val angle = rotationInput.text.toDouble()
                 if (!(Math.abs(angle - 0.0) < 0.01)) {
 
-                    CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) { applyRotate(angle) }
+                    CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) {
+                        applyRotate(
+                            angle
+                        )
+                    }
                     rotationInput.setText("0.0")
                 }
             }
@@ -114,7 +118,11 @@ class TransformFragment : Fragment() {
                 val zoomFactor = zoomingInput.text.toDouble()
                 if (!(Math.abs(zoomFactor - 1.0) < 0.01)) {
 
-                    CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) { applyZoom(zoomFactor) }
+                    CoroutineScope(EmptyCoroutineContext).launch(Dispatchers.Main) {
+                        applyZoom(
+                            zoomFactor
+                        )
+                    }
                     zoomingInput.setText("1.0")
                 }
             }
@@ -122,18 +130,19 @@ class TransformFragment : Fragment() {
         }
     }
 
-    private suspend fun applyZoom(zoomFactor: Double){
+    private suspend fun applyZoom(zoomFactor: Double) {
         currentPicture = Zooming.zoom(currentPicture, zoomFactor)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    private suspend fun applyRotate(angle: Double){
+    private suspend fun applyRotate(angle: Double) {
         currentPicture = Rotation.rotate(currentPicture, angle)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    fun reloadImage () {
-        originalImages = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
+    fun reloadImage() {
+        originalImages =
+            getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
         currentPicture = PixelArray(originalImages)
         deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
     }

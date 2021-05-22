@@ -17,16 +17,16 @@ class SettingsActivity : AppCompatActivity() {
         val sharedPrefsEdit: SharedPreferences.Editor = appSettingPrefs.edit()
         val isNightModeOn: Boolean = appSettingPrefs.getBoolean("NightMode", false)
 
-        if(isNightModeOn){
+        if (isNightModeOn) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            btnDark.text  = "Disable Dark Mode"
+            btnDark.text = "Disable Dark Mode"
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            btnDark.text  = "Enable Dark Mode"
+            btnDark.text = "Enable Dark Mode"
         }
 
         btnDark.setOnClickListener(View.OnClickListener {
-            if(isNightModeOn){
+            if (isNightModeOn) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 sharedPrefsEdit.putBoolean("NightMode", false)
                 sharedPrefsEdit.apply()
@@ -37,7 +37,7 @@ class SettingsActivity : AppCompatActivity() {
                 sharedPrefsEdit.putBoolean("NightMode", true)
                 sharedPrefsEdit.apply()
 
-                btnDark.text  = "Disable Dark Mode"
+                btnDark.text = "Disable Dark Mode"
             }
         })
     }

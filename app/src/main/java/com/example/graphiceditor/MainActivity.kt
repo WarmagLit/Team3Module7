@@ -38,7 +38,6 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 
 
-
 private const val CAMERA_REQUEST_CODE = 42
 private const val IMAGE_PICK_CODE = 1000
 private const val PERMISSION_CAMERA_CODE = 1002
@@ -56,8 +55,8 @@ class MainActivity : AppCompatActivity() {
     var currentFragment = "filterFragment"
 
     private var currentPicture = PixelArray(1, 1)
-    private var affineOldPoints = Array(3){ IntArray(2) }
-    private var affineNewPoints = Array(3){ IntArray(2) }
+    private var affineOldPoints = Array(3) { IntArray(2) }
+    private var affineNewPoints = Array(3) { IntArray(2) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
         val appSettingPrefs: SharedPreferences = getSharedPreferences("AppSettingPrefs", 0)
         val isNightModeOn: Boolean = appSettingPrefs.getBoolean("NightMode", false)
-        if(isNightModeOn){
+        if (isNightModeOn) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -102,19 +101,19 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         var itemview = item.itemId
 
-        when(itemview) {
+        when (itemview) {
             R.id.addGallery -> {
                 pickImageFromGallery()
                 true
             }
-            R.id.addCamera-> {
-                if(checkPermission(CAMERA, CAMERA_REQUEST_CODE)){
+            R.id.addCamera -> {
+                if (checkPermission(CAMERA, CAMERA_REQUEST_CODE)) {
                     val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                     startActivityForResult(intent, CAMERA_REQUEST_CODE)
                 }
                 true
             }
-            R.id.saveImg-> {
+            R.id.saveImg -> {
                 saveImage(true)
                 true
             }
@@ -128,7 +127,6 @@ class MainActivity : AppCompatActivity() {
             replace(R.id.fl_wrapper, fragment)
             commit()
         }
-
 
 
     private fun setupNavigation() {
@@ -165,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermission(permission: String, requestCode: Int): Boolean{
+    private fun checkPermission(permission: String, requestCode: Int): Boolean {
 
         if (checkSelfPermission(permission) == PERMISSION_GRANTED)
             return true
@@ -196,16 +194,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImage(withText: Boolean):Uri? {
+    private fun saveImage(withText: Boolean): Uri? {
         var bitmap = (imageView2.drawable as BitmapDrawable).bitmap
         //val bitmap = getImageFromInternalStorage(this, "myImage")!!
-        if(currentFragment == "filterFragment") {
+        if (currentFragment == "filterFragment") {
             bitmap = filterFrag.currentPicture.bitmap
         }
-        if(currentFragment == "drawFragment") {
+        if (currentFragment == "drawFragment") {
             bitmap = drawFrag.currentPicture.bitmap
         }
-        if(currentFragment == "transformFragment") {
+        if (currentFragment == "transformFragment") {
             bitmap = transformFrag.currentPicture.bitmap
         }
         saveToInternalStorage(this.applicationContext, bitmap, "myImage")
@@ -461,7 +459,6 @@ class MainActivity : AppCompatActivity() {
     */
 
 
-
     private fun getStrings(): List<String> = Filter.values().map { getString(it) }
     private fun getString(filter: Filter) = getString(filter.code)
 
@@ -470,25 +467,45 @@ class MainActivity : AppCompatActivity() {
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    private suspend fun applyZoom(zoomFactor: Double){
+    private suspend fun applyZoom(zoomFactor: Double) {
         currentPicture = Zooming.zoom(currentPicture, zoomFactor)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    private suspend fun applyRotate(angle: Double){
+    private suspend fun applyRotate(angle: Double) {
         currentPicture = Rotation.rotate(currentPicture, angle)
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    private suspend fun applyTransformation(){
-        val oldSystemX = doubleArrayOf(affineOldPoints[0][0].toDouble(), affineOldPoints[1][0].toDouble(), affineOldPoints[2][0].toDouble())
-        val oldSystemY = doubleArrayOf(affineOldPoints[0][1].toDouble(), affineOldPoints[1][1].toDouble(), affineOldPoints[2][1].toDouble())
-        val newSystemX = doubleArrayOf(affineNewPoints[0][0].toDouble(), affineNewPoints[1][0].toDouble(), affineNewPoints[2][0].toDouble())
-        val newSystemY = doubleArrayOf(affineNewPoints[0][1].toDouble(), affineNewPoints[1][1].toDouble(), affineNewPoints[2][1].toDouble())
+    private suspend fun applyTransformation() {
+        val oldSystemX = doubleArrayOf(
+            affineOldPoints[0][0].toDouble(),
+            affineOldPoints[1][0].toDouble(),
+            affineOldPoints[2][0].toDouble()
+        )
+        val oldSystemY = doubleArrayOf(
+            affineOldPoints[0][1].toDouble(),
+            affineOldPoints[1][1].toDouble(),
+            affineOldPoints[2][1].toDouble()
+        )
+        val newSystemX = doubleArrayOf(
+            affineNewPoints[0][0].toDouble(),
+            affineNewPoints[1][0].toDouble(),
+            affineNewPoints[2][0].toDouble()
+        )
+        val newSystemY = doubleArrayOf(
+            affineNewPoints[0][1].toDouble(),
+            affineNewPoints[1][1].toDouble(),
+            affineNewPoints[2][1].toDouble()
+        )
 
         val transformations = AffineTransformations(oldSystemX, oldSystemY, newSystemX, newSystemY)
 
-        currentPicture = transformations.transformWithTrilinearFiltering(currentPicture, currentPicture.width, currentPicture.height)
+        currentPicture = transformations.transformWithTrilinearFiltering(
+            currentPicture,
+            currentPicture.width,
+            currentPicture.height
+        )
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
@@ -520,13 +537,13 @@ class MainActivity : AppCompatActivity() {
             mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
             mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
             saveToInternalStorage(this, mainOriginalImage, "myImage")
-            if(currentFragment == "filterFragment") {
+            if (currentFragment == "filterFragment") {
                 filterFrag.reloadImage()
             }
-            if(currentFragment == "drawFragment") {
+            if (currentFragment == "drawFragment") {
                 drawFrag.reloadImage()
             }
-            if(currentFragment == "transformFragment") {
+            if (currentFragment == "transformFragment") {
                 transformFrag.reloadImage()
             }
         }
@@ -535,35 +552,33 @@ class MainActivity : AppCompatActivity() {
             mainCurrentPicture = PixelArray((imageView2.drawable as BitmapDrawable).bitmap)
             mainOriginalImage = (imageView2.drawable as BitmapDrawable).bitmap
             saveToInternalStorage(this, mainOriginalImage, "myImage")
-            if(currentFragment == "filterFragment") {
+            if (currentFragment == "filterFragment") {
                 filterFrag.reloadImage()
             }
-            if(currentFragment == "drawFragment") {
+            if (currentFragment == "drawFragment") {
                 drawFrag.reloadImage()
             }
-            if(currentFragment == "transformFragment") {
+            if (currentFragment == "transformFragment") {
                 transformFrag.reloadImage()
             }
 
         } else {
             super.onActivityResult(requestCode, resultCode, data)
-            }
+        }
     }
 
-    private fun Bitmap.addPoint(x: Int, y: Int, color: Int){
+    private fun Bitmap.addPoint(x: Int, y: Int, color: Int) {
         val r = 20
 
-        for (i in x-r..x+r){
+        for (i in x - r..x + r) {
             if (i !in 0 until width) continue
-            for (j in y-r..y+r){
+            for (j in y - r..y + r) {
                 if (j !in 0 until height || (x - i) * (x - i) + (y - j) * (y - j) > r * r) continue
                 setPixel(i, j, color)
             }
 
         }
     }
-
-
 
 
 }

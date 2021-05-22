@@ -2,10 +2,12 @@ package com.example.graphiceditor
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.provider.CalendarContract
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -27,7 +29,8 @@ class Box : View {
     )
 
     private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val backgroundColor = Color.WHITE
+    val backgroundColor = R.color.colorBackground
+
     private var nodeColor = Color.BLUE
     private var edgeColor = Color.BLACK
     private var nodeSize = 12
@@ -237,13 +240,11 @@ class Box : View {
             fourColor(colorPath, canvas, colorPaint)
             four(mPath, canvas, mPaint)
         }
-        if (numbers[22].z > 0.0)
-        {
+        if (numbers[22].z > 0.0) {
             fiveColor(colorPath, canvas, colorPaint)
             five(mPath, canvas, mPaint)
         }
-        if (numbers[27].z > 0.0)
-        {
+        if (numbers[27].z > 0.0) {
             sixColor(colorPath, canvas, colorPaint)
             six(mPath, canvas, mPaint)
         }
@@ -414,5 +415,6 @@ class Box : View {
         canvas.drawPath(colorPath, colorPaint)
         colorPath.reset()
     }
+
 }
 

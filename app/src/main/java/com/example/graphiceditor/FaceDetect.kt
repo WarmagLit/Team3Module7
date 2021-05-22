@@ -12,9 +12,9 @@ import kotlinx.android.synthetic.main.activity_face_detect.*
 private const val IMAGE_PICK_CODE = 1000
 private const val CAMERA_REQUEST_CODE = 42
 
-class FaceDetect : AppCompatActivity(){
+class FaceDetect : AppCompatActivity() {
 
-    var selectedUri:Uri?=null
+    var selectedUri: Uri? = null
     lateinit var dialog: ProgressDialog
 
 
@@ -57,5 +57,5 @@ class FaceDetect : AppCompatActivity(){
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
-    
+
 }

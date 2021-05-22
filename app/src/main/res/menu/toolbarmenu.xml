@@ -6,19 +6,19 @@
         android:id="@+id/addCamera"
         android:icon="@drawable/ic_photo_camera_black_24dp"
         android:title="@string/saveImage"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/saveImg"
         android:icon="@drawable/ic_save_black_24dp"
         android:title="@string/app_name"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/addGallery"
         android:icon="@drawable/ic_add_black_24dp"
         android:title="@string/saveImage"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
 
 </menu>

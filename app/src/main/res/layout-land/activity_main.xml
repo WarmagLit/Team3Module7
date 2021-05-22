@@ -11,8 +11,8 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:background="@color/colorAccent"
+        android:visibility="gone"
         app:menu="@menu/toolbarmenu"
         app:navigationIcon="@drawable/ic_menu_black_24dp"
         app:title="Editor"
@@ -21,16 +21,16 @@
     <FrameLayout
         android:id="@+id/fl_wrapper"
         android:layout_width="match_parent"
-        android:background="@color/colorBackground"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_gravity="bottom"
+        android:visibility="gone"
         app:backgroundTint="@color/colorAccent"
         app:itemIconTint="@color/material_on_background_emphasis_high_type"
         app:itemTextColor="@color/material_on_background_emphasis_high_type"

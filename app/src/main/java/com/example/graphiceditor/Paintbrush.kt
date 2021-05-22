@@ -35,9 +35,14 @@ class Paintbrush {
                         }
                     }
 
-                    val k = (centering * sqrt(((x - i) * (x - i) + (y - j) * (y - j)).toDouble())).toInt()
+                    val k =
+                        (centering * sqrt(((x - i) * (x - i) + (y - j) * (y - j)).toDouble())).toInt()
+
                     fun newValue(component: Int): Int {
-                        val newValue = ((r - k) * newColor.component(component) + k * currentPicture[i, j].component(component)) / r
+                        val newValue =
+                            ((r - k) * newColor.component(component) + k * currentPicture[i, j].component(
+                                component
+                            )) / r
                         return max(newValue, bitmap.getPixel(i, j).component(component))
                     }
 
@@ -75,7 +80,8 @@ class Paintbrush {
         )
 
         private fun grayStyle(color: Int): Int {
-            val newColor = (color.component(red) + color.component(green) + color.component(blue)) / 3
+            val newColor =
+                (color.component(red) + color.component(green) + color.component(blue)) / 3
             return colorOf(
                 newColor,
                 newColor,
@@ -83,8 +89,8 @@ class Paintbrush {
             )
         }
 
-        private fun blur(currentPicture: PixelArray, x: Int, y: Int, r: Int): Int{
-            fun calculateMiddle(component: Int): Int{
+        private fun blur(currentPicture: PixelArray, x: Int, y: Int, r: Int): Int {
+            fun calculateMiddle(component: Int): Int {
                 var color = 0
                 var quantity = 0
                 for (i in x - r..x + r) {

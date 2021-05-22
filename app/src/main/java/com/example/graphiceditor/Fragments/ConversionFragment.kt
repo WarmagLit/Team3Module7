@@ -26,14 +26,14 @@ import kotlin.coroutines.EmptyCoroutineContext
 class ConvertionFragment : Fragment() {
 
     var currentPicture = PixelArray(1, 1)
-    lateinit var originalImage : Bitmap
+    lateinit var originalImage: Bitmap
 
     private var currentSpline = Splines()
     private var isSpline = false
 
     private var currentPlacePoint = 0
-    private var affineOldPoints = Array(3){ IntArray(2) }
-    private var affineNewPoints = Array(3){ IntArray(2) }
+    private var affineOldPoints = Array(3) { IntArray(2) }
+    private var affineNewPoints = Array(3) { IntArray(2) }
     private val pointColor = intArrayOf(
         colorOf(255, 140, 0, 0),
         colorOf(255, 0, 140, 0),
@@ -85,7 +85,7 @@ class ConvertionFragment : Fragment() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun initSpline(){
+    private fun initSpline() {
         seekBarRadius.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
@@ -138,8 +138,8 @@ class ConvertionFragment : Fragment() {
             val r = radiusInput.text.toDouble().toInt()
             val changes = PixelArray(currentSpline.drawSplineWithoutSettings(r, splineBitmap))
 
-            for (x in 0 until changes.width){
-                for (y in 0 until changes.height){
+            for (x in 0 until changes.width) {
+                for (y in 0 until changes.height) {
                     val k = changes[x, y].component(alpha)
                     fun newColor(component: Int) =
                         (k * changes[x, y].component(component) +
@@ -171,7 +171,7 @@ class ConvertionFragment : Fragment() {
         }
     }
 
-    private fun onTouchSplineField(event: MotionEvent): Boolean{
+    private fun onTouchSplineField(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
             val x = event.x.toInt()
             val y = event.y.toInt()
@@ -180,24 +180,21 @@ class ConvertionFragment : Fragment() {
             val r = radiusInput.text.toDouble().toInt()
 
             if (isSpline) {
-                if (currentSpline.checkSelected()){
+                if (currentSpline.checkSelected()) {
                     currentSpline.changeSelectedPoint(x, y)
                     deletePointButton.visibility = View.INVISIBLE
-                }
-                else if (currentSpline.select(x, y, r) == -1){
+                } else if (currentSpline.select(x, y, r) == -1) {
                     currentSpline.add(x, y)
                     deletePointButton.visibility = View.INVISIBLE
-                }
-                else if (!currentSpline.checkIsSettingPoint()){
+                } else if (!currentSpline.checkIsSettingPoint()) {
                     deletePointButton.visibility = View.VISIBLE
                 }
-            }
-            else {
+            } else {
                 currentSpline.add(x, y)
             }
 
             val newSplineBitmap =
-                if(isSpline) currentSpline.drawSpline(r, splineBitmap)
+                if (isSpline) currentSpline.drawSpline(r, splineBitmap)
                 else currentSpline.drawPolyline(r, splineBitmap)
 
             splineField.setImageBitmap(newSplineBitmap)
@@ -211,7 +208,7 @@ class ConvertionFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun initTransformer() {
 
-        pointsField.setOnTouchListener{ _, event ->
+        pointsField.setOnTouchListener { _, event ->
             onTouchPointsField(event)
         }
 
@@ -247,7 +244,7 @@ class ConvertionFragment : Fragment() {
         }
     }
 
-    private fun allowPlacePoints(){
+    private fun allowPlacePoints() {
         currentPlacePoint = 1
         val pointsBitmap = Bitmap.createBitmap(
             currentPicture.width,
@@ -258,25 +255,45 @@ class ConvertionFragment : Fragment() {
         pointsField.setImageBitmap(pointsBitmap)
     }
 
-    private suspend fun applyTransformation(){
-        val oldSystemX = doubleArrayOf(affineOldPoints[0][0].toDouble(), affineOldPoints[1][0].toDouble(), affineOldPoints[2][0].toDouble())
-        val oldSystemY = doubleArrayOf(affineOldPoints[0][1].toDouble(), affineOldPoints[1][1].toDouble(), affineOldPoints[2][1].toDouble())
-        val newSystemX = doubleArrayOf(affineNewPoints[0][0].toDouble(), affineNewPoints[1][0].toDouble(), affineNewPoints[2][0].toDouble())
-        val newSystemY = doubleArrayOf(affineNewPoints[0][1].toDouble(), affineNewPoints[1][1].toDouble(), affineNewPoints[2][1].toDouble())
+    private suspend fun applyTransformation() {
+        val oldSystemX = doubleArrayOf(
+            affineOldPoints[0][0].toDouble(),
+            affineOldPoints[1][0].toDouble(),
+            affineOldPoints[2][0].toDouble()
+        )
+        val oldSystemY = doubleArrayOf(
+            affineOldPoints[0][1].toDouble(),
+            affineOldPoints[1][1].toDouble(),
+            affineOldPoints[2][1].toDouble()
+        )
+        val newSystemX = doubleArrayOf(
+            affineNewPoints[0][0].toDouble(),
+            affineNewPoints[1][0].toDouble(),
+            affineNewPoints[2][0].toDouble()
+        )
+        val newSystemY = doubleArrayOf(
+            affineNewPoints[0][1].toDouble(),
+            affineNewPoints[1][1].toDouble(),
+            affineNewPoints[2][1].toDouble()
+        )
 
         val transformations = AffineTransformations(oldSystemX, oldSystemY, newSystemX, newSystemY)
 
-        currentPicture = transformations.transformWithTrilinearFiltering(currentPicture, currentPicture.width, currentPicture.height)
+        currentPicture = transformations.transformWithTrilinearFiltering(
+            currentPicture,
+            currentPicture.width,
+            currentPicture.height
+        )
         imageView2.setImageBitmap(currentPicture.bitmap)
     }
 
-    private fun prohibitPlacePoints(){
+    private fun prohibitPlacePoints() {
         currentPlacePoint = 0
         val pointsBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
         pointsField.setImageBitmap(pointsBitmap)
     }
 
-    private fun onTouchPointsField(event: MotionEvent): Boolean{
+    private fun onTouchPointsField(event: MotionEvent): Boolean {
         if (event.action != MotionEvent.ACTION_UP) return false
         if (currentPlacePoint == 0) return false
         val pointsBitmap = (pointsField.drawable as BitmapDrawable).bitmap
@@ -293,12 +310,12 @@ class ConvertionFragment : Fragment() {
         return false
     }
 
-    private fun Bitmap.addPoint(x: Int, y: Int, color: Int){
+    private fun Bitmap.addPoint(x: Int, y: Int, color: Int) {
         val r = 20
 
-        for (i in x-r..x+r){
+        for (i in x - r..x + r) {
             if (i !in 0 until width) continue
-            for (j in y-r..y+r){
+            for (j in y - r..y + r) {
                 if (j !in 0 until height || (x - i) * (x - i) + (y - j) * (y - j) > r * r) continue
                 setPixel(i, j, color)
             }
@@ -306,7 +323,7 @@ class ConvertionFragment : Fragment() {
         }
     }
 
-    fun reloadImage () {
+    fun reloadImage() {
         originalImage = ImageStorageManager.getImageFromInternalStorage(
             getActivity()!!.applicationContext,
             "myImage"

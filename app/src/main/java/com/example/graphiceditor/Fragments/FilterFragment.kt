@@ -31,7 +31,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 class FilterFragment : Fragment() {
 
     var currentPicture = PixelArray(1, 1)
-    lateinit var originalImage : Bitmap
+    lateinit var originalImage: Bitmap
 
 
     override fun onCreateView(
@@ -42,7 +42,6 @@ class FilterFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_filter, container, false)
     }
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +56,7 @@ class FilterFragment : Fragment() {
         initUnsharp()
     }
 
-    fun reloadImage () {
+    fun reloadImage() {
         originalImage = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
         currentPicture = PixelArray(originalImage)
         imageView2.setImageBitmap(originalImage)
@@ -71,7 +70,6 @@ class FilterFragment : Fragment() {
         val bit = (imageView2.drawable as BitmapDrawable).bitmap
         saveToInternalStorage(getActivity()!!.applicationContext, bit, "myImage")
     }
-
 
 
     private fun initButtons() {
@@ -95,7 +93,7 @@ class FilterFragment : Fragment() {
 
         val arrayStrings = getStrings()
 
-        for (i in arrayBtn.indices){
+        for (i in arrayBtn.indices) {
             arrayBtn[i].setOnClickListener {
                 val filter = of(arrayStrings[i])
                 Log.d("TAG", filter.toString())
@@ -110,7 +108,11 @@ class FilterFragment : Fragment() {
 
     private fun initUnsharp() {
         unsharpButton.setOnClickListener {
-            currentPicture = Unsharp.unsharpFilter(currentPicture,unsharpSigma.text.toDouble(),koefK.text.toDouble())
+            currentPicture = Unsharp.unsharpFilter(
+                currentPicture,
+                unsharpSigma.text.toDouble(),
+                koefK.text.toDouble()
+            )
             imageView2.setImageBitmap(currentPicture.bitmap)
         }
 
@@ -156,7 +158,8 @@ class FilterFragment : Fragment() {
         try {
             val bytes = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-            val fo: FileOutputStream = view!!.getContext().openFileOutput(fileName, Context.MODE_PRIVATE)
+            val fo: FileOutputStream =
+                view!!.getContext().openFileOutput(fileName, Context.MODE_PRIVATE)
             fo.write(bytes.toByteArray())
             // remember close file output
             fo.close()
@@ -167,9 +170,9 @@ class FilterFragment : Fragment() {
         return fileName
     }
 
-    private fun of(string: String): Filter{
+    private fun of(string: String): Filter {
         Filter.values().forEach {
-            if(getString(it) == string)
+            if (getString(it) == string)
                 return it
         }
         return Filter.NONE

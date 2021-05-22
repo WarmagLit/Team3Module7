@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.DrawFragment">
 
 
@@ -54,17 +54,17 @@
                         android:id="@+id/radiusText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorText"
                         android:layout_weight="1"
-                        android:text="@string/radius" />
+                        android:text="@string/radius"
+                        android:textColor="@color/colorText" />
 
                     <TextView
                         android:id="@+id/centeringText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorText"
                         android:layout_weight="1"
-                        android:text="@string/centering" />
+                        android:text="@string/centering"
+                        android:textColor="@color/colorText" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -79,18 +79,18 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number"
-                        android:textColor="@color/colorText"
-                        android:text="5" />
+                        android:text="5"
+                        android:textColor="@color/colorText" />
 
                     <EditText
                         android:id="@+id/centeringInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textColor="@color/colorText"
                         android:ems="10"
                         android:inputType="numberDecimal"
-                        android:text="@string/_0_5" />
+                        android:text="@string/_0_5"
+                        android:textColor="@color/colorText" />
 
                 </LinearLayout>
 

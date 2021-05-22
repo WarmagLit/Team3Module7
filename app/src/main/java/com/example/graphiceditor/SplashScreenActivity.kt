@@ -17,7 +17,7 @@ class SplashScreenActivity : AppCompatActivity() {
         val isNightModeOn: Boolean = appSettingPrefs.getBoolean("NightMode", false)
 
 
-        if(isNightModeOn){
+        if (isNightModeOn) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

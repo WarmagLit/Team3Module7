@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_filter.imageView2
 class DrawFragment : Fragment() {
 
     var currentPicture = PixelArray(1, 1)
-    lateinit var originalImage : Bitmap
+    lateinit var originalImage: Bitmap
 
     private var currentBrush = "red"
 
@@ -65,7 +65,7 @@ class DrawFragment : Fragment() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun initBrush(){
+    private fun initBrush() {
 
         btnClearBrush.setOnClickListener {
             val drawingBitmap = Bitmap.createBitmap(
@@ -93,7 +93,7 @@ class DrawFragment : Fragment() {
             "gray"
         )
 
-        for (i in arrayBtn.indices){
+        for (i in arrayBtn.indices) {
             arrayBtn[i].setOnClickListener {
                 currentBrush = arrayStrings[i]
             }
@@ -115,8 +115,8 @@ class DrawFragment : Fragment() {
 
         applyDrawingButton.setOnClickListener {
             val changes = PixelArray((drawingField.drawable as BitmapDrawable).bitmap)
-            for (x in 0 until changes.width){
-                for (y in 0 until changes.height){
+            for (x in 0 until changes.width) {
+                for (y in 0 until changes.height) {
                     if (changes[x, y] != 0) {
                         currentPicture[x, y] = changes[x, y]
                     }
@@ -165,7 +165,7 @@ class DrawFragment : Fragment() {
         })
     }
 
-    private fun onTouchDrawingField(event: MotionEvent): Boolean{
+    private fun onTouchDrawingField(event: MotionEvent): Boolean {
         if (event.action != MotionEvent.ACTION_MOVE) return false
         val x = event.x.toInt()
         val y = event.y.toInt()
@@ -180,12 +180,11 @@ class DrawFragment : Fragment() {
         return false
     }
 
-    fun reloadImage () {
+    fun reloadImage() {
         originalImage = getImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")!!
         currentPicture = PixelArray(originalImage)
         deleteImageFromInternalStorage(getActivity()!!.applicationContext, "myImage")
     }
-
 
 
 }
